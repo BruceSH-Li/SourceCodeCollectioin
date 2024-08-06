@@ -1,0 +1,305 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset layui-hide" id="searchField">
+            <div>
+                <form class="layui-form layui-form-pane">
+                    <div class="layui-form-item">
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">关键字:</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="txt_keyword" name="txt_keyword" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <input type="checkbox" name="IsTemp" id="IsTemp" checked value="true" title="临时标识">
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container" id="toolbar">
+                <button id="NF-add" name="NF-add" authorize class="layui-btn layui-btn-sm data-add-btn" lay-event="add"><i class="layui-icon">&#xe654;</i>新增</button>
+                <button id="NF-edit" name="NF-edit" authorize class="layui-btn layui-btn-sm layui-btn-warm data-edit-btn layui-hide" lay-event="edit"><i class="layui-icon">&#xe642;</i>修改</button>
+                <button id="NF-delete" name="NF-delete" authorize class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn layui-hide" lay-event="delete"> <i class="layui-icon">&#xe640;</i>删除</button>
+                <button id="NF-details" name="NF-details" authorize class="layui-btn layui-btn-sm layui-btn-normal data-info-btn layui-hide" lay-event="details"> <i class="layui-icon">&#xe60b;</i>查看</button>
+                <button id="NF-print" name="NF-print" authorize class="layui-btn layui-btn-sm layui-hide" lay-event="print"> <i class="layui-icon">&#xe66d;</i>打印</button>
+                <button id="NF-import" authorize class="layui-btn layui-btn-sm data-import-btn" lay-event="import"> <i class="layui-icon">&#xe67c;</i>导入</button>
+                <button id="NF-banding" name="NF-banding" authorize class="layui-btn layui-btn-sm data-banding-btn" lay-event="banding"><i class="fa fa-key"></i>物料绑定</button>
+                <button id="NF-return" name="NF-return" authorize class="layui-btn layui-btn-sm layui-btn-warm data-return-btn layui-hide" lay-event="return"><i class="fa fa-backward "></i>退回</button>
+            </div>
+        </script>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <script type="text/html" id="currentTableBar">
+            <a id="NF-edit" authorize class="layui-btn layui-btn-sm" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+            <a id="NF-delete" authorize class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"><i class="layui-icon">&#xe640;</i></a>
+            <a id="NF-return" authorize class="layui-btn layui-btn-sm layui-btn-warm data-return-btn" lay-event="return"><i class="fa fa-backward "></i></a>
+        </script>
+    </div>
+</div>
+<script>
+    layui.use(['jquery', 'form', 'table', 'commonTable', 'common', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table, commonTable = layui.commonTable
+        common = layui.common;
+        //权限控制(js是值传递)
+        currentTableBar.innerHTML = common.authorizeButtonNew(currentTableBar.innerHTML);
+        toolbarDemo.innerHTML = common.authorizeButtonNew(toolbarDemo.innerHTML);
+        //var json = {};
+        //json.cmd = "getPrinters";
+        //json.requestId = uuid();
+        //sendWSPush(json);
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            id: 'currentTableId',
+            url: '/MaterialManage/TransferBox/GetGridJson',
+            wher: { IsTemp: !!$('#IsTemp').val() ? $('#IsTemp').val():false},
+            cols: [[
+                //此处需修改
+                { type: "checkbox", width: 50 },
+                {
+                    field: 'F_TransferState', title: '流转箱状态', width: 120, sort: true, filter: true,
+                    templet: function (d) {
+                        if (d.F_TransferState == 1) {
+                            return "<span class='layui-btn layui-btn-xs'>绑定</span>";
+                        } else if (d.F_TransferState == 2) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>在库</span>";
+                        }
+                        else if (d.F_TransferState == 3) {
+                            return "<span class='layui-btn layui-btn-danger layui-btn-xs'>使用</span>";
+                        }
+                        else if (d.F_TransferState == 4) {
+                            return "<span class='layui-btn layui-btn-danger layui-btn-xs'>出库</span>";
+                        }
+                        else {
+                            return "<span class='layui-btn layui-btn-warm layui-btn-xs'>空闲</span>";
+                        }
+                    }
+                },
+                { field: 'F_TransferCode', title: '流转箱编号', width: 180, sort: true, filter: true },
+                {
+                    field: 'F_TransferType', title: '流转箱类型', width: 140, sort: true, filter: true,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_TransferType"][d.F_TransferType] == null ? "" : top.clients.dataItems["Mes_TransferType"][d.F_TransferType];
+                    }
+                },
+                {
+                    field: 'F_IsTemp', title: '临时', width: 85, sort: true, filter: true,
+                    templet: function (d) {
+                        if (d.F_IsTemp == true) {
+                            return "<span class='layui-btn layui-btn-warm layui-btn-xs'>是</span>";
+                        } else {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>否</span>";
+                        }
+                    }
+                },
+                { field: 'F_TransferMaxNum', title: '流转箱最大数', width: 140, sort: true, filter: true },
+
+                {
+                    field: 'F_LocationCode', title: '库位编号', width: 150, sort: true, filter: true,
+                },
+                {
+                    field: 'F_EnabledMark', title: '有效', width: 100, sort: true, filter: true,
+                    templet: function (d) {
+                        if (d.F_EnabledMark == true) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>有效</span>";
+                        } else {
+                            return "<span class='layui-btn layui-btn-warm layui-btn-xs'>无效</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'F_CreatorTime', title: '创建时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                },
+                { field: 'F_Description', title: '备注', minWidth: 120, sort: true, filter: true },
+                { title: '操作', width: 175, toolbar: '#currentTableBar', align: "center" }
+            ]]
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            commonTable.reloadtable({
+                elem: 'currentTableId',
+                curr: 1,
+                where: { keyword: data.field.txt_keyword, IsTemp: !!data.field.IsTemp ? data.field.IsTemp:false }
+            });
+            return false;
+        });
+        wcLoading.close();
+        //行点击事件监听，控制按钮显示
+        var oneList = ["NF-edit", "NF-details"];//选择1条显示
+        var moreList = ["NF-delete", "NF-print", "NF-return"];//选择多条显示
+        commonTable.tableRowClick("checkbox", "currentTableFilter", "currentTableId", oneList, moreList);
+        //toolbar监听事件
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            var data = table.checkStatus('currentTableId').data;
+            if (obj.event === 'add') {  // 监听添加操作
+                common.modalOpen({
+                    title: "添加界面",
+                    url: "/MaterialManage/TransferBox/Form",
+                    width: "500px",
+                    height: "500px",
+                });
+            }
+            else if (obj.event === 'delete') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                var ids = [];
+                for (var i = 0; i < data.length; i++) {
+                    ids.push(data[i].F_Id);
+                }
+                common.deleteForm({
+                    url: "/MaterialManage/TransferBox/DeleteForm",
+                    param: { keyValue: ids.join(',') },
+                    success: function () {
+                        common.reload('data-search-btn');
+                    }
+                });
+            }
+            else if (obj.event === 'edit') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                common.modalOpen({
+                    title: "编辑界面",
+                    url: "/MaterialManage/TransferBox/Form?keyValue=" + data[0].F_Id,
+                    width: "500px",
+                    height: "400px",
+                });
+            }
+            else if (obj.event === 'details') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                common.modalOpen({
+                    title: "查看界面",
+                    url: "/MaterialManage/TransferBox/Details?keyValue=" + data[0].F_Id,
+                    width: "500px",
+                    height: "400px",
+                    btn: []
+                });
+            }
+            else if (obj.event === 'print') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                if (top.websocket == null || top.websocket.readyState == 3) {
+                    common.modalMsg("打印服务未开启", "warning");
+                    return false;
+                }
+                common.modalConfirm("注：您确定要打印选中这些数据吗？", function (r) {
+                    if (r) {
+                        var ids = [];
+                        var json = {};
+                        json.cmd = "print";
+                        json.requestId = uuid();
+                        json.data = {};
+                        json.data.printIniInfo = {};
+                        json.data.printIniInfo.filePath = window.document.location.origin + top.clients.printTemplates["二维码编号名称模板"];
+                        json.data.printIniInfo.realName = "二维码编号名称模板";
+                        json.data.printIniInfo.printType = 1;
+                        json.data.printIniInfo.printName = "";
+                        json.data.printIniInfo.landscape = true;
+                        json.data.printIniInfo.paperSize = "";
+                        json.data.printIniInfo.duplex = "";
+                        json.data.data = [];
+                        for (var i = 0; i < data.length; i++) {
+                            var temp = {};
+                            temp.barId = data[i].F_TransferCode;
+                            temp.code = "流转箱编号";
+                            temp.name = data[i].F_TransferCode;
+                            json.data.data.push(temp);
+                        }
+                        top.sendWSPush(json);
+                    }
+                });
+            }
+            else if (obj.event === 'import') {
+                common.modalOpen({
+                    title: "导入界面",
+                    url: "/MaterialManage/TransferBox/Import",
+                    width: "650px",
+                    height: "650px",
+                });
+            }
+            else if (obj.event === 'banding') {
+                common.openNewTabByIframe({
+                    title: "流转物料绑定",
+                    href: "/MaterialManage/TransferType/Index",
+                });
+            }
+            else if (obj.event === 'return') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                var ids = [];
+                for (var i = 0; i < data.length; i++) {
+                    ids.push(data[i].F_Id);
+                }
+                common.submitPost({
+                    prompt: "注：您确定退回了选中这些数据吗？",
+                    url: '/MaterialManage/TransferBox/ReturnForm',
+                    param: { keyValue: ids.join(',') },
+                    success: function () {
+                        common.reload('data-search-btn');
+                    }
+                });
+            }
+            else if (obj.event === 'TABLE_SEARCH') {
+                var _that = $("#searchField");
+                if (_that.hasClass("layui-hide")) {
+                    _that.removeClass('layui-hide');
+                } else {
+                    _that.addClass('layui-hide');
+                }
+            }
+            return false;
+        });
+        //toolrow监听事件
+        table.on('tool(currentTableFilter)', function (obj) {
+            if (obj.event === 'delete') {
+                common.deleteForm({
+                    url: "/MaterialManage/TransferBox/DeleteForm",
+                    param: { keyValue: obj.data.F_Id },
+                    success: function () {
+                        obj.del();
+                    }
+                });
+            }
+            else if (obj.event === 'edit') {
+                common.modalOpen({
+                    title: "编辑界面",
+                    url: "/MaterialManage/TransferBox/Form?keyValue=" + obj.data.F_Id,
+                    width: "500px",
+                    height: "400px",
+                });
+            }
+            else if (obj.event === 'return') {
+                common.submitPost({
+                    prompt: "注：您确定退回了选中这些数据吗？",
+                    url: '/MaterialManage/TransferBox/ReturnForm',
+                    param: { keyValue: obj.data.F_Id },
+                    success: function () {
+                        common.reload('data-search-btn');
+                    }
+                });
+            }
+            return false;
+        });
+    });
+</script>

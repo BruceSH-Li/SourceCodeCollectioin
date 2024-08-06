@@ -1,0 +1,86 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="~/js/lay-module/flow/WaterFlow.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <fieldset class="table-search-fieldset" id="searchField">
+                @*<legend>搜索信息</legend>*@
+                <div>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label required">物料编号:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="materialCode" name="materialCode" lay-verify="required" autocomplete="off" class="layui-input" placeholder="">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label required">物料批号:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="materialBatch" name="materialBatch"  lay-verify="required" autocomplete="off" class="layui-input" placeholder="">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </fieldset>
+            <div id="flowPanel"></div>
+        </div>
+    </div>
+    <script>
+        layui.use(['jquery', 'form', 'waterflow', 'flowlayout', 'common'], function () {
+            var $ = layui.jquery,
+                form = layui.form,
+                common = layui.common;
+            var flowDesignPanel;
+            //加载数据
+            wcLoading.close();
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                common.ajax({
+                    url: '/ReportRecord/MaterialReport/GetGridJson',
+                    dataType: 'json',
+                    data: { materialBatch: data.field.materialBatch, materialCode: data.field.materialCode },
+                    async: false,
+                    success: function (data) {
+                        flowDesignPanel = $('#flowPanel').flowdesign({
+                            haveTool: false,
+                            useName: "物料编号",
+                            tagName: { "0": "其他", "1": "当前"},
+                            tagClass: { "0": "#5bc0de", "1": "#f0ad4e"},
+                            needNoTag: false,
+                            resultName: "当前物料",
+                            timeName: "物料批号",
+                            remarkName: "详细信息"
+                            , isprocessing: true
+                            , nodeData: data.nodes
+                            , flowcontent: data
+                        });
+                        flowDesignPanel.reinitSize($(window).width() - 50, $(window).height() - 100);
+                        $(window).resize(function () {
+                            flowDesignPanel.reinitSize($(window).width() - 50, $(window).height() - 100);
+                        });
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+
+</body>
+</html>

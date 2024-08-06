@@ -1,0 +1,227 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'common', 'optimizeSelectOption'], function () {
+        var HotEqpList = [];
+        var TdEqpList = [];
+        var AreaList = [];
+
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common;
+        var type = !$.request("type") ? 0 : $.request("type");
+        var boardList = [];
+        var viewListRadio;
+        $(function () {
+            initControl();
+            var data = JSON.parse(localStorage.getItem("WC_BoardList"));
+            if (!!data) {
+                $('#refleshSecond').val(data.refleshSecond);
+                $('#skipSecond').val(data.skipSecond);
+                $('#viewType').val(data.viewType);
+                ViewTypeChange(data.viewType);
+                if (data.viewType=="true") {
+                    for (var i = 0; i < data.viewList.length; i++) {
+                        $(document.getElementsByName(data.viewList[i])[0]).attr("checked", 'checked');
+                    }
+                }
+                else {
+                    $("input[name='valuesName'][value='" + data.viewList[0]+"']").attr("checked", true);
+                }
+            }
+            else {
+                ViewTypeChange("false");
+            }
+            form.render();
+        });
+        wcLoading.close();
+
+        function getHotEqpList(ParentId) {
+            common.ajax({
+                url: "/ProductionReport/HelpClass/GetEqpByEqpUse?EqpUse=9",
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    HotEqpList = !!data ? data : [];
+
+                }
+            });
+        }
+        function getTdEqpList() {
+            common.ajax({
+                url: "/ProductionReport/HelpClass/GetEqpByEqpUse?EqpUse=0",
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    TdEqpList = !!data ? data : [];
+
+                }
+            });
+        }
+        function getAreaList() {
+            common.ajax({
+                url: "/ProductionReport/HelpClass/GetAreaList",
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    AreaList = !!data ? data : [];
+                }
+            });
+        }
+
+
+        function initControl() {
+            getHotEqpList();
+            getTdEqpList();
+            getAreaList();
+
+            common.ajax({
+                url: '/BoardHome/GetInitDataJson',
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    for (var i = 0; i < data.menuInfo.length; i++) {
+                        boardList.push({
+                            text: data.menuInfo[i].title, id: data.menuInfo[i].href
+                        });
+                    }
+                }
+            });
+        }
+        //监听下拉框
+        form.on('select(ViewType)', function (data) {
+            ViewTypeChange(data.value);
+        });
+        function ViewTypeChange(value) {
+            $('#viewList').html('');
+            if (value == "true") {
+                $('#skipSecond').parent().parent().removeClass("layui-hide");
+                if (!!boardList && boardList.length > 0) {
+                    for (var i = 0; i < boardList.length; i++) {
+                        var target = $('#viewList');
+                        var html = $("#divInputTemplate").prop("outerHTML");
+                        html = html.replace(/lookname/g, boardList[i].text); // 替换多个
+                        html = html.replace(/values/g, boardList[i].id);
+                        html = html.replace(/divInputTemplate/g, "view" + i);
+                        var obj = $(html);
+                        obj.removeClass("layui-hide");
+                        obj.appendTo(target);
+                    }
+                }
+            }
+            else {
+                $('#skipSecond').parent().parent().addClass("layui-hide");
+                if (!!boardList && boardList.length > 0) {
+                    for (var i = 0; i < boardList.length; i++) {
+                        var target = $('#viewList');
+                        var html = $("#divInputTemplate1").prop("outerHTML");
+                        html = html.replace(/lookname/g, boardList[i].text); // 替换多个
+                        html = html.replace(/valuesId/g, boardList[i].id);
+                        html = html.replace(/values/g, "valuesName");
+                        html = html.replace(/divInputTemplate/g, "view" + i);
+                        var obj = $(html);
+                        obj.removeClass("layui-hide");
+                        obj.appendTo(target);
+                    }
+                }
+            }
+            form.render();
+        }
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            postData = data.field;
+            firstHref = "";
+            if (data.field.viewType == "true") {
+                if (!data.field.skipSecond || Number(data.field.skipSecond) <= 0) {
+                    common.modalMsg("未设置轮播时间", "warning");
+                    return false;
+                }
+            }
+            postData.viewList = [];
+            $('#viewList').find('input,select,textarea').each(function (r) {
+                var $this = $(this);
+                var name = $this.attr('name');
+                var type = $this.attr('type');
+                switch (type) {
+                    case "checkbox":
+                        if ($this.is(":checked")) {
+                            if (!firstHref) {
+                                firstHref = name;
+                            }
+                            postData.viewList.push(name);
+                        };
+                        break;
+                    case "radio":
+                        if ($this.is(":checked")) {
+                            if (!firstHref) {
+                                firstHref = $this.attr('value');
+                            }
+                            postData.viewList.push($this.attr('value'));
+                        };
+                        break;
+                }
+            });
+            if (postData.viewList.length == 0) {
+                common.modalMsg("请选择至少一个界面", "warning");
+                return false;
+            }
+            if (Number(data.field.refleshSecond) <= 0) {
+                common.modalMsg("请输入正确刷新时间", "warning");
+                return false;
+            }
+            // 单击之后提交按钮不可选,防止重复提交
+            $('.site-demo-active').addClass('layui-btn-disabled');
+            $('.site-demo-active').attr('disabled', 'disabled');
+            delete postData.select;
+            //存到localStorage
+            localStorage.setItem("WC_BoardList", JSON.stringify(postData));
+            //父界面跳转
+            top.window.location.href = firstHref.indexOf("?") != -1 ? firstHref + "&type=" + type : firstHref + "?type=" + type;
+            //关闭当前页面
+            common.modalClose();
+            return false;
+        });
+    });
+</script>
+
+<body>
+    <input type="checkbox" id="divInputTemplate" class=" layui-hide" name="values" title="lookname" lay-skin="primary">
+    <input type="radio" id="divInputTemplate1" class=" layui-hide" name="values" value="valuesId" title="lookname" lay-skin="primary">
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">显示方式</label>
+                    <div class="layui-input-block">
+                        <select id="viewType" name="viewType" lay-verify="required" lay-filter="ViewType" lay-search>
+                            <option value="false">固定</option>
+                            <option value="true">轮播</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">刷新时间(秒)</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="refleshSecond" name="refleshSecond" lay-verify="required|number" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">轮播时间(秒)</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="skipSecond" name="skipSecond" lay-verify="number" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div id="viewList" style="padding-left:30px">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

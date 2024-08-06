@@ -1,0 +1,29 @@
+<import-sjs from="/static/js/enum.sjs" name="typeEnum"></import-sjs>
+<view style="position: relative;">
+  <view class="listview-container margin_bottom">
+    <block a:for="{{newList}}" a:key="index">
+      <view class="playlog-item">
+        <view class="dotline">
+          <!-- 竖线 -->
+          <view class="line"></view>
+          <!-- 圆点 -->
+          <view a:if="{{index===0}}" class="dot"></view>
+          <view a:else class="greydot"></view>
+          <!-- 时间戳 -->
+        </view>
+        <view class="content">
+          <text class="course">{{item.addtime}}</text>
+          <text class="chapter">{{item.F_ActionDesc}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+  <!-- 印章效果 -->
+  <view class="seal" style="border:solid 6rpx {{typeEnum.RepairStatusColor(status)}}">
+    <view class="seal-son" style="border:solid 2rpx {{typeEnum.RepairStatusColor(status)}}">
+      <!-- <text style="position: absolute;top: 50rpx;text-align: center;font-size: 35rpx;transform: rotate(-45deg);right: 40rpx;color: green;font-weight: 900;">已完成</text> -->
+      <!-- <text style="position: absolute;top: 66rpx;text-align: center;font-size: 20rpx;transform: rotate(-45deg);left: 40rpx;color: #B4B4B4;">2021.08.09 23:59</text> -->
+          <text class="sealtext" style="color:{{typeEnum.RepairStatusColor(status)}}">{{typeEnum.RepairStatus(status)}}</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,374 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>@ViewBag.ProjectName-普热斯勒出品</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="~/lib/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/screeneqp.css" />
+    <link rel="icon" href="@ViewBag.LogoIcon">
+    <script src="~/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+</head>
+<script>
+    window.onload = function () {
+        $(".loading").fadeOut()
+    }
+
+    /**rem参数基准**/
+    $(document).ready(function () {
+        var whei = $(window).width()
+        $("html").css({ fontSize: whei / 20 })
+        $(window).resize(function () {
+            var whei = $(window).width()
+            $("html").css({ fontSize: whei / 20 })
+        });
+    });
+</script>
+<style>
+    .layui-btn + .layui-btn {
+        margin-left: 25%;
+    }
+
+    .statefinish {
+        background: #5fb878 url(../../picture/line.png);
+    }
+
+    .statedoing {
+        background: #f80 url(../../picture/line.png);
+    }
+    .layui-form-select dl dd {
+        color: black;
+    }
+</style>
+<body>
+    <div class="loading">
+        <div class="loadbox"><img src="/picture/loading.gif"> 页面加载中...</div>
+    </div>
+    <div class="header">
+        <h1 class="header-title" onclick="openSetting()" id="title">@ViewBag.BoardName-普热斯勒出品</h1>
+        <div class="weather"><span id="showTime"></span></div>
+    </div>
+    <div class="layuimini-site-mobile">
+        <btn class="layui-btn layui-btn-danger" onclick="loginOut()"><i class="layui-icon">&#xe682;</i></btn>
+    </div>
+    <div class="mainbox">
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="boxall">
+                    <div class="alltitle">申请任务列表<a onclick="changeEqp()" style="color:orange;float:right;">切换设备</a></div>
+                    <div class="allnav2" id="eqpJob">
+                    </div>
+                    <div class="boxfoot"></div>
+                </div>
+            </div>
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="boxall">
+                    <div class="alltitle">操作<a onclick="loginOut()" style="color:orange;float:right;">退出登录</a></div>
+                    <div class="allnav2">
+                        <button class="layui-btn bigbtn layui-btn-normal" onclick="NeedMaterialJob()">申请领料</button>
+                        <button class="layui-btn bigbtn layui-btn-warm" onclick="NeedMaterial()">领料扫码</button>
+                        <button class="layui-btn bigbtn layui-btn-danger" onclick="OutputMaterial()">产出扫码</button>
+                        <button class="layui-btn bigbtn" onclick="ReadyBox()">预绑定容器</button>
+                    </div>
+                    <div class="boxfoot"></div>
+                </div>
+            </div>
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="boxall">
+                    <div class="alltitle">工位详情</div>
+
+                    <div class="allnav2">
+                        <div class="box">
+                            <div class="boxcard" id="eqpState">
+                            </div>
+                        </div>
+                        <div class="box">
+                            <div class="boxcard" id="eqpNowNum">
+                            </div>
+                        </div>
+                        <div class="box">
+                            <div class="boxcard" id="eqpUse">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="boxfoot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/layui/layui.js" charset="utf-8"></script>
+    <script src="~/js/cookie/jquery.cookie.js"></script>
+    <script src="~/js/lay-config.js?v=@WaterCloud.Code.GlobalContext.GetVersion()" charset="utf-8"></script>
+    <script src="~/js/framework-ui.js?v=@WaterCloud.Code.GlobalContext.GetVersion()"></script>
+    <script>
+        var t = null;
+        var type = !$.request("type") ? 0 : $.request("type");
+        var keyValue = localStorage.getItem("currentEqp");
+        var userId = top.$.cookie('boardlogin_uerId');
+        if (!keyValue) {
+            changeEqp();
+        }
+        if (type == 0) {
+            $(".layuimini-site-mobile").remove();
+        }
+        else {
+            if (!userId) {
+                localStorage.removeItem("WC_BoardList");
+                localStorage.removeItem("currentBoard");
+                window.location.href = '../../BoardLogin/OutLogin';
+            }
+            var data = JSON.parse(localStorage.getItem("WC_BoardList"));
+            setInterval(function () {
+                setTimeout(() => {
+                    console.log("定时器调用");
+                    getData();
+                }, 0)
+            }, data.refleshSecond * 1000);
+            if (data.viewType == "true" && data.viewList.length > 1) {
+                setTimeout(function () {
+                    for (var i = 0; i < data.viewList.length; i++) {
+                        if (window.location.href.indexOf(data.viewList[i]) > -1) {
+                            var k = i + 1;
+                            var href = k == data.viewList.length ? data.viewList[0] : data.viewList[k];
+                            window.location.href = href.indexOf("?") != -1 ? href + "&type=" + type : href + "?type=" + type;
+                        }
+                    }
+                }, data.skipSecond * 1000);//開始运行
+            }
+        }
+        t = setTimeout(time, 1000);//開始运行
+        function time() {
+            clearTimeout(t);//清除定时器
+            dt = new Date();
+            var week;
+            switch (dt.getDay()) {
+                case 1:
+                    week = "星期一";
+                    break;
+                case 2:
+                    week = "星期二";
+                    break;
+                case 3:
+                    week = "星期三";
+                    break;
+                case 4:
+                    week = "星期四";
+                    break;
+                case 5:
+                    week = "星期五";
+                    break;
+                case 6:
+                    week = "星期六";
+                    break;
+                default:
+                    week = "星期天";
+            }
+            var y = dt.getFullYear();
+            var mt = dt.getMonth() + 1;
+            var day = dt.getDate();
+            var h = dt.getHours();//获取时
+            var m = dt.getMinutes();//获取分
+            var s = dt.getSeconds();//获取秒
+            document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日 " + h + "时" + m + "分" + s + "秒 " + week;
+            t = setTimeout(time, 1000); //设定定时器，循环运行
+        }
+        function openSetting() {
+            if (type == 1) {
+                layui.use(['jquery', 'common'], function () {
+                    var $ = layui.jquery,
+                        common = layui.common;
+                    common.modalOpen({
+                        title: "看板配置",
+                        url: "/BoardHome/BoardSetting?type=" + type,
+                        width: "600px",
+                        height: "550px",
+                    });
+                });
+            }
+        }
+        function loginOut() {
+            layui.use(['jquery', 'common'], function () {
+                var $ = layui.jquery,
+                    common = layui.common;
+                common.modalConfirm("注：您确定要退出登录吗？", function (r) {
+                    if (r) {
+                        localStorage.removeItem("currentBoard");
+                        window.location.href = '../../BoardLogin/OutLogin';
+                    }
+                });
+            });
+        }
+        function getData() {
+            if (!!keyValue) {
+                layui.use(['jquery', 'common'], function () {
+                    var $ = layui.jquery,
+                        common = layui.common;
+
+                    common.ajax({
+                        url: '/RunMonitor/EqpScanScreen/GetListJson',
+                        dataType: "json",
+                        data: { keyValue: keyValue },
+                        async: false,
+                        success: function (data) {
+                            //获取领料申请和当前托盘计数及当前工单产出
+                            $('#eqpJob').html('');
+                            $('#eqpState').html('');
+                            $('#eqpNowNum').html('');
+                            $('#eqpUse').html('');
+                            if (!!data.eqpUseJob) {
+                                var html = '';
+                                for (var i = 0; i < data.eqpUseJob.length; i++) {
+                                    html += '<div class="box">' + '';
+                                    if (data.eqpUseJob[i].F_JobState == 2) {
+                                        html += '<div class="boxcard statefinish">';
+                                        html += '<p>申请时间:' + data.eqpUseJob[i].F_CreatorTime + '</p>';
+                                        html += '<p>申请物料:' + data.eqpUseJob[i].F_MaterialName + '</p>';
+                                        html += '<p>申请数量:' + data.eqpUseJob[i].F_NeedNum + '</p>';
+                                        html += '<p>完成状态:已完成</p>';
+                                    }
+                                    else {
+                                        html += '<div class="boxcard statedoing">';
+                                        html += '<p>申请时间:' + data.eqpUseJob[i].F_CreatorTime + '</p>';
+                                        html += '<p>申请物料:' + data.eqpUseJob[i].F_MaterialName + '</p>';
+                                        html += '<p>申请数量:' + data.eqpUseJob[i].F_NeedNum + '</p>';
+                                        html += '<p>完成状态:进行中</p>';
+                                    }
+                                    html += '<div class="boxfoot"></div>';
+                                    html += '</div>';
+                                    html += '</div>';
+                                }
+                                $('#eqpJob').html(html);
+                            }
+                            var html0 = '';
+                            html0 += '<p>当前设备:' + data.F_EqpName + '</p>';
+                            html0 += '<p>值班人:' + data.workusers + '</p>';
+                            html0 += '<p>班次:' + data.dateClass + '</p>';
+                            if (!!data.workorders) {
+                                for (var i = 0; i < data.workorders.length; i++) {
+                                    html0 += '<p>生产物料:' + data.workorders[i].F_MaterialName + '</p>';
+                                    html0 += '<p>当前产量:' + data.workorders[i].F_DoneNum + '</p>';
+                                }
+                            }
+                            html0 += '<div class="boxfoot"></div>';
+                            $('#eqpState').html(html0);
+                            var html1 = '';
+                            if (!!data.transferbox) {
+                                html1 += '<p>当前容器:' + data.transferbox.F_TransferBoxCode + '</p>';
+                            }
+                            else {
+                                html1 += '<p>当前容器:' + '----' + '</p>';
+                            }
+                            html1 += '<p>产出计数:' + '----' + '</p>';
+                            html1 += '<div class="boxfoot"></div>';
+                            $('#eqpNowNum').html(html1);
+                            var html2 = '';
+                            if (!!data.eqpUse) {
+                                for (var i = 0; i < data.eqpUse.length; i++) {
+                                    html2 += '<p>工位物料:' + data.eqpUse[i].F_MaterialName + '</p>';
+                                    html2 += '<p>剩余数量:' + data.eqpUse[i].Num + '</p>';
+                                }
+                            }
+                            html2 += '<div class="boxfoot"></div>';
+                            $('#eqpUse').html(html2);
+                        }
+                    });
+                });
+            }
+        }
+        $(function () {
+            getData();
+        })
+        function changeEqp() {
+            layui.use(['jquery', 'common'], function () {
+                var $ = layui.jquery,
+                    common = layui.common;
+                common.modalOpen({
+                    title: "切换设备",
+                    url: "/RunMonitor/EqpScanScreen/EqpForm?keyValue=" + keyValue,
+                    width: "400px",
+                    height: "250px"
+                });
+            });
+        }
+        function NeedMaterialJob() {
+            layui.use(['jquery', 'common'], function () {
+                var $ = layui.jquery,
+                    common = layui.common;
+                common.ajax({
+                    url: '/RunMonitor/EqpScanScreen/GetNeedMaterialList',
+                    dataType: 'json',
+                    data: { keyValue: keyValue },
+                    async: false,
+                    success: function (data) {
+                        if (!!data && data.length > 0) {
+                            if (data.length > 1) {
+                                common.modalOpen({
+                                    title: "申请领料",
+                                    url: "/RunMonitor/EqpScanScreen/NeedMaterialJob?keyValue=" + keyValue,
+                                    width: "400px",
+                                    height: "200px",
+                                    data: data,
+                                });
+                            }
+                            else {
+                                common.submitPost({
+                                    prompt: "注：您确定要发起领料申请吗？",
+                                    url: "/RunMonitor/EqpScanScreen/NeedMaterialJob",
+                                    param: { keyValue: keyValue, materialId: data[0].F_Id },
+                                    close: false,
+                                    success: function () {
+                                        getData();
+                                    }
+                                })
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        function NeedMaterial() {
+            layui.use(['jquery', 'common'], function () {
+                var $ = layui.jquery,
+                    common = layui.common;
+                common.modalOpen({
+                    title: "领取物料",
+                    url: "/RunMonitor/EqpScanScreen/NeedMaterial?keyValue=" + keyValue,
+                    width: "400px",
+                    height: "400px"
+                });
+            });
+        }
+        function OutputMaterial() {
+            layui.use(['jquery', 'common'], function () {
+                var $ = layui.jquery,
+                    common = layui.common;
+                common.modalOpen({
+                    title: "产出物料",
+                    url: "/RunMonitor/EqpScanScreen/OutputMaterial?keyValue=" + keyValue,
+                    width: "400px",
+                    height: "350px"
+                });
+            });
+        }
+        function ReadyBox() {
+            layui.use(['jquery', 'common'], function () {
+                var $ = layui.jquery,
+                    common = layui.common;
+                common.modalOpen({
+                    title: "预绑定容器",
+                    url: "/RunMonitor/EqpScanScreen/ReadyBox?keyValue=" + keyValue,
+                    width: "600px",
+                    height: "500px",
+                    btn: []
+                });
+            });
+        }
+    </script>
+</body>
+</html>

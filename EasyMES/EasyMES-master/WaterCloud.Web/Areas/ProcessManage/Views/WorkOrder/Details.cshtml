@@ -1,0 +1,174 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'commonTable', 'table', 'common', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            laydate = layui.laydate,
+            table = layui.table,
+            commonTable = layui.commonTable,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#planDate'
+            , trigger: 'click'
+            , type: 'date'
+            , format: 'yyyy/MM/dd',
+        });
+        $(function () {
+            $("#classNum").bindSelect({
+                data: top.clients.dataItems['Mes_ClassNumber'],
+                id: "",
+            });
+            if (!!keyValue) {
+                common.ajax({
+                    url: '/ProcessManage/WorkOrder/GetFormJson',
+                    dataType: 'json',
+                    data: { keyValue: keyValue },
+                    async: false,
+                    success: function (data) {
+                        common.val('adminform', data);
+                        $('#planDate').val(new Date(data.planDate).Format("yyyy/MM/dd"));
+                        common.setReadOnly('adminform');
+                        if (!!data.details) {
+                            table.reload('currentTableId', {
+                                data: data.details
+                            });
+                        }
+                    }
+                });
+            }
+            form.render();
+        });
+        wcLoading.close();
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            data: [],
+            defaultToolbar: [],
+            toolbar: false,//工具栏
+            search: false,
+            limit: 9999,//每页数据 默认
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count'] //自定义分页布局
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            height: 'full-265',
+            filter: {
+                clearFilter: false,
+            },
+            cols: [[
+                {
+                    field: 'F_WorkOrderState', title: '工单状态', width: 120, sort: true, filter: true,
+                    templet: function (d) {
+                        if (d.F_WorkOrderState == 0) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>等待中</span>";
+                        }
+                        if (d.F_WorkOrderState == 1) {
+                            return "<span class='layui-btn layui-btn-warm layui-btn-xs'>执行中</span>";
+                        }
+                        if (d.F_WorkOrderState == 2) {
+                            return "<span class='layui-btn layui-btn-xs'>已完成</span>";
+                        }
+                        if (d.F_WorkOrderState == 3) {
+                            return "<span class='layui-btn layui-btn-danger layui-btn-xs'>已终止</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'F_MaterialType', title: '料号分类', width: 110, sort: true, filter: true,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                    }
+                },
+                { field: 'F_MaterialCode', title: '料号编号', width: 200, sort: true, filter: true },
+                { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true, filter: true },
+                { field: 'F_MaterialUnit', title: '料号单位', width: 120, sort: true, filter: true },
+                { field: 'F_PlanNum', title: '计划数量', width: 105, sort: true, filter: true },
+                { field: 'F_DoneNum', title: '完成数量', width: 110, sort: true, filter: true },
+                { field: 'F_BadNum', title: '不良数量', width: 110, sort: true, filter: true },
+                { field: 'F_RunSort', title: '执行顺序', width: 120, sort: true, filter: true },
+                { field: 'F_ProcessName', title: '工序名称', width: 120, sort: true, filter: true },
+                { field: 'F_Description', title: '备注', minWidth: 120, sort: true, filter: true },
+
+            ]]
+        });
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item">
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label">工单编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="F_WorkOrderCode" name="F_WorkOrderCode" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label">物料名称</label>
+                        <div class="layui-input-block">
+                            <input id="F_MaterialName" name="F_MaterialName" type="text" class="layui-input" onclick="search()" />
+                            <input id="F_MaterialId" name="F_MaterialId" type="text" hidden />
+                        </div>
+                    </div>
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label">数量</label>
+                        <div class="layui-input-block">
+                            <input type="number" pattern="[0-9]*" id="F_PlanNum" name="F_PlanNum" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label">拆分</label>
+                        <div class="layui-input-block">
+                            <select id="F_SplitType" name="F_SplitType">
+                                <option value="">==请选择==</option>
+                                <option value="0">单阶</option>
+                                <option value="1">尾阶</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label">计划日期</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="planDate" name="planDate" lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label">班别</label>
+                        <div class="layui-input-block">
+                            <select id="classNum" lay-verify="required" name="classNum">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md12 layui-hide">
+                        <label class="layui-form-label">备注</label>
+                        <div class="layui-input-block">
+                            <input id="F_Description" name="F_Description" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md12">
+                        <label class="layui-form-label">物料列表</label>
+                        <div class="layui-input-block">
+                            <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

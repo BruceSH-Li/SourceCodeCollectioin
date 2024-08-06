@@ -1,0 +1,293 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+ }
+ <div class="layuimini-container">
+     <div class="layuimini-main">
+         <fieldset class="table-search-fieldset layui-hide" id="searchField">
+             <div>
+                 <form class="layui-form layui-form-pane">
+                     <div class="layui-form-item">
+                         <div class="layui-inline">
+                             <label class="layui-form-label">关键字:</label>
+                             <div class="layui-input-inline">
+                                 <input type="text" id="txt_keyword" name="txt_keyword" autocomplete="off" class="layui-input">
+                             </div>
+                         </div>
+                         <div class="layui-inline">
+                             <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                         </div>
+                     </div>
+                 </form>
+             </div>
+         </fieldset>
+         <script type="text/html" id="toolbarDemo">
+             <div class="layui-btn-container" id="toolbar">
+                 <button id="NF-add" name="NF-add" authorize class="layui-btn layui-btn-sm data-add-btn" lay-event="add"><i class="layui-icon">&#xe654;</i>新增</button>
+                 <button id="NF-edit" name="NF-edit" authorize class="layui-btn layui-btn-sm layui-btn-warm data-edit-btn layui-hide" lay-event="edit"><i class="layui-icon">&#xe642;</i>修改</button>
+                 <button id="NF-delete" name="NF-delete" authorize class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn layui-hide" lay-event="delete"> <i class="layui-icon">&#xe640;</i>删除</button>
+                 <button id="NF-details" name="NF-details" authorize class="layui-btn layui-btn-sm layui-btn-normal data-info-btn layui-hide" lay-event="details"> <i class="layui-icon">&#xe60b;</i>查看</button>
+                 <button id="NF-print" name="NF-print" authorize class="layui-btn layui-btn-sm layui-hide" lay-event="print"> <i class="layui-icon">&#xe66d;</i>打印</button>
+                 <button id="NF-import" authorize class="layui-btn layui-btn-sm data-import-btn" lay-event="import"> <i class="layui-icon">&#xe67c;</i>导入</button>
+                 <button id="NF-eqpbanding" name="NF-eqpbanding" authorize="yes" class="layui-btn layui-btn-sm  data-eqpbanding-btn layui-hide" lay-event="eqpbanding"> <i class="fa fa-key"></i>设备绑定</button>
+                 <button id="NF-bombanding" name="NF-bombanding" authorize="yes" class="layui-btn layui-btn-sm layui-btn-danger data-bombanding-btn layui-hide" lay-event="bombanding"> <i class="fa fa-hourglass-1"></i>工序构成</button>
+             </div>
+         </script>
+         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+         <script type="text/html" id="currentTableBar">
+             <a id="NF-edit" authorize class="layui-btn layui-btn-sm" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+             <a id="NF-delete" authorize class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"><i class="layui-icon">&#xe640;</i></a>
+             <a id="NF-eqpbanding" authorize class="layui-btn layui-btn-sm data-eqpbanding-btn" lay-event="eqpbanding"><i class="fa fa-key"></i></a>
+             <a id="NF-bombanding" authorize class="layui-btn layui-btn-sm layui-btn-danger data-bombanding-btn" lay-event="bombanding"><i class="fa fa-hourglass-1"></i></a>
+         </script>
+     </div>
+ </div>
+ <script>
+     layui.use(['jquery', 'form', 'table', 'commonTable', 'common', 'optimizeSelectOption'], function () {
+         var $ = layui.jquery,
+             form = layui.form,
+             table = layui.table, commonTable = layui.commonTable
+         common = layui.common;
+         //权限控制(js是值传递)
+         currentTableBar.innerHTML = common.authorizeButtonNew(currentTableBar.innerHTML);
+         toolbarDemo.innerHTML = common.authorizeButtonNew(toolbarDemo.innerHTML);
+         commonTable.rendertable({
+             elem: '#currentTableId',
+             id: 'currentTableId',
+             url: '/MaterialManage/Material/GetGridJson',
+             cols: [[
+                 { type: "checkbox", width: 50 },
+                 {
+                     field: 'F_MaterialType', title: '料号分类', width: 105, sort: true, filter: true,
+                     templet: function (d) {
+                         return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                     }
+                 },
+                 { field: 'F_MaterialCode', title: '料号编号', width: 170, sort: true, filter: true },
+                 { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true, filter: true },
+                 { field: 'F_ContainerNum', title: '容器值', width: 105, sort: true, filter: true },
+                 { field: 'F_ReceiveNum', title: '领用倍数限制', width: 130, sort: true, filter: true },
+                 { field: 'F_MaterialDescription', title: '料号描述', width: 120, sort: true, filter: true },
+                 { field: 'F_MaterialUnit', title: '料号单位', width: 120, sort: true, filter: true },
+                 { field: 'F_MaterialSize', title: '料号规格', width: 120, sort: true, filter: true },
+                 { field: 'F_MaterialBy', title: '料号材质', width: 120, sort: true, filter: true },
+                 { field: 'F_MaterialPic', title: '图片路径', width: 120, hide: true, filter: true },
+                 { field: 'F_Customer', title: '客户名称', width: 120, sort: true, filter: true },
+                 { field: 'F_CustomerProNO', title: '客户品号', width: 120, sort: true, filter: true },
+                 {
+                     field: 'F_NeedCheckout', title: '需要检验', width: 105, sort: true, filter: true,
+                     templet: function (d) {
+                         if (d.F_NeedCheckout == true) {
+                             return "<span class='layui-btn layui-btn-normal layui-btn-xs'>是</span>";
+                         } else {
+                             return "<span class='layui-btn layui-btn-warm layui-btn-xs'>否</span>";
+                         }
+                     }
+                 },
+                 {
+                     field: 'F_EnabledMark', title: '状态', width: 80, sort: true, filter: true,
+                     templet: function (d) {
+                         if (d.F_EnabledMark == true) {
+                             return "<span class='layui-btn layui-btn-normal layui-btn-xs'>有效</span>";
+                         } else {
+                             return "<span class='layui-btn layui-btn-warm layui-btn-xs'>无效</span>";
+                         }
+                     }
+                 },
+                 {
+                     field: 'F_CreatorTime', title: '创建时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                 },
+                 { field: 'F_Description', title: '备注', minWidth: 120, sort: true, filter: true },
+                 { title: '操作', width: 210, toolbar: '#currentTableBar', align: "center" }
+
+             ]]
+         });
+         //行点击事件监听，控制按钮显示
+         var oneList = ["NF-edit", "NF-details", "NF-eqpbanding", "NF-bombanding"];//选择1条显示
+         var moreList = ["NF-delete", "NF-print"];//选择多条显示
+         commonTable.tableRowClick("checkbox", "currentTableFilter", "currentTableId", oneList, moreList);
+         // 监听搜索操作
+         form.on('submit(data-search-btn)', function (data) {
+             //执行搜索重载
+             commonTable.reloadtable({
+                 elem: 'currentTableId',
+                 curr: 1,
+                 where: { keyword: data.field.txt_keyword }
+             });
+             return false;
+         });
+         wcLoading.close();
+         //toolbar监听事件
+         table.on('toolbar(currentTableFilter)', function (obj) {
+             var data = table.checkStatus('currentTableId').data;
+             if (obj.event === 'add') {  // 监听添加操作
+                 common.modalOpen({
+                     title: "添加界面",
+                     url: "/MaterialManage/Material/Form",
+                     width: "1100px",
+                     height: "600px",
+                 });
+             }
+             else if (obj.event === 'delete') {
+                 if (data.length == 0) {
+                     common.modalMsg("未选中数据", "warning");
+                     return false;
+                 }
+                 var ids = [];
+                 for (var i = 0; i < data.length; i++) {
+                     ids.push(data[i].F_Id);
+                 }
+                 common.deleteForm({
+                     url: "/MaterialManage/Material/DeleteForm",
+                     param: { keyValue: ids.join(',') },
+                     success: function () {
+                         common.reload('data-search-btn');
+                     }
+                 });
+             }
+             else if (obj.event === 'edit') {
+                 if (data.length == 0) {
+                     common.modalMsg("未选中数据", "warning");
+                     return false;
+                 }
+                 common.modalOpen({
+                     title: "编辑界面",
+                     url: "/MaterialManage/Material/Form?keyValue=" + data[0].F_Id,
+                     width: "1100px",
+                     height: "600px",
+                 });
+             }
+             else if (obj.event === 'details') {
+                 if (data.length == 0) {
+                     common.modalMsg("未选中数据", "warning");
+                     return false;
+                 }
+                 common.modalOpen({
+                     title: "查看界面",
+                     url: "/MaterialManage/Material/Details?keyValue=" + data[0].F_Id,
+                     width: "900px",
+                     height: "600px",
+                     btn: []
+                 });
+             }
+             else if (obj.event === 'import') {
+                 common.modalOpen({
+                     title: "导入界面",
+                     url: "/MaterialManage/Material/Import",
+                     width: "650px",
+                     height: "650px",
+                 });
+             }
+             else if (obj.event === 'eqpbanding') {
+                 if (data.length == 0) {
+                     common.modalMsg("未选中数据", "warning");
+                     return false;
+                 }
+                 common.openNewTabByIframe({
+                     title: "设备绑定",
+                     href: "/MaterialManage/MaterialEqp/Index?keyValue=" + data[0].F_Id,
+                 });
+             }
+             else if (obj.event === 'bombanding') {
+                 if (data.length == 0) {
+                     common.modalMsg("未选中数据", "warning");
+                     return false;
+                 }
+                 if (data[0].F_MaterialType == 0) {
+                     common.modalMsg("原料无需绑定", "warning");
+                     return false;
+                 }
+                 common.openNewTabByIframe({
+                     title: "工序绑定",
+                     href: "/MaterialManage/MaterialBom/Index?keyValue=" + data[0].F_Id,
+                 });
+             }
+             else if (obj.event === 'print') {
+                 if (data.length == 0) {
+                     common.modalMsg("未选中数据", "warning");
+                     return false;
+                 }
+                 if (top.websocket == null || top.websocket.readyState == 3) {
+                     common.modalMsg("打印服务未开启", "warning");
+                     return false;
+                 }
+                 common.modalConfirm("注：您确定要打印选中这些数据吗？", function (r) {
+                     if (r) {
+                         var ids = [];
+                         var json = {};
+                         json.cmd = "print";
+                         json.requestId = uuid();
+                         json.data = {};
+                         json.data.printIniInfo = {};
+                         json.data.printIniInfo.filePath = window.document.location.origin + top.clients.printTemplates["二维码编号名称模板"];
+                         json.data.printIniInfo.realName = "二维码编号名称模板";
+                         json.data.printIniInfo.printType = 1;
+                         json.data.printIniInfo.printName = "";
+                         json.data.printIniInfo.landscape = true;
+                         json.data.printIniInfo.paperSize = "";
+                         json.data.printIniInfo.duplex = "";
+                         json.data.data = [];
+                         for (var i = 0; i < data.length; i++) {
+                             var temp = {};
+                             temp.barId = data[i].F_MaterialCode;
+                             temp.code = data[i].F_MaterialCode;
+                             temp.name = data[i].F_MaterialName;
+                             json.data.data.push(temp);
+                         }
+                         top.sendWSPush(json);
+                     }
+                 });
+             }
+             else if (obj.event === 'TABLE_SEARCH') {
+                 var _that = $("#searchField");
+                 if (_that.hasClass("layui-hide")) {
+                     _that.removeClass('layui-hide');
+                 } else {
+                     _that.addClass('layui-hide');
+                 }
+             }
+             return false;
+         });
+         //toolrow监听事件
+         table.on('tool(currentTableFilter)', function (obj) {
+             if (obj.event === 'delete') {
+                 common.deleteForm({
+                     url: "/EquipmentManage/Mould/DeleteForm",
+                     param: { keyValue: obj.data.F_Id },
+                     success: function () {
+                         obj.del();
+                     }
+                 });
+             }
+             else if (obj.event === 'edit') {
+                 common.modalOpen({
+                     title: "编辑界面",
+                     url: "/MaterialManage/Material/Form?keyValue=" + obj.data.F_Id,
+                     width: "1100px",
+                     height: "600px",
+                 });
+             }
+             else if (obj.event === 'eqpbanding') {
+                 if (obj.data.F_MaterialType == 2) {
+                     common.modalMsg("原料无需绑定", "warning");
+                     return false;
+                 }
+                 common.openNewTabByIframe({
+                     title: "设备绑定",
+                     href: "/MaterialManage/MaterialEqp/Index?keyValue=" + obj.data.F_Id,
+                 });
+             }
+             else if (obj.event === 'bombanding') {
+                 if (obj.data.F_MaterialType == 0) {
+                     common.modalMsg("原料无需绑定", "warning");
+                     return false;
+                 }
+                 common.openNewTabByIframe({
+                     title: "工序绑定",
+                     href: "/MaterialManage/MaterialBom/Index?keyValue=" + obj.data.F_Id,
+                 });
+             }
+             return false;
+         });
+     });
+ </script>

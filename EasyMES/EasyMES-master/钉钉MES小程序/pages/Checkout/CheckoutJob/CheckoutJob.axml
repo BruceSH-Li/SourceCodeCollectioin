@@ -1,0 +1,44 @@
+<import-sjs from="/static/js/enum.sjs" name="Enum"></import-sjs>
+<view class="page">
+  <view class="page-description">质检申请</view>
+  <form onSubmit="onSubmit">
+    <view class="page-section">
+      <view class="page-section-title requireLabel">流转箱编号</view>
+      <view class="page-section-demo">
+        <input value="{{transferCode}}" name="transferCode" class="input" placeholder="流转箱编号" onBlur="search"/>
+        <button size="mini" type="ghost" onTap="Scan_transferCode" class="scanbtn"></button>
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">流转箱相关信息</view>
+      <view class="form-line"/>
+      <view style="padding:10rpx;display:{{storageHidden?'none':'block'}}">
+        <view a:if="{{!entity}}">
+          <view style="color:grey">不存在和此流转箱匹配的信息！</view>
+        </view>
+        <view a:else>
+          <view class="page-section-demo">
+            <view>物料编号：{{entity.F_MaterialCode}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>物料名称：{{entity.F_MaterialName}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>数量：{{entity.F_Num}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>批号：{{entity.F_MaterialBatch}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>物料来源：
+              <text class="uk-badge">{{Enum.MaterialSourceType(entity.F_CheckType)}}</text></view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <view>
+        <button type="primary" formType="submit">提交</button></view>
+    </view>
+  </form>
+</view>

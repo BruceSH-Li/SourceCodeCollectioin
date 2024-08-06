@@ -1,0 +1,43 @@
+<view class="page">
+  <view class="page-description">库存汇总</view>
+  <form onSubmit="onSubmit">
+    <view class="page-section">
+      <picker onChange="bindObjPickerChange" value="{{arrIndex}}" range="{{objectArray}}" range-key="F_MaterialName">
+        <view class="row">
+          <view class="row-title requireLabel">物料编号</view>
+          <view class="row-extra">{{objectArray[arrIndex].F_MaterialName}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">库存汇总信息</view>
+      <view class="form-line"/>
+      <view style="padding:10rpx;display:{{storageHidden?'none':'block'}}">
+        <view a:if={{!!storageEntity}}>
+          <view class="page-section-demo">
+            <view>物料编号：{{storageEntity.F_MaterialCode}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>物料名称：{{storageEntity.F_MaterialName}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>总数量：{{storageEntity.F_Num}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>在库数量：{{storageEntity.F_StorageNum}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>领用数量：{{storageEntity.F_DoneNum}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>绑定数量：{{storageEntity.F_BandingNum}}</view>
+          </view>
+        </view>
+        <view a:else class="page-section-demo">
+          <view style="color:grey">不存在和此{{!isShow?'流转箱':'物料'}}相关的库存信息</view>
+        </view>
+      </view>
+    </view>
+  </form>
+</view>

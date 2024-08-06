@@ -1,0 +1,99 @@
+﻿@{
+    ViewBag.Title = "CloneButton";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common', 'dtree', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            dtree = layui.dtree,
+            common = layui.common;
+        var ids = $.request("keyValue");
+        var keyValue = $.request("itemId");
+        wcLoading.close();
+        $(function () {
+            initControl();
+            if (!!keyValue) {
+                //common.ajax({
+                //    url: "/EquipmentManage/EqpPqcCheckItem/GetEqpListJson",
+                //    dataType: "json",
+                //    //data: { keyValue: keyValue },
+                //    async: false,
+                //    success: function (data) {
+                //        $('#jobType').val(data.F_ItemCode);
+                //    }
+                //});
+                $('#F_EqpId').val(keyValue);
+            }
+            form.render();
+        });
+
+        function initControl() {
+            $("#F_EqpId").bindSelect({
+                url: "/EquipmentManage/EqpPqcCheckItem/GetEqpListJson",
+                id: "F_Id",
+                text: "F_EqpName"
+            });
+
+        }
+        //监听提交
+        var lock = false;
+        form.on('submit(saveBtn)', function (data) {
+            if (!lock) {
+                //var useEqp = data.field.useEqp;
+                //if (!data.field.useEqp) {
+                //    useEqp = false;
+                //}
+                common.submitForm({
+                    url: "/EquipmentManage/EqpPqcCheckItem/SubmitCloneForm",
+                    //param: { jobType: data.field.jobType, eqpId: data.field.eqpId, ids: ids, useEqp: useEqp },
+                    param: { eqpId: data.field.F_EqpId, ids: ids},
+                    success: function () {
+                        common.parentreload("data-search-btn");
+                    }
+                })
+            }
+            return false;
+        });
+    });
+</script>
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" style="padding-bottom: 50px;" lay-filter="adminform">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label required">复制至此设备</label>
+                        <div class="layui-input-block">
+                            <select id="F_EqpId" name="F_EqpId" lay-verify="required" lay-search>
+                                <option value="" selected>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">设备</label>
+                        <div class="layui-input-block">
+                            <select id="eqpId" name="eqpId" lay-search>
+                                <option value="" selected>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">选择设备</label>
+                        <div class="layui-input-block">
+                            <input type="checkbox" name="useEqp" id="useEqp" value="true" checked title="使用标识">
+                        </div>
+                    </div>
+                </div>*@
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

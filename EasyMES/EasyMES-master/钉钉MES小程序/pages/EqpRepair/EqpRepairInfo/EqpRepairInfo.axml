@@ -1,0 +1,167 @@
+<view style="padding: 24rpx;">
+  <tabs tabs="{{tabs}}"
+    tabsName="activeTab"
+    onTabClick="handleTabClick"
+    onChange="handleTabChange"
+    onPlusClick="handlePlusClick"
+    activeTab="{{activeTab}}"
+    showPlus="{{false}}"
+    swipeable="{{false}}"
+    capsule="{{typeCapsule}}"
+    hasSubTitle="{{false}}"
+    tabBarUnderlineWidth="20px"
+    tabContentHeight="{{activeTab === 0 ? '130px' : activeTab === 2 ? '200px' : '50vh'}}"
+    stickyBar="{{true}}">
+   <block a:for="{{tabs}}">
+<tab-content key="{{index}}" tabId="{{index}}" activeTab="{{activeTab}}" a:if="{{index === 0}}">
+  <view a:if="{{pgNodatadispaly}}">
+    <view class="tab-content" style="height: 100px;">
+      <text>无维修单需要派工！</text>
+    </view>
+  </view>
+  <view a:else>
+    <block a:for="{{KPGquery}}" a:for-item="item">
+      <view a:if="{{item.F_Status==1}}" class="demo-title">{{item.F_EqpName}}
+        <button disabled="{{noAdminRole}}" style="float:right;margin-left:20px;" data-F_RepairId="{{item.F_Id}}" data-type="PG" size="mini" type="warn" onTap="updateStatus">
+          <text>首次派工</text>
+        </button>
+      </view>
+      <view a:else class="demo-title">{{item.F_EqpName}}
+        <button disabled="{{noAdminRole}}" style="float:right;margin-left:20px;" data-F_RepairId="{{item.F_Id}}" data-type="PG" size="mini" type="primary" onTap="updateStatus">
+          <text>继续派工</text>
+        </button>
+      </view>
+      <view class="tab-content1" onTap="DetailRepair" data-F_RepairId="{{item.F_Id}}">
+        <view class="uk-width-4-4">
+              维修单号：{{item.F_RepairNo}}
+          <view/>
+              故障描述：{{item.F_ProblemDesc.substr(0,10)}}...
+          <view/>
+              报修人员：{{item.F_CallRepairManName}}
+          <view/>
+              报修时间：{{item.F_CallRepairTime}}
+          <view/>
+        </view>
+      </view>
+    </block>
+  </view>
+</tab-content>
+<tab-content key="{{index}}" tabId="{{index}}" activeTab="{{activeTab}}" a:elif="{{index === 1}}">
+  <view a:if="{{jdNodatadispaly}}">
+    <view class="tab-content" style="height: 100px;">
+      <text>没有指派给你的维修单！</text>
+    </view>
+  </view>
+  <view a:else>
+    <block a:for="{{JDquery}}" a:for-item="item">
+      <view class="demo-title">{{item.F_EqpName}}(管理员指派)
+        <button style="float:right;margin-left:20px;" data-F_RepairId="{{item.F_Id}}" data-type="PGJD" size="mini" type="warn" onTap="updateStatus">
+          <text>接单</text>
+        </button>
+      </view>
+      <view class="tab-content1" onTap="DetailRepair" data-F_RepairId="{{item.F_Id}}">
+        <view class="uk-width-4-4">
+              维修单号：{{item.F_RepairNo}}
+          <view/>
+              故障描述：{{item.F_ProblemDesc.substr(0,10)}}
+          <view/>
+              报修人员：{{item.F_CallRepairManName}}
+          <view/>
+              报修时间：{{item.F_CallRepairTime}}
+          <view/>
+        </view>
+      </view>
+    </block>
+  </view>
+
+
+      <view class="demo-title1">其他报修单</view>
+    <block a:for="{{BXquery}}" a:for-item="item">
+      <view class="demo-title2">{{item.F_EqpName}}
+        <button style="float:right;margin-left:20px;" data-F_RepairId="{{item.F_Id}}" data-type="ZZJD" size="mini" type="primary" onTap="updateStatus">
+          <text>接单</text>
+        </button>
+      </view>
+      <view class="tab-content1" onTap="DetailRepair" data-F_RepairId="{{item.F_Id}}">
+        <view class="uk-width-4-4">
+              维修单号：{{item.F_RepairNo}}
+          <view/>
+              故障描述：{{item.F_ProblemDesc.substr(0,10)}}
+          <view/>
+              报修人员：{{item.F_CallRepairManName}}
+          <view/>
+              报修时间：{{item.F_CallRepairTime}}
+          <view/>
+        </view>
+      </view>
+    </block>
+</tab-content>
+<tab-content key="{{index}}" tabId="{{index}}" activeTab="{{activeTab}}" a:elif="{{index === 2}}">
+  <view a:if="{{wxNodatadispaly}}">
+    <view class="tab-content" style="height: 100px;">
+      <text>您没有维修中的设备！</text>
+    </view>
+  </view>
+  <view a:else>
+    <block a:for="{{WXquery}}" a:for-item="item">
+      <view class="demo-title">{{item.F_EqpName}}
+        <button style="float:right;margin-left:20px;" data-F_RepairId="{{item.F_Id}}" data-type="WX" size="mini" type="warn" onTap="updateStatus">
+          <text>维修完成</text>
+        </button>
+      </view>
+      <view class="tab-content1" onTap="DetailRepair" data-F_RepairId="{{item.F_Id}}">
+        <view class="uk-width-4-4">
+              维修单号：{{item.F_RepairNo}}
+          <view/>
+              故障描述：{{item.F_ProblemDesc.substr(0,10)}}
+          <view/>
+              报修人员：{{item.F_CallRepairManName}}
+          <view/>
+              报修时间：{{item.F_CallRepairTime}}
+          <view/>
+        </view>
+      </view>
+    </block>
+  </view>
+</tab-content>
+
+<tab-content key="{{index}}" tabId="{{index}}" activeTab="{{activeTab}}" a:elif="{{index === 3}}">
+  <view a:if="{{qrNodatadispaly}}">
+    <view class="tab-content" style="height: 100px;">
+      <text>您没有需要确认的维修单！</text>
+    </view>
+  </view>
+  <view a:else>
+    <block a:for="{{QRquery}}" a:for-item="item">
+      <view class="demo-title">{{item.F_EqpName}}
+        <button style="float:right;margin-left:20px;" data-F_RepairId="{{item.F_Id}}" data-type="QR" size="mini" type="warn" onTap="updateStatus">
+          <text>确认</text>
+        </button>
+      </view>
+      <view class="tab-content1" onTap="DetailRepair" data-F_RepairId="{{item.F_Id}}">
+        <view class="uk-width-4-4">
+              维修单号：{{item.F_RepairNo}}
+          <view/>
+              故障描述：{{item.F_ProblemDesc.substr(0,10)}}
+          <view/>
+              报修人员：{{item.F_CallRepairManName}}
+          <view/>
+              报修时间：{{item.F_CallRepairTime}}
+          <view/>
+        </view>
+      </view>
+    </block>
+  </view>
+</tab-content>
+
+
+<tab-content key="{{index}}" tabId="{{index}}" activeTab="{{activeTab}}"
+        a:else>
+  <view class="tab-content">content of {{item.title}}</view>
+</tab-content>
+</block>
+
+  </tabs>
+</view>
+
+

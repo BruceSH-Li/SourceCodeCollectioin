@@ -1,0 +1,248 @@
+﻿    @{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+ }
+<div class="layui-fluid" style="padding:0 0px">
+    <div class="layui-row layui-col-space5">
+        <div class="layui-col-md4 layui-col-xs5">
+            <div class="layui-card" style="padding: 5px;">
+                <fieldset class="table-search-fieldset" style="border:1px solid #e6e6e6">
+                    <legend>流转箱类型</legend>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <input type="text" id="txt_keyword" name="txt_keyword" autocomplete="off" class="layui-input" placeholder="">
+                            </div>
+                            <div class="layui-inline">
+                                <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                            </div>
+                        </div>
+                    </form>
+                </fieldset>
+                <script type="text/html" id="toolbarDemo">
+                    <div class="layui-btn-container" id="toolbar">
+                        <button id="NF-add" name="NF-add" authorize class="layui-btn layui-btn-sm data-add-btn" lay-event="add"><i class="layui-icon">&#xe654;</i>新增</button>
+                        <button id="NF-edit" name="NF-edit" authorize class="layui-btn layui-btn-sm layui-btn-warm data-edit-btn layui-hide" lay-event="edit"><i class="layui-icon">&#xe642;</i>修改</button>
+                        <button id="NF-delete" name="NF-delete" authorize class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn layui-hide" lay-event="delete"> <i class="layui-icon">&#xe640;</i>删除</button>
+                        <button id="NF-details" name="NF-details" authorize class="layui-btn layui-btn-sm layui-btn-normal data-info-btn layui-hide" lay-event="details"> <i class="layui-icon">&#xe60b;</i>查看</button>
+                    </div>
+                </script>
+                <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+            </div>
+        </div>
+        <div class="layui-col-md8 layui-col-xs7">
+            <div class="layui-card" style="padding: 5px;">
+                <fieldset class="table-search-fieldset" style="border:1px solid #e6e6e6">
+                    <legend>绑定物料</legend>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <input type="text" id="temp_txt_keyword" name="temp_txt_keyword" autocomplete="off" class="layui-input" placeholder="">
+                            </div>
+                            <div class="layui-inline">
+                                <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="temp-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                            </div>
+                        </div>
+                    </form>
+                </fieldset>
+                <script type="text/html" id="toolbarTemp">
+                    <div class="layui-btn-container" id="tool">
+                        <button id="TF-add" name="TF-add" authorize class="layui-btn layui-btn-sm data-add-btn" lay-event="add"><i class="layui-icon">&#xe654;</i>新增</button>
+                        <button id="TF-delete" name="TF-delete" authorize class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn layui-hide" lay-event="delete"> <i class="layui-icon">&#xe640;</i>删除</button>
+                    </div>
+                </script>
+                <table class="layui-hide" id="currentTable" lay-filter="currentTable"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['jquery', 'form', 'table', 'commonTable', 'common', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table, commonTable = layui.commonTable
+        common = layui.common;
+        var entity;
+        var itemId;
+        //权限控制(js是值传递)
+        toolbarDemo.innerHTML = common.authorizeButtonNew(toolbarDemo.innerHTML);
+        toolbarTemp.innerHTML = common.authorizeButtonNew(toolbarTemp.innerHTML);
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            id: 'currentTableId',
+            url: '/MaterialManage/TransferType/GetGridJson',
+            search: false,
+            page: false,
+            defaultToolbar: [],
+            height: 'full-130',
+            cols: [[
+                { field: 'F_ItemCode', title: '类型编号', width: 110, sort: true },
+                { field: 'F_ItemName', title: '类型名称', minWidth: 110,sort:true },
+                {
+                    field: 'F_EnabledMark', title: '状态', width: 80, sort: true,
+                    templet: function (d) {
+                        if (d.F_EnabledMark == true) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>有效</span>";
+                        } else {
+                            return "<span class='layui-btn layui-btn-warm layui-btn-xs'>无效</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'F_CreatorTime', title: '创建时间', width: 160, sort: true
+                },
+                { field: 'F_Description', title: '备注', minWidth: 150, hide: true },
+            ]]
+        });
+        commonTable.rendertable({
+            elem: '#currentTable',
+            id: 'currentTable',
+            toolbar: '#toolbarTemp',//工具栏
+            url: '/MaterialManage/TransferType/GetMaterialGridJson',
+            where: {
+                itemId: itemId,
+                keyword: "",
+            },
+            search: false,
+            defaultToolbar: [],
+            height: 'full-130',
+            cols: [[
+                { type: "checkbox", width: 50 },
+                {
+                    field: 'F_MaterialType', title: '料号分类', width: 120, sort: true,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                    }
+                },
+                { field: 'F_MaterialCode', title: '料号编号', width: 150, sort: true },
+                { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true },
+                { field: 'F_MaterialDescription', title: '料号描述', minWidth: 120, sort: true },
+                { field: 'F_MaterialSize', title: '料号规格', width: 120, sort: true },
+                { field: 'F_MaterialUnit', title: '料号单位', width: 120, sort: true },
+                { field: 'F_Description', title: '备注', width: 120, sort: true,hide:true },
+            ]]
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            commonTable.reloadtable({
+                elem: 'currentTableId',
+                curr: 1,
+                where: { keyword: data.field.txt_keyword }
+            });
+            entity = null;
+            itemId = null;
+            return false;
+        });
+        // 监听搜索操作
+        form.on('submit(temp-search-btn)', function (data) {
+            //执行搜索重载
+            commonTable.reloadtable({
+                elem: 'currentTable',
+                curr: 1,
+                where: { itemId: itemId, keyword: data.field.txt_keyword }
+            });
+            item = null;
+            return false;
+        });
+        wcLoading.close();
+        table.on('row(currentTableFilter)', function (obj) {
+            obj.tr.addClass("layui-table-click").siblings().removeClass("layui-table-click");
+            entity = obj;
+            itemId = obj.data.F_ItemCode;
+            $('[name="NF-edit"]').removeClass("layui-hide");
+            $('[name="NF-details"]').removeClass("layui-hide");
+            $('[name="NF-delete"]').removeClass("layui-hide");
+            $("#temp_txt_keyword").val('');
+            $('button[lay-filter="temp-search-btn"]').click();//按钮刷新
+        })
+        //行点击事件监听，控制按钮显示
+        var moreList = ["TF-delete"];//选择多条显示
+        commonTable.tableRowClick("checkbox", "currentTable", "currentTable", null, moreList);
+        //toolbar监听事件
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                common.modalOpen({
+                    title: "添加类型",
+                    url: "/SystemManage/ItemsData/Form?itemId=@ViewBag.KeyValue",
+                    width: "400px",
+                    height: "400px",
+                });
+            }
+            else if (obj.event === 'delete') {
+                if (entity == null) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                common.deleteForm({
+                    url: "/SystemManage/ItemsData/DeleteForm",
+                    param: { keyValue: entity.data.F_Id },
+                    success: function () {
+                        common.reload('data-search-btn');
+                        entity = null;
+                    }
+                });
+            }
+            else if (obj.event === 'edit') {
+                if (entity == null) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                common.modalOpen({
+                    title: "编辑类型",
+                    url: "/SystemManage/ItemsData/Form?keyValue=" + entity.data.F_Id,
+                    width: "400px",
+                    height: "400px",
+                });
+            }
+            else if (obj.event === 'details') {
+                if (entity == null) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                common.modalOpen({
+                    title: "查看类型",
+                    url: "/SystemManage/ItemsData/Details?keyValue=" + entity.data.F_Id,
+                    width: "400px",
+                    height: "400px",
+                    btn: []
+                });
+            }
+            return false;
+        });
+        //tool监听事件
+        table.on('toolbar(currentTable)', function (obj) {
+            var data = table.checkStatus('currentTable').data;
+            if (obj.event === 'add') {  // 监听添加操作
+                if (!itemId) {
+                    return false;
+                }
+                common.modalOpen({
+                    title: "添加物料",
+                    url: "/MaterialManage/TransferType/Form?ItemId=" + itemId,
+                    width: "600px",
+                    height: "600px",
+                });
+            }
+            else if (obj.event === 'delete') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                var ids = [];
+                for (var i = 0; i < data.length; i++) {
+                    ids.push(data[i].F_Id);
+                }
+                common.deleteForm({
+                    url: "/MaterialManage/TransferType/DeleteForm",
+                    param: { ItemId: itemId, keyValue: ids.join(',') },
+                    success: function () {
+                        common.reload('temp-search-btn');
+                        entity = null;
+                    }
+                });
+            }
+            return false;
+        });
+    });
+</script>

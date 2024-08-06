@@ -1,0 +1,168 @@
+﻿@{
+    ViewBag.Title = "ManRecordDetails";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common,
+            laydate = layui.laydate;
+        var keyValue = $.request("keyValue");
+        var repairNo = $.request("repairNo");
+        //var repairId = $.request("repairId");
+        //权限字段
+        common.authorizeFields('adminform');
+
+        //laydate.render({
+        //    elem: '#F_DistributeTime'
+        //    , trigger: 'click'
+        //    , type: 'datetime'
+        //    , format: 'yyyy/MM/dd HH:mm:ss',
+        //    value: new Date()
+        //});
+
+
+
+        $(function () {
+            initControl();
+            $('#F_RepairNo').val(repairNo);
+            if (!!keyValue) {
+                common.ajax({
+                    url: '/EquipmentManage/EqpRepair/GetManRecordFormJson',
+                    dataType: 'json',
+                    data: { keyValue: keyValue },
+                    async: false,
+                    success: function (data) {
+                        common.val('adminform', data);
+                        common.setReadOnly('adminform');
+                    }
+                });
+            }
+            else {
+                //$('#F_RepairNo').val(repairNo);
+                //$('#F_RepairId').val(repairId);
+            }
+            form.render();
+        });
+        wcLoading.close();
+
+        function initControl() {
+            //layui.$('#F_EqpId').bindSelect({
+            //    url: "/EquipmentManage/EqpPqcCheckItem/GetEqpListJson",
+            //    id: "F_Id",
+            //    text: "F_EqpName"
+            //});
+
+            //layui.$('#F_ConfirmMan').bindSelect({
+            //    url: "/EquipmentManage/EqpRepair/GetUserListJson",
+            //    id: "F_Id",
+            //    text: "F_RealName"
+            //});
+
+            layui.$('#F_RepairMan').bindSelect({
+                url: "/EquipmentManage/EqpRepair/GetUserListJson",
+                id: "F_Id",
+                text: "F_RealName"
+            });
+
+
+
+        }
+
+        //form.on('select(RepairMan)', function (data) {
+
+        //    $('#F_RepairManName').val($("#F_RepairMan option:selected").text());
+        //    form.render();
+        //});
+
+        //监听提交
+        //form.on('submit(saveBtn)', function (data) {
+        //    var postData = data.field;
+        //    common.submitForm({
+        //        url: '/EquipmentManage/EqpRepair/ManRecordSubmitForm?keyValue=' + keyValue,
+        //        param: postData,
+        //        success: function () {
+        //            common.parentreload('data-search-btn');
+        //            common.parentreload('temp-search-btn');
+        //        }
+        //    })
+        //    return false;
+        //});
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">维修单号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_RepairNo" name="F_RepairNo" autocomplete="off" lay-verify="required" placeholder="请输入" class="layui-input" readonly>
+                        <input type="hidden" id="F_RepairId" name="F_RepairId" autocomplete="off" lay-verify="required" class="layui-input" readonly>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">派工状态</label>
+                    <div class="layui-input-block">
+                        <select id="F_Status" name="F_Status" lay-search disabled>
+                            <option value="">请选择</option>
+                            <option value="1" selected>派工</option>
+                            <option value="2">维修中</option>
+                            <option value="99">维修完成</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">指定维修人</label>
+                    <div class="layui-input-block">
+                        <select id="F_RepairMan" name="F_RepairMan" lay-verify="required" lay-search lay-filter="RepairMan">
+                            <option value="" selected>请选择</option>
+                        </select>
+                        <input type="hidden" id="F_RepairManName" name="F_RepairManName" autocomplete="off" class="layui-input">
+
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">派工时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_DistributeTime" name="F_DistributeTime" autocomplete="off" lay-verify="required" placeholder="" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">维修开始时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_StartRepairTime" name="F_StartRepairTime" autocomplete="off" lay-verify="required" placeholder="" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">维修结束时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_EndRepairTime" name="F_EndRepairTime" autocomplete="off" lay-verify="required" placeholder="" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">维修结果</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_RepairResult" name="F_RepairResult" autocomplete="off" lay-verify="required" placeholder="" class="layui-input">
+                    </div>
+                </div>
+
+
+
+
+                @*<div class="layui-form-item layui-hide">
+                        <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                    </div>*@
+            </div>
+        </div>
+    </div>
+</body>
+

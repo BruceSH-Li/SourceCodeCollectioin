@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ServerUpdate>
+	<item>
+		<ApplicationStart>PrintApp.exe</ApplicationStart>
+		<AppName>PrintApp</AppName>
+		<MinVersion>1.0.0.0</MinVersion>
+		<ReleaseDate>2021/03/01 16:00:00</ReleaseDate>
+		<ReleaseUrl>/tar_file/update/1.0.0.0.zip</ReleaseUrl>
+		<ReleaseVersion>1.0.0.0</ReleaseVersion>
+		<VersionDesc>...</VersionDesc>
+	</item>
+</ServerUpdate>

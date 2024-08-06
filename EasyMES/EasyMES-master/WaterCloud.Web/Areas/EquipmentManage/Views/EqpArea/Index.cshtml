@@ -1,0 +1,306 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'table', 'common', 'commonTable', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            commonTable = layui.commonTable,
+            table = layui.table,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+        //权限控制(js是值传递)
+        toolbarDemo.innerHTML = common.authorizeButtonNew(toolbarDemo.innerHTML);
+        $(function () {
+            initControl();
+            var eqpUse;
+            common.ajax({
+                url: '/EquipmentManage/EqpArea/GetFormJson',
+                dataType: 'json',
+                data: { keyValue: keyValue },
+                async: false,
+                success: function (data) {
+                    common.val('adminform', data);
+                    common.setReadOnly('adminform');
+                    eqpUse = data.F_EqpUse;
+                    EqpTypeChange(data.F_EqpType);
+                    MaintainChange(data.F_IsMaintain);
+                    $('button[lay-filter="data-search-btn"]').click();//按钮刷新
+                }
+            });
+            $("#F_EqpUse").val(eqpUse);
+            form.render();
+        });
+        function initControl() {
+            $("#F_ParentId").bindSelect({
+                url: "/EquipmentManage/Equipment/GetListJson",
+                id: "F_Id",
+                text: "F_EqpName"
+            });
+            $("#F_MaintainType").bindSelect({
+                data: top.clients.dataItems['Mes_MaintainType'],
+                id: "",
+            });
+            $("#F_EqpType").bindSelect({
+                data: top.clients.dataItems['Mes_EqpType'],
+                id: "",
+            });
+        }
+        form.on('select(EqpType)', function (data) {
+            EqpTypeChange(data.value);
+            form.render();
+        });
+        function EqpTypeChange(value) {
+            if (value == "0") {
+                $('#F_ParentId').parent().parent().removeClass('layui-hide');
+                $("#F_EqpUse").empty();
+                $('#F_EqpUse').append(new Option("请选择", ""));
+                $("#F_EqpUse").bindSelect({
+                    url: "/EquipmentManage/Equipment/GetEqpUseListJson?type=" + value,
+                    id: "F_ItemCode",
+                    text: "F_ItemName"
+                });
+
+            } else if (value == "2") {
+                $('#F_ParentId').parent().parent().addClass('layui-hide');
+                $('#F_ParentId').val(0);
+                $("#F_EqpUse").empty();
+                $("#F_EqpUse").bindSelect({
+                    url: "/EquipmentManage/Equipment/GetEqpUseListJson?type=" + value,
+                    id: "F_ItemCode",
+                    text: "F_ItemName"
+                });
+            } else if (value == "1") {
+                $('#F_ParentId').parent().parent().addClass('layui-hide');
+                $('#F_ParentId').val(0);
+                $("#F_EqpUse").empty();
+                $('#F_EqpUse').append(new Option("请选择", ""));
+                $("#F_EqpUse").bindSelect({
+                    url: "/EquipmentManage/Equipment/GetEqpUseListJson?type=" + value,
+                    id: "F_ItemCode",
+                    text: "F_ItemName"
+                });
+            }
+            else {
+                $('#F_ParentId').parent().parent().addClass('layui-hide');
+                $('#F_ParentId').val(0);
+                $("#F_EqpUse").empty();
+                $('#F_EqpUse').append(new Option("请选择", ""));
+            }
+        }
+        //监听复选框
+        form.on('checkbox(Maintain)', function (data) {
+            MaintainChange(this.checked);
+            form.render();
+        });
+        function MaintainChange(value) {
+            if (value) {
+                $('#F_PlanUserNum').parent().parent().removeClass('layui-hide');
+                $('#F_UsedNum').parent().parent().removeClass('layui-hide');
+                $('#F_MaintainType').parent().parent().removeClass('layui-hide');
+                $('#F_MaintainNum').parent().parent().removeClass('layui-hide');
+            }
+            else {
+                $('#F_PlanUserNum').parent().parent().addClass('layui-hide');
+                $('#F_UsedNum').parent().parent().addClass('layui-hide');
+                $('#F_MaintainType').parent().parent().addClass('layui-hide');
+                $('#F_MaintainNum').parent().parent().addClass('layui-hide');
+            }
+        }
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            data:[],
+            defaultToolbar: [],
+            search: false,
+            page: false,
+            height: 'full-130',
+            cols: [[
+                { type: "checkbox", width: 50 },
+                { field: 'F_AreaCode', title: '库区编号', minWidth: 150, sort: true, filter: true },
+                {
+                    field: 'F_AreaType', title: '库区类型', width: 150, sort: true, filter: true,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_AreaType"][d.F_AreaType] == null ? "" : top.clients.dataItems["Mes_AreaType"][d.F_AreaType];
+                    }
+                },
+                {
+                    field: 'F_EnabledMark', title: '状态', width: 120, sort: true, filter: true,
+                    templet: function (d) {
+                        if (d.F_EnabledMark == true) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>有效</span>";
+                        } else {
+                            return "<span class='layui-btn layui-btn-warm layui-btn-xs'>无效</span>";
+                        }
+                    }
+                },
+                { field: 'F_Description', title: '备注', minWidth: 150, sort: true, filter: true },
+            ]]
+        });
+        //加载数据
+        wcLoading.close();
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            common.ajax({
+                url: "/EquipmentManage/EqpArea/GetGridJson",
+                dataType: 'json',
+                data: { itemId: keyValue, keyword: data.field.txt_keyword },
+                async: false,
+                success: function (data) {
+                    if (data.data) {
+                        table.reload('currentTableId', {
+                            data: data.data
+                        });
+                    }
+                }
+            });
+            return false;
+        });
+        //行点击事件监听，控制按钮显示
+        var morerList = ["NF-delete"];//选中1条以上显示
+        commonTable.tableRowClick("checkbox", "currentTableFilter", "currentTableId", null, morerList);
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            var data = table.checkStatus('currentTableId').data;
+            if (obj.event === 'add') {  // 监听操作
+                if (!keyValue) {
+                    return false;
+                }
+                common.modalOpen({
+                    title: "添加绑定",
+                    url: "/EquipmentManage/EqpArea/Form?itemId=" + keyValue,
+                    width: "600px",
+                    height: "600px",
+                });
+            }
+            else if (obj.event === 'delete') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                var ids = [];
+                for (var i = 0; i < data.length; i++) {
+                    ids.push(data[i].F_Id);
+                }
+                common.deleteForm({
+                    url: "/EquipmentManage/EqpArea/DeleteForm",
+                    param: { keyValue: ids.join(',') },
+                    success: function () {
+                        common.reload('data-search-btn');
+                    }
+                });
+            }
+            return false;
+        });
+    });
+
+</script>
+<div class="layui-fluid" style="padding:0 0px">
+    <div class="layui-row layui-col-space5">
+        <div class="layui-col-md4 layui-col-xs5">
+            <div class="layui-card" style="padding: 5px;">
+                <fieldset class="table-search-fieldset" style="border:1px solid #e6e6e6">
+                    <legend>设备</legend>
+                    <div class="layui-form layuimini-form" lay-filter="adminform">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">设备类型</label>
+                            <div class="layui-input-block">
+                                <select id="F_EqpType" name="F_EqpType" lay-verify="required" lay-filter="EqpType" lay-search>
+                                    <option value="" selected>请选择</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">父级</label>
+                            <div class="layui-input-block">
+                                <select id="F_ParentId" name="F_ParentId" lay-verify="required" lay-search>
+                                    <option value="0" selected>父节点</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">设备用途</label>
+                            <div class="layui-input-block">
+                                <select id="F_EqpUse" name="F_EqpUse" lay-verify="required" lay-search>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">设备名称</label>
+                            <div class="layui-input-block">
+                                <input type="text" id="F_EqpName" name="F_EqpName" autocomplete="off" lay-verify="required" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">选项</label>
+                            <div class="layui-input-block">
+                                <input type="checkbox" name="F_IsMaintain" id="F_IsMaintain" lay-filter="Maintain" value="true" title="保养标识">
+                                <input type="checkbox" name="F_IsOtherEqp" id="F_IsOtherEqp" value="true" title="加载标识">
+                                <input type="checkbox" name="F_EnabledMark" id="F_EnabledMark" checked="" value="true" title="有效标识">
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">设备描述</label>
+                            <div class="layui-input-block">
+                                <textarea id="F_Description" name="F_Description" class="layui-textarea"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">预计使用次数</label>
+                            <div class="layui-input-block">
+                                <input type="number" pattern="[0-9]*" id="F_PlanUserNum" name="F_PlanUserNum" lay-verify="required|number" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">已使用次数</label>
+                            <div class="layui-input-block">
+                                <input type="number" pattern="[0-9]*" id="F_UsedNum" name="F_UsedNum" lay-verify="required|number" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">保养周期类型</label>
+                            <div class="layui-input-block">
+                                <select id="F_MaintainType" name="F_MaintainType" lay-search>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">保养周期</label>
+                            <div class="layui-input-block">
+                                <input type="number" pattern="[0-9]*" id="F_MaintainNum" name="F_MaintainNum" lay-verify="required|number" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="layui-col-md8 layui-col-xs7">
+            <div class="layui-card" style="padding: 5px;">
+                <fieldset class="table-search-fieldset" style="border:1px solid #e6e6e6">
+                    <legend>绑定区域</legend>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <input type="text" id="txt_keyword" name="txt_keyword" autocomplete="off" class="layui-input" placeholder="">
+                            </div>
+                            <div class="layui-inline">
+                                <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                            </div>
+                        </div>
+                    </form>
+                </fieldset>
+                <script type="text/html" id="toolbarDemo">
+                    <div class="layui-btn-container" id="toolbar">
+                        <button id="NF-add" authorize="yes" class="layui-btn layui-btn-sm data-add-btn" lay-event="add"><i class="layui-icon">&#xe654;</i>新建</button>
+                        <button id="NF-delete" name="NF-delete" authorize="yes" class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn layui-hide" lay-event="delete"> <i class="layui-icon">&#xe640;</i>删除</button>
+                    </div>
+                </script>
+                <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+            </div>
+        </div>
+    </div>
+</div>

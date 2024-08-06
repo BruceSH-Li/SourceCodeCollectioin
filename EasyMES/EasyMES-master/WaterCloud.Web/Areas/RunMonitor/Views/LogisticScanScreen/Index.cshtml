@@ -1,0 +1,537 @@
+﻿<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>@ViewBag.ProjectName-普热斯勒出品</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="~/lib/layui/css/layui.css" media="all">
+    <link rel="stylesheet" href="/css/screeneqp.css" />
+    <link rel="icon" href="@ViewBag.LogoIcon">
+    <script src="~/lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+    <script src="~/js/cookie/jquery.cookie.js"></script>
+</head>
+<script>
+    window.onload = function () {
+        $(".loading").fadeOut()
+    }
+
+    /**rem参数基准**/
+    $(document).ready(function () {
+        var whei = $(window).width()
+        $("html").css({ fontSize: whei / 20 })
+        $(window).resize(function () {
+            var whei = $(window).width()
+            $("html").css({ fontSize: whei / 20 })
+        });
+    });
+</script>
+<style>
+    .layui-btn + .layui-btn {
+        margin-left: 25%;
+    }
+
+    .colorred {
+        background: #e04848 url(../../picture/line.png);
+    }
+
+    .coloryellow {
+        background: #ffd800 url(../../picture/line.png);
+    }
+
+    .colorgreen {
+        background: #5fb878 url(../../picture/line.png);
+    }
+
+    .box.left:hover {
+        background: #b6ff00;
+        cursor: pointer;
+    }
+
+    .statefinish {
+        background: #5fb878 url(../../picture/line.png);
+    }
+
+    .statedoing {
+        background: #f80 url(../../picture/line.png);
+    }
+
+    .layui-form-select dl dd {
+        color: black;
+    }
+</style>
+<body>
+    <div class="loading">
+        <div class="loadbox"><img src="/picture/loading.gif"> 页面加载中...</div>
+    </div>
+    <div class="header">
+        <h1 class="header-title" onclick="openSetting()" id="title">@ViewBag.BoardName-普热斯勒出品</h1>
+        <div class="weather"><span id="showTime"></span></div>
+    </div>
+    <div class="layuimini-site-mobile">
+        <btn class="layui-btn layui-btn-danger" onclick="loginOut()"><i class="layui-icon">&#xe682;</i></btn>
+    </div>
+    <div class="mainbox">
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="boxall">
+                    <div class="alltitle">任务列表</div>
+                    <div class="allnav2" id="userJob" style="overflow: auto">
+                    </div>
+                    <div class="boxfoot"></div>
+                </div>
+            </div>
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="boxall">
+                    <div class="alltitle">操作<a onclick="loginOut()" style="color:orange;float:right;">退出登录</a></div>
+                    <div class="allnav2">
+                        <button class="layui-btn bigbtn layui-btn-normal" onclick="ConfirmJob()">任务确认</button>
+                        @*<button class="layui-btn bigbtn layui-btn-warm" onclick="OutPut()">产出上架</button>
+                            <button class="layui-btn bigbtn layui-btn-danger" onclick="getStorage()">库存查询</button>*@
+                    </div>
+                    <div class="boxfoot"></div>
+                </div>
+            </div>
+            <div class="layui-col-md4 layui-col-sm4">
+                <div class="boxall" style="overflow:auto;">
+                    <div class="alltitle">详细信息</div>
+                    <div class="allnav2" style="overflow:auto;">
+                        <div class="box" style="overflow:auto;">
+                            <div class="boxcard" id="userNameT">
+                            </div>
+                            <div class="boxcard" id="Eqp">
+                            </div>
+                            <div class="boxcard" id="material">
+                            </div>
+                            <div class="boxcard" id="transferbox">
+                            </div>
+                            <div class="boxcard" id="firstlocation">
+                            </div>
+                            <div class="boxcard" id="location">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="boxfoot"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="~/lib/layui/layui.js" charset="utf-8"></script>
+    <script src="~/js/lay-config.js?v=@WaterCloud.Code.GlobalContext.GetVersion()" charset="utf-8"></script>
+    <script src="~/js/framework-ui.js?v=@WaterCloud.Code.GlobalContext.GetVersion()"></script>
+    <script>
+
+        var totalJob = [];
+        var index = 99;
+
+        var t = null;
+        var type = !$.request("type") ? 0 : $.request("type");
+        var userId = top.$.cookie('boardlogin_uerId');
+        var userNameT = top.$.cookie('boardlogin_uerName');
+        if (type == 0) {
+            $(".layuimini-site-mobile").remove();
+            try {
+                userId = JSON.parse(sessionStorage.getItem("currentUser")).F_Id;
+                //userId = "36e9c47b-1e9e-40b8-b391-dd987533cde0";
+                userNameT = top.$.cookie('username');
+
+            } catch (e) { }
+        }
+        else {
+            if (!userId) {
+                localStorage.removeItem("WC_BoardList");
+                localStorage.removeItem("currentBoard");
+                window.location.href = '../../BoardLogin/OutLogin';
+            }
+            var data = JSON.parse(localStorage.getItem("WC_BoardList"));
+            setInterval(function () {
+                setTimeout(() => {
+                    console.log("定时器调用");
+                    getData();
+                }, 0)
+            }, data.refleshSecond * 1000);
+            if (data.viewType == "true" && data.viewList.length > 1) {
+                setTimeout(function () {
+                    for (var i = 0; i < data.viewList.length; i++) {
+                        if (window.location.href.indexOf(data.viewList[i]) > -1) {
+                            var k = i + 1;
+                            var href = k == data.viewList.length ? data.viewList[0] : data.viewList[k];
+                            window.location.href = href.indexOf("?") != -1 ? href + "&type=" + type : href + "?type=" + type;
+                        }
+                    }
+                }, data.skipSecond * 1000);//開始运行
+            }
+        }
+        t = setTimeout(time, 1000);//開始运行
+        function time() {
+            clearTimeout(t);//清除定时器
+            dt = new Date();
+            var week;
+            switch (dt.getDay()) {
+                case 1:
+                    week = "星期一";
+                    break;
+                case 2:
+                    week = "星期二";
+                    break;
+                case 3:
+                    week = "星期三";
+                    break;
+                case 4:
+                    week = "星期四";
+                    break;
+                case 5:
+                    week = "星期五";
+                    break;
+                case 6:
+                    week = "星期六";
+                    break;
+                default:
+                    week = "星期天";
+            }
+            var y = dt.getFullYear();
+            var mt = dt.getMonth() + 1;
+            var day = dt.getDate();
+            var h = dt.getHours();//获取时
+            var m = dt.getMinutes();//获取分
+            var s = dt.getSeconds();//获取秒
+            document.getElementById("showTime").innerHTML = y + "年" + mt + "月" + day + "日 " + h + "时" + m + "分" + s + "秒 " + week;
+            t = setTimeout(time, 1000); //设定定时器，循环运行
+        }
+        function openSetting() {
+            if (type == 1) {
+                layui.use(['jquery', 'common'], function () {
+                    var $ = layui.jquery,
+                        common = layui.common;
+                    common.modalOpen({
+                        title: "看板配置",
+                        url: "/BoardHome/BoardSetting?type=" + type,
+                        width: "600px",
+                        height: "550px",
+                    });
+                });
+            }
+        }
+        function loginOut() {
+            layui.use(['jquery', 'common'], function () {
+                var $ = layui.jquery,
+                    common = layui.common;
+                common.modalConfirm("注：您确定要退出登录吗？", function (r) {
+                    if (r) {
+                        localStorage.removeItem("currentBoard");
+                        window.location.href = '../../BoardLogin/OutLogin';
+                    }
+                });
+            });
+        }
+
+
+        function timeDifference(startTime, endTime) {
+
+        }
+
+        function getData() {
+            totalJob = [];
+            index = 99;
+
+            layui.use(['jquery', 'common'], function () {
+                var $ = layui.jquery,
+                    common = layui.common;
+                common.ajax({
+                    url: '/RunMonitor/LogisticScanScreen/GetListJson',
+                    dataType: "json",
+                    data: { keyValue: userId },
+                    async: false,
+                    success: function (data) {
+                        $('#userJob').html('');
+                        if (!!data) {
+                            let jobhtml = "";
+                            for (var i = 0; i < data.length; i++) {
+                                totalJob = data;
+                                jobhtml += '<div class="box left" eqpid=' + data[i].F_NeedEqpId + '>' + '';
+
+                                if (new Date() - new Date(data[i].F_NeedTime) > 0) {
+                                    jobhtml += '<div class="boxcard colorred">';
+                                } else if (new Date(data[i].F_NeedTime) - new Date() < 10 * 60 * 1000) {
+                                    jobhtml += '<div class="boxcard coloryellow">';
+                                } else {
+                                    jobhtml += '<div class="boxcard colorgreen">';
+                                }
+                                jobhtml += '<p>任务信息:' + data[i].F_JobInfo + '</p>';
+                                jobhtml += '<p>开始时间:' + data[i].F_CreatorTime + '</p>';
+                                jobhtml += '<p>截至时间:' + data[i].F_NeedTime + '</p>';
+                                if (data[i].F_JobState == 1) {
+                                    jobhtml += '<p>任务状态:已确认，请尽快完成</p>';
+                                } else if (data[i].F_JobState == 0) {
+                                    jobhtml += '<p>任务状态:等待确认</p>';
+                                } else {
+                                    jobhtml += '<p>任务状态:完成</p>';
+                                }
+                                jobhtml += '<div class="boxfoot"></div>';
+                                jobhtml += '</div>';
+                                jobhtml += '</div>';
+                            }
+                            $('#userJob').html(jobhtml);
+                        }
+                        try {
+                            $('#userJob .box')[0].click();
+                        } catch (e) { }
+
+
+                    }
+                });
+            });
+        }
+        $(function () {
+            getData();
+            $('#userNameT').html("当前登入人："+userNameT);
+
+            $("#userJob").on("click", ".box", function () {
+                //debugger;
+                index = $(this).index();
+                $(this).css("background", "#b6ff00").siblings().css("background", "transparent");
+
+                $('#material').html('');
+                $('#transferbox').html('');
+                $('#location').html('');
+
+                switch (totalJob[index].F_JobType) {
+                    case 0://领用
+                        let html0 = '';
+                        html0 += '<p>当前设备:' + totalJob[index].F_NeedEqpName + '</p>';
+                        html0 += '<p>物料名称:' + totalJob[index].F_MaterialName + '</p>';
+                        html0 += '<div class="boxfoot"></div>';
+                        $('#Eqp').html(html0)
+                        GetUseMaterial(totalJob[index].F_NeedEqpName);
+                        break;
+                    case 3://产出上架
+                        let html3 = '';
+                        html3 += '<p>当前设备:' + totalJob[index].F_NeedEqpName + '</p>';
+                        html3 += '<p>流转箱编号:' + totalJob[index].F_NeedId + '</p>';
+                        html3 += '<div class="boxfoot"></div>';
+                        $('#Eqp').html(html3);
+
+                        let materialhtml3 = '';
+                        materialhtml3 += '<p>物料编号:' + totalJob[index].F_MaterialCode + '</p>';
+                        materialhtml3 += '<p>物料名称:' + totalJob[index].F_MaterialName + '</p>';
+                        materialhtml3 += '<p>数量:' + totalJob[index].F_NeedNum + '</p>';
+                        materialhtml3 += '<div class="boxfoot"></div>';
+                        $('#material').html(materialhtml3);
+                        GetUseLocation(totalJob[index].F_NeedEqpName, totalJob[index].F_MaterialCode, "", "", "GetUseLocation");
+                        break;
+                    case 7://退回
+                        let html7 = '';
+                        html7 += '<p>当前设备:' + totalJob[index].F_NeedEqpName + '</p>';
+                        html7 += '<p>流转箱编号:' + totalJob[index].F_NeedId + '</p>';
+                        html7 += '<div class="boxfoot"></div>';
+                        $('#Eqp').html(html7);
+
+                        let materialhtml7 = '';
+                        materialhtml7 += '<p>物料编号:' + totalJob[index].F_MaterialCode + '</p>';
+                        materialhtml7 += '<p>物料名称:' + totalJob[index].F_MaterialName + '</p>';
+                        materialhtml7 += '<p>数量:' + totalJob[index].F_NeedNum + '</p>';
+                        materialhtml7 += '<div class="boxfoot"></div>';
+                        $('#material').html(materialhtml7);
+                        GetUseLocation("", totalJob[index].F_MaterialCode, totalJob[index].F_LocationCode, "", "GetReturnLocation");
+                        break;
+                    case 10://入库上架
+                        let html10 = '';
+                        //html10 += '<p>当前设备:' + totalJob[index].F_NeedEqpName + '</p>';
+                        html10 += '<p>流转箱编号:' + totalJob[index].F_NeedId + '</p>';
+                        html10 += '<div class="boxfoot"></div>';
+                        $('#Eqp').html(html10);
+
+                        let materialhtml10 = '';
+                        materialhtml10 += '<p>物料编号:' + totalJob[index].F_MaterialCode + '</p>';
+                        materialhtml10 += '<p>物料名称:' + totalJob[index].F_MaterialName + '</p>';
+                        materialhtml10 += '<p>数量:' + totalJob[index].F_NeedNum + '</p>';
+                        materialhtml10 += '<div class="boxfoot"></div>';
+                        $('#material').html(materialhtml10);
+                        var areacode = GetArea();
+                        GetUseLocation("", totalJob[index].F_MaterialCode, "", areacode, "GetUseLocation");
+                        break;
+
+                    default:
+                        break;
+                }
+
+            });
+
+
+
+        })
+        function GetArea() {
+            layui.use(['common'], function () {
+                let common = layui.common;
+                common.ajax({
+                    url: '/RunMonitor/LogisticScanScreen/GetAreaList',
+                    dataType: "json",
+                    data: { type:0 },
+                    async: false,
+                    success: function (data) {
+                        if (!!data) {
+                            return data[0].F_AreaCode;
+                        }
+                    }
+                })
+            })
+        }
+        function GetUseMaterial(eqpName) {
+            let mathtml = '';
+            let transferhtml = '';
+            if (!eqpName) return;
+            layui.use(['common'], function () {
+                let common = layui.common;
+                common.ajax({
+                    url: '/RunMonitor/LogisticScanScreen/GetUseMaterial',
+                    dataType: "json",
+                    data: { eqpName: eqpName },
+                    async: false,
+                    success: function (data) {
+                        if (!!data && data.materialdata && data.materialdata.length > 0) {
+                            //mathtml += '<p>物料名称:' + data.materialdata[0].F_materialName + '</p>';
+                            mathtml += '<p>已领用数量:' + data.materialdata[0].F_Num + '</p>';
+                            mathtml += '<p>已使用数量:' + data.materialdata[0].F_DoneNum + '</p>';
+                            //mathtml += '<p>未使用数量:' + data.materialdata[0].F_NeedEqpName + '</p>';
+                            mathtml += '<div class="boxfoot"></div>';
+                            $('#material').html(mathtml)
+                        }
+                        if (!!data && data.readyEntity && data.readyEntity.length > 0) {
+
+                            transferhtml += '<p>推荐流转箱:' + data.readyEntity[0].list[0].F_TransferBoxCode + '</p>';
+                            transferhtml += '<p>推荐库位号:' + data.readyEntity[0].list[0].F_LocationCode + '</p>';
+                            transferhtml += '<div class="boxfoot"></div>';
+                            $('#transferbox').html(transferhtml);
+                        }
+
+
+                    }
+                })
+            })
+        }
+
+        function GetUseLocation(eqpName, materialcode, locationcode, areacode, rearurl) {
+            let locationhtml = '<p>规则库位</p>';
+            let firstlocationhtml = '';
+
+            if (!locationcode) {
+                locationcode = "RA101";
+            }
+
+            layui.use(['common'], function () {
+                let common = layui.common;
+                common.ajax({
+                    url: '/RunMonitor/LogisticScanScreen/' + rearurl,
+                    dataType: "json",
+                    data: { eqpName: eqpName, materialCode: materialcode, locationCode: locationcode, areacode: areacode, isAll: false },
+                    async: false,
+                    success: function (data) {
+                        if (!!data) {
+
+                            if (data.length > 0 && !!data[0].list && data[0].list.length > 0) {
+                                firstlocationhtml += '<p>推荐库位：' + data[0].list[0].F_LocationCode + '</p>';
+                                firstlocationhtml += '<div class="boxfoot"></div>';
+                                $('#firstlocation').html(firstlocationhtml);
+                            }
+
+                            for (let i = 0; i < data.length; i++) {
+                                locationhtml += '<p>';
+                                locationhtml += data[i].Prefix + "：";
+                                if (!!data[i].list) {
+                                    for (let j = 0; j < data[i].list.length; j++) {
+                                        locationhtml += data[i].list[j].F_LocationCode + ' ';
+                                    }
+                                }
+                                locationhtml += '</p>';
+                            }
+                            locationhtml += '<div class="boxfoot"></div>';
+                            $('#location').html(locationhtml);
+
+                        }
+
+
+                    }
+                })
+            })
+        }
+
+
+        function ConfirmJob() {
+
+
+            layui.use(['jquery', 'layer', 'common'], function () {
+                let common = layui.common;
+                if (totalJob.length < 1) {
+                    layer.msg('当前无任务', {
+                        time: 1500,
+                        icon: 0
+                    });
+                    return;
+                }
+                if (index == 99) {
+                    layer.msg('请先选择需要操作的任务', {
+                        time: 1500,
+                        icon: 0
+                    });
+                    return;
+                }
+                if (totalJob[index].F_JobState >= "1") {
+                    layer.msg('已确认，无需重复确认', {
+                        time: 1500,
+                        icon: 0
+                    });
+                } else {
+                    common.ajax({
+                        url: "/RunMonitor/LogisticScanScreen/DoTaskJob",
+                        method: 'POST',
+                        data: { jobCode: totalJob[index].F_JobCode },
+                        //contentType: 'application/json',
+                        dataType: 'json',
+                        async: false,
+                        success: function (data) {
+                            if (!!data && data.state == "success") {
+                                layer.msg('操作成功', {
+                                    time: 1500,
+
+                                });
+                                getData();
+                            }
+                        }
+                    })
+                }
+            })
+        }
+
+
+        function OutPut() {
+            layui.use(['jquery', 'layer', 'common'], function () {
+                let common = layui.common,
+                    layer = layui.layer;
+                layer.msg('PC端功能待开发,请至手机端操作', {
+                    time: 1500,
+                    icon: 0
+                });
+            })
+        }
+
+        function getStorage() {
+            layui.use(['jquery', 'layer', 'common'], function () {
+                let common = layui.common,
+                    layer = layui.layer;
+                layer.msg('PC端功能待开发,请至手机端操作', {
+                    time: 1500,
+                    icon: 0
+                });
+            })
+        }
+
+
+
+    </script>
+</body>
+</html>

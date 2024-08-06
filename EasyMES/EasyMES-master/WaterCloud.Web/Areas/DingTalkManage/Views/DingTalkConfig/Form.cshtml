@@ -1,0 +1,179 @@
+﻿@{
+    ViewBag.Title = "Form"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common','optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common,
+            laydate = layui.laydate;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+
+        $(function () {
+            initControl();
+            if (!!keyValue) {
+                 common.ajax({
+                   url: '/DingTalkManage/DingTalkConfig/GetFormJson',
+                   dataType: 'json',
+                   data: { keyValue: keyValue },
+                   async: false,
+                   success: function (data) {
+                       common.val('adminform', data);
+                    }
+               });
+            }
+            if ($('#F_DingType').val() == "0" ) {
+                $("#F_AppId").parent().parent().addClass('layui-hide');
+                $("#F_RedirectUrl").parent().parent().addClass('layui-hide');
+                $("#F_Url").parent().parent().addClass('layui-hide');
+            }
+            else if ($('#F_DingType').val() == "2") {
+                $("#F_AppId").parent().parent().addClass('layui-hide');
+                $("#F_RedirectUrl").parent().parent().addClass('layui-hide');
+            }
+            else if ($('#F_DingType').val()== "1") {
+                $("#F_AgentId").parent().parent().addClass('layui-hide');
+                $("#F_AppKey").parent().parent().addClass('layui-hide');
+            }
+           form.render();
+       });
+       wcLoading.close();
+
+        function initControl() {
+            $("#F_DingType").bindSelect({
+                data: top.clients.dataItems['Mob_DingType'],
+                id: "",
+            });
+        }
+
+        form.on('select(DingType)', function (data) {
+            var message = data.value;
+            if (message == "0" ) {
+                $("#F_AppId").val("");
+                $("#F_AppId").parent().parent().addClass('layui-hide');
+                $("#F_RedirectUrl").val("");
+                $("#F_RedirectUrl").parent().parent().addClass('layui-hide');
+                $("#F_Url").val("");
+                $("#F_Url").parent().parent().addClass('layui-hide');
+                $("#F_AgentId").parent().parent().removeClass('layui-hide');
+                $("#F_AppKey").parent().parent().removeClass('layui-hide');
+                form.render();
+            } else if (message == "2") {
+                $("#F_AppId").val("");
+                $("#F_AppId").parent().parent().addClass('layui-hide');
+                $("#F_RedirectUrl").val("");
+                $("#F_RedirectUrl").parent().parent().addClass('layui-hide');
+                $("#F_AgentId").parent().parent().removeClass('layui-hide');
+                $("#F_AppKey").parent().parent().removeClass('layui-hide');
+                $("#F_Url").parent().parent().removeClass('layui-hide');
+                form.render();
+            } else if (message == "1") {
+                $("#F_AgentId").val("");
+                $("#F_AgentId").parent().parent().addClass('layui-hide');
+                $("#F_AppKey").val("");
+                $("#F_AppKey").parent().parent().addClass('layui-hide');
+                $("#F_RedirectUrl").parent().parent().removeClass('layui-hide');
+                $("#F_AppId").parent().parent().removeClass('layui-hide');
+                $("#F_Url").parent().parent().removeClass('layui-hide');
+                form.render();
+            }
+        });
+
+       //监听提交
+       form.on('submit(saveBtn)', function (data) {
+           var postData = data.field;
+           if (!postData["F_EnabledMark"]) postData["F_EnabledMark"] = false;
+           if (!postData["F_IsWebLogin"] || postData['F_DingType'] != "1") postData["F_IsWebLogin"] = false;
+           if (!postData["F_IsDingInfo"] || postData['F_DingType'] == "1") postData["F_IsDingInfo"] = false;
+           if (!postData["F_IsBoardLogin"] && postData['F_IsBoardLogin'] == "1") postData["F_IsDingInfo"] = false;
+           common.submitForm({
+               url: '/DingTalkManage/DingTalkConfig/SubmitForm?keyValue=' + keyValue,
+               param: postData,
+               success: function () {
+                   common.parentreload('data-search-btn');
+               }
+           })
+           return false;
+       });
+   });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">应用类型</label>
+                    <div class="layui-input-block">
+                        <select id="F_DingType" name="F_DingType" lay-verify="required" lay-filter="DingType" lay-search>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">应用名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AppName" name="F_AppName" autocomplete="off" lay-verify="required" maxlength="50" placeholder="请输入应用名称" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">授权页面LOGO地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_RedirectUrl" name="F_RedirectUrl" autocomplete="off" maxlength="255" placeholder="请输入授权地址" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">AgentId</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AgentId" name="F_AgentId" autocomplete="off" maxlength="50" placeholder="请输入AgentId" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">AppKey</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AppKey" name="F_AppKey" autocomplete="off" maxlength="50" placeholder="请输入AppId" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">AppId</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AppId" name="F_AppId" autocomplete="off" maxlength="50" placeholder="请输入AppId" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">AppSecret</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AppSecret" name="F_AppSecret" autocomplete="off" lay-verify="required" maxlength="100" placeholder="请输入AppSecret" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">访问地址/回调域名</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_Url" name="F_Url" autocomplete="off" maxlength="255" placeholder="请输入访问地址/回调域名" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">选项</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="F_EnabledMark" id="F_EnabledMark" checked="" value="true" title="有效标识">
+                        <input type="checkbox" name="F_IsWebLogin" id="F_IsWebLogin" value="true" title="登录标识">
+                        <input type="checkbox" name="F_IsBoardLogin" id="F_IsBoardLogin" value="true" title="看板标识">
+                        <input type="checkbox" name="F_IsDingInfo" id="F_IsDingInfo" value="true" title="调用钉钉">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text layui-hide">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <textarea id="F_Description" name="F_Description" class="layui-textarea" placeholder="请输入备注"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

@@ -1,0 +1,115 @@
+﻿@{
+    ViewBag.Title = "Form"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common','optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common,
+            laydate = layui.laydate;
+        var keyValue = $.request("keyValue");
+        var event = $.request("event");
+
+        $(function () {
+            var code = localStorage.getItem('ScapMaterialCode');
+            if (!!code) {
+                $('#StartNo').val(code);
+            }
+            else {
+                $('#StartNo').val("SMC0000001");
+            }
+           form.render();
+       });
+       wcLoading.close();
+       //监听提交
+       form.on('submit(saveBtn)', function (data) {
+           if (top.websocket == null || top.websocket.readyState == 3) {
+               common.modalMsg("打印服务未开启", "warning");
+               return false;
+           }
+           if (!data.field.StartNo || !data.field.RunNum) {
+               return false;
+           }
+           var json = {};
+           json.cmd = "print";
+           json.requestId = uuid();
+           json.data = {};
+           json.data.printIniInfo = {};
+           json.data.printIniInfo.filePath = window.document.location.origin + top.clients.printTemplates["二维码编号名称模板"];
+           json.data.printIniInfo.realName = "二维码编号名称模板";
+           json.data.printIniInfo.printType = 1;
+           json.data.printIniInfo.printName = "";
+           json.data.printIniInfo.landscape = true;
+           json.data.printIniInfo.paperSize = "";
+           json.data.printIniInfo.duplex = "";
+           json.data.data = [];
+           var start = data.field.StartNo.slice(0, 3);
+           var startnum = Number(data.field.StartNo.slice(3));
+           var endNum = startnum + Number(data.field.RunNum);
+           var savenum = data.field.StartNo;
+           for (var i = startnum; i <= endNum; i++) {
+               var printnum = start;
+               if (i > 999999) {
+                   printnum = printnum + i;
+               }
+               else if (i > 99999) {
+                   printnum = printnum + "0" + i;
+               }
+               else if (i > 9999) {
+                   printnum = printnum + "00" + i;
+               }
+               else if (i > 999) {
+                   printnum = printnum + "000" + i;
+               }
+               else if (i > 99) {
+                   printnum = printnum + "0000" + i;
+               }
+               else if (i > 9) {
+                   printnum = printnum + "00000" + i;
+               }
+               else {
+                   printnum = printnum + "000000" + i;
+               }
+               savenum = printnum;
+               if (i == endNum) {
+                   break;
+               }
+               var temp = {};
+               temp.code = "条码编号";
+               temp.barId = printnum;
+               temp.name = printnum;
+               json.data.data.push(temp);
+           }
+           top.sendWSPush(json);
+           localStorage.setItem('ScapMaterialCode', savenum);
+           common.modalClose();
+           return false;
+       });
+   });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">起始编号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="StartNo" name="StartNo" maxlength="50" lay-verify="required" class="layui-input ">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">连续打印次数</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="RunNum" name="RunNum" lay-verify="required|number" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" value="1" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

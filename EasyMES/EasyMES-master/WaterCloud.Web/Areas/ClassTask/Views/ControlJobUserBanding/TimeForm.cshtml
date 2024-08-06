@@ -1,0 +1,78 @@
+﻿@{
+    ViewBag.Title = "TimeForm";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common;
+        var keyValue = $.request("itemId");
+        wcLoading.close();
+        $(function () {
+            initControl();
+            if (!!keyValue) {
+                common.ajax({
+                    url: "/ClassTask/ControlJobUserBanding/GetTimeFormJson",
+                    dataType: "json",
+                    data: { keyValue: keyValue },
+                    async: false,
+                    success: function (data) {
+                        common.val('adminform', data);
+                    }
+                });
+            }
+            form.render();
+        });
+
+        function initControl() {
+            $("#F_JobType").bindSelect({
+                data: top.clients.dataItems['Mes_ControlJobType'],
+                id: "",
+            });
+        }
+        //监听提交
+        var lock = false;
+        form.on('submit(saveBtn)', function (data) {
+            if (!lock) {
+                common.submitForm({
+                    url: "/ClassTask/ControlJobUserBanding/SubmitTimeForm",
+                    param: { F_JobType: data.field.F_JobType, F_NeedTime: data.field.F_NeedTime },
+                    success: function () {
+                        common.parentreload("data-search-btn");
+                    }
+                })
+            }
+            return false;
+        });
+    });
+</script>
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" style="padding-bottom: 50px;" lay-filter="adminform">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label required">信息类型</label>
+                        <div class="layui-input-block">
+                            <select id="F_JobType" name="F_JobType" lay-verify="required" lay-search>
+                                <option value="" selected>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label required">设置响应时长(分)</label>
+                        <div class="layui-input-block">
+                            <input type="number" pattern="[0-9]*" id="F_NeedTime" name="F_NeedTime" lay-verify="required|number" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>

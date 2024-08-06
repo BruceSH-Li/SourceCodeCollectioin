@@ -1,0 +1,221 @@
+﻿@{
+    ViewBag.Title = "Form"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+        $(function () {
+            initControl();
+            if (!!keyValue) {
+                common.ajax({
+                    url: '/MaterialManage/Storage/GetFormJson',
+                    dataType: 'json',
+                    data: { keyValue: keyValue },
+                    async: false,
+                    success: function (data) {
+                        common.val('adminform', data);
+                        $('#F_ChangeNum').val(data.F_Num);
+                        $('#storageNum').val(data.F_Num);
+                        ChangeTypeChange(data.F_ChangeType);
+                    }
+                });
+            }
+            else {
+                ChangeTypeChange("0");
+            }
+            form.render();
+        });
+        wcLoading.close();
+
+        function initControl() {
+            $("#F_MaterialType").bindSelect({
+                data: top.clients.dataItems['Mes_MaterialType'],
+                id: "",
+            });
+            $("#F_NewLocationCode").bindSelect({
+                url: "/MaterialManage/Location/GetUseListJson",
+                id: "F_LocationCode",
+                text: "F_LocationCode"
+            });
+            $("#F_NewTransferBoxCode").bindSelect({
+                url: "/MaterialManage/TransferBox/GetUseListJson",
+                id: "F_TransferCode",
+                text: "F_TransferCode"
+            });
+        }
+        //监听复选框
+        form.on('select(ChangeType)', function (data) {
+            ChangeTypeChange(data.value);
+            form.render();
+        });
+        function ChangeTypeChange(value) {
+            if (value == "0") {
+                $('#F_ChangeNum').removeAttr("disabled");
+                $('#F_NewLocationCode').parent().parent().removeClass('layui-hide');
+                $('#F_NewTransferBoxCode').parent().parent().removeClass('layui-hide');
+                $('#F_ChangeNum').parent().parent().find('label').html('转移数量');
+                $('#F_ChangeNum').val($('#storageNum').val());
+            }
+            else if (value == "1") {
+                $('#F_NewLocationCode').parent().parent().removeClass('layui-hide');
+                $('#F_NewTransferBoxCode').parent().parent().addClass('layui-hide');
+
+                $('#F_NewLocationCode').val("");
+                $('#F_ChangeNum').parent().parent().find('label').html('转移数量');
+                $('#F_ChangeNum').val($('#storageNum').val());
+                $('#F_ChangeNum').attr("disabled", "disabled");
+            }
+            else if (value == "2") {
+                $('#F_NewLocationCode').parent().parent().addClass('layui-hide');
+                $('#F_NewTransferBoxCode').parent().parent().addClass('layui-hide');
+                $('#F_ChangeNum').removeAttr("disabled");
+                $('#F_NewLocationCode').val("");
+                $('#F_NewTransferBoxCode').val("");
+                $('#F_ChangeNum').parent().parent().find('label').html('变更数量');
+                $('#F_ChangeNum').val($('#storageNum').val());
+            }
+        }
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            if (data.field.F_ChangeType == "2") {
+                if (!$('#F_ChangeNum').val()) {
+                    common.modalMsg("变更数量不能为空", "warning");
+                    return false;
+                }
+            }
+            else {
+                if (!$('#F_ChangeNum').val()) {
+                    common.modalMsg("请输入转移数量", "warning");
+                    return false;
+                }
+                if (!$('#F_NewLocationCode').val() && !$('#F_NewTransferBoxCode').val()) {
+                    common.modalMsg("请输入转移流转箱或者转移库位", "warning");
+                    return false;
+                }
+            }
+            if (parseInt($('#F_ChangeNum').val()) < 0) {
+                common.modalMsg("数量不能小于0", "warning");
+                return false;
+            }
+            var postData = data.field;
+            postData.F_StorageId = keyValue;
+            postData.F_Num = postData.storageNum;
+            common.submitForm({
+                url: '/MaterialManage/Storage/SubmitForm',
+                param: postData,
+                success: function () {
+                    common.parentreload('data-search-btn');
+                }
+            })
+            return false;
+        });
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">变动类型</label>
+                    <div class="layui-input-block">
+                        <select id="F_ChangeType" name="F_ChangeType" lay-verify="required" lay-filter="ChangeType" >
+                            <option value="0" selected>物料转移</option>
+                            <option value="1">库位变动</option>
+                            <option value="2">数量变动</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">库位编号</label>
+                    <div class="layui-input-block">
+                        <input id="F_LocationCode" name="F_LocationCode" type="text" readonly class="layui-input" />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">流转箱编号</label>
+                    <div class="layui-input-block">
+                        <input id="F_TransferBoxCode" name="F_TransferBoxCode" type="text" readonly class="layui-input" />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">物料分类</label>
+                    <div class="layui-input-block">
+                        <select id="F_MaterialType" name="F_MaterialType" disabled lay-filter="MaterialType">
+                            <option value="" selected>请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">物料编号</label>
+                    <div class="layui-input-block">
+                        <input id="F_MaterialCode" name="F_MaterialCode" type="text" readonly class="layui-input" />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">物料名称</label>
+                    <div class="layui-input-block">
+                        <input id="F_MaterialName" name="F_MaterialName" type="text" readonly class="layui-input" />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">物料单位</label>
+                    <div class="layui-input-block">
+                        <input id="F_MaterialUnit" name="F_MaterialUnit" type="text" readonly class="layui-input" />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">批号</label>
+                    <div class="layui-input-block">
+                        <input id="F_MaterialBatch" name="F_MaterialBatch" type="text" readonly class="layui-input" />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">数量</label>
+                    <div class="layui-input-block">
+                        <input id="storageNum" name="storageNum" class="layui-hide">
+                        <input type="number" pattern="[0-9]*" id="F_Num" name="F_Num" readonly class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">转移数量</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="F_ChangeNum" name="F_ChangeNum" required autocomplete="off" lay-verify="number" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">新库位编号</label>
+                    <div class="layui-input-block">
+                        <select id="F_NewLocationCode" name="F_NewLocationCode" lay-search>
+                            <option value="" selected>请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">新流转箱编号</label>
+                    <div class="layui-input-block">
+                        <select id="F_NewTransferBoxCode" name="F_NewTransferBoxCode" lay-search>
+                            <option value="" selected>请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text layui-hide">
+                    <label class="layui-form-label required">备注</label>
+                    <div class="layui-input-block">
+                        <textarea id="F_Description" name="F_Description" class="layui-textarea" lay-verify="required" placeholder="请输入备注"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

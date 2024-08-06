@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "cascadeselect": "/components/cascadeSelect/cascadeSelect"
+  }
+}

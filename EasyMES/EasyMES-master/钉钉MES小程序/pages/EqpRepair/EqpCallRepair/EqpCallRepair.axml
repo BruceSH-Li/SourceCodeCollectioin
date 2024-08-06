@@ -1,0 +1,68 @@
+<!--<import-sjs from="/static/js/enum.sjs" name="typeEnum"></import-sjs> -->
+<view class="page">
+  <view class="page-description">设备信息</view>
+  <form onSubmit="onSubmit">
+    <view class="page-section">
+      <picker onChange="bindObjPickerEqpChange" value="{{arrEqpIndex}}" range="{{objectEqpArray}}" range-key="F_EqpName">
+        <view class="row">
+          <view class="row-title requireLabel">设备</view>
+          <view class="row-extra">当前选择：{{objectEqpArray[arrEqpIndex].F_EqpName}}</view>
+          <!--<image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" /> -->
+        </view>
+      </picker>
+    </view>
+    <view class="page-description">故障信息</view>
+    <view class="page-section">
+      <view class="form-row">
+        <view class="form-row-label requireLabel">报修人</view>
+        <view class="form-row-content" style="text-align: right">
+          <!--<input type="number" name="num" min="0" disabled="disabled" value="{{num}}" /> -->
+          <input value="{{F_CallRepairMan}}" name="F_CallRepairMan" class="input" placeholder="请选择报修人" style="display:none" />
+          <input disabled value="{{F_CallRepairManName}}" name="F_CallRepairManName" class="input" placeholder="请选择报修人" />
+        </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <picker onChange="bindObjPickerProblemTypeChange" value="{{arrProblemTypeIndex}}" range="{{objectProblemTypeArray}}" range-key="F_ProblemTypeDesc">
+        <view class="row">
+          <view class="row-title requireLabel">故障分类</view>
+          <view class="row-extra">当前选择：{{objectProblemTypeArray[arrProblemTypeIndex].F_ProblemTypeDesc}}</view>
+          <!--<image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" /> -->
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <picker onChange="bindObjPickerProblemClassChange" value="{{arrProblemClassIndex}}" range="{{objectProblemClassArray}}" range-key="F_ProblemClassDesc">
+        <view class="row">
+          <view class="row-title requireLabel">故障等级</view>
+          <view class="row-extra">当前选择：{{objectProblemClassArray[arrProblemClassIndex].F_ProblemClassDesc}}</view>
+          <!--<image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" /> -->
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title requireLabel">故障描述</view>
+      <view class="page-section-demo">
+        <textarea auto-height name="F_ProblemDesc" value="{{F_ProblemDesc}}" placeholder="描述" />
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">故障图片</view>
+    </view>
+    <view class="gallery">
+      <view class="item" a:for="{{images}}" a:key="index">
+        <image style="width: {{imageWidth}}px; height: {{imageWidth}}px" src="{{item}}" onTap="previewImage" data-index={{index}} mode="aspectFill" />
+        <!-- 删除按钮 -->
+        <view class="delete" onTap="delete" data-index="{{index}}">
+          <image style="left: {{imageWidth / 2 - 10}}px;" src="/static/images/delPicture.png" /></view>
+      </view>
+      <view class="item">
+        <image style="width: {{imageWidth}}px; height: {{imageWidth}}px" src="/static/images/AddPicture1.jpg" class="button-upload" onTap="chooseImage" />
+      </view>
+    </view>
+    <view class="page-section">
+      <view>
+        <button type="primary" formType="submit">提交</button></view>
+    </view>
+  </form>
+</view>

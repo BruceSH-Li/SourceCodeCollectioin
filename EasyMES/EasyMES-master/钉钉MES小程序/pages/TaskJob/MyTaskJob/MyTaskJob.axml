@@ -1,0 +1,33 @@
+<import-sjs from="/static/js/enum.sjs" name="JobtypeEnum"></import-sjs>
+<view class="page">
+  <view class="page-description">我的任务</view>
+  <view a:if="{{JobCount<=0}}">
+    <view style="font-size:50rpx;">
+      <icon type="info" size="25"/>
+      <text style="padding-left:10rpx">暂无未完成任务</text>
+    </view>
+  </view>
+  <view a:else>
+    <block a:for="{{TaskJobs}}" a:for-item="item">
+      <view class="page-section" onTap="DetailTaskJob" data-jobCode="{{item.F_JobCode}}">
+        <!-- <view class="page-section-title">任务编号：{{item.F_JobCode}}</view> -->
+        <view class="page-section-title" style="font-size:16px; color:{{item.F_IsOutTime?'red':'green'}}">需求时间：{{item.F_NeedTime.split('.')[0].replace(/-/g, '/').replace(/T/g, ' ')}}</view>
+        <view class="page-section-demo">
+          <view class="uk-grid uk-grid-small">
+            <view class="uk-width-1-4">
+              <view class="uk-badge">{{JobtypeEnum.JobType(item.F_JobType)}}</view>
+              <view class="uk-badge">{{item.F_JobState>0?"已确认":"待确认"}}</view>
+            </view>
+            <view class="uk-width-3-4" style="font-size:14px;">
+              <!-- 流转箱编号：DOL0001<view/>
+                  库位编号：RA101<view/>
+                  物料编号:MC_20210111150429<view/>
+                  作业数量:10<view/> -->
+                  {{item.F_JobInfo}}
+            </view>
+          </view>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>

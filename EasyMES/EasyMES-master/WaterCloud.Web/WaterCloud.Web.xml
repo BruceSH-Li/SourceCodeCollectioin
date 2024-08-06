@@ -1,0 +1,1702 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WaterCloud.Web</name>
+    </assembly>
+    <members>
+        <member name="T:WaterCloud.Web.Areas.ClassTask.Controllers.ControlJobController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-01-15 14:18
+            描 述：待执行任务控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.ClassTask.Controllers.ControlJobPlanerController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-01-15 14:18
+            描 述：待执行任务控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.ClassTask.Controllers.ControlJobUserBandingController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-06-03 13:55
+            描 述：信息设置控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.DingTalkManage.Controllers.DingTalkConfigController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-11-21 09:52
+            描 述：应用配置控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.EquipmentManage.Controllers.EqpAreaController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-01 12:23
+            描 述：模具物料绑定控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.EquipmentManage.Controllers.EqpPqcCheckItemController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-06-08 12:32
+            描 述：设备点检项目控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.EquipmentManage.Controllers.EqpRepairController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-06-15 12:37
+            描 述：设备维修记录表控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.EquipmentManage.Controllers.EqpStopRecordController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-06-10 15:47
+            描 述：设备停机控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.EquipmentManage.Controllers.EqpUserController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-01 12:23
+            描 述：模具物料绑定控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.EquipmentManage.Controllers.EquipmentController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-11-30 14:03
+            描 述：设备清单控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.EquipmentManage.Controllers.MaterialBomController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-01 12:23
+            描 述：模具物料绑定控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.EquipmentManage.Controllers.MaterialEqpController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-01 12:23
+            描 述：模具物料绑定控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.FileManage.Controllers.UploadfileController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-07-22 12:04
+            描 述：文件管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.FlowManage.Controllers.FlowinstanceController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-07-14 09:18
+            描 述：我的流程控制器类
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.FlowManage.Controllers.FlowinstanceController.ToDoFlow">
+            <summary>
+            待处理的流程
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.FlowManage.Controllers.FlowinstanceController.DoneFlow">
+            <summary>
+            已完成的流程
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.FlowManage.Controllers.FlowinstanceController.Verification">
+            <summary>
+            处理界面
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.FlowManage.Controllers.FlowinstanceController.QueryHistories(System.String)">
+            <summary>
+            获取一个流程实例的操作历史记录
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.InfoManage.Controllers.MessageController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-07-29 16:41
+            描 述：通知管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.AreaController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-17 08:30
+            描 述：库区管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.BomInfoController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-03 13:55
+            描 述：Bom结构控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.InStorageController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-16 13:37
+            描 述：入库管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.LocationController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-17 08:31
+            描 述：库位管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.MaterialController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-01 14:31
+            描 述：物料管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.OutStorageController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-16 13:38
+            描 述：出库管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.StorageController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-16 13:38
+            描 述：出库管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.TransferBoxBatchController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-06-17 14:19
+            描 述：流转箱打印控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.TransferBoxController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-14 12:44
+            描 述：流转箱管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.MaterialManage.Controllers.TransferTypeController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-14 12:44
+            描 述：流转箱管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.PlanManage.Controllers.InStoragePlanController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-06-23 14:04
+            描 述：采购计划控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.PlanManage.Controllers.OrderController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-07-21 14:57
+            描 述：订单管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.PlanManage.Controllers.OutStoragePlanController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-06-23 14:04
+            描 述：交付计划控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.ProcessManage.Controllers.ProcessFlowController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-03 09:48
+            描 述：工序管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.ProcessManage.Controllers.WorkOrderController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-07 12:14
+            描 述：工单管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.ProcessManage.Controllers.WorkOrderRunController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-07 12:14
+            描 述：工单执行控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.ProcessManage.Controllers.WorkPlanController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-06-15 10:07
+            描 述：生产计划控制器类
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.ProcessManage.Controllers.WorkPlanController.DeleteUnCreateOrderForm(System.String,System.String,System.String)">
+            <summary>
+            删除未创建工单的计划
+            </summary>
+            <param name="eqpId"></param>
+            <param name="currentdate"></param>
+            <param name="classnum"></param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.ProcessManage.Controllers.EqpScanScreenController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-03 09:48
+            描 述：总生产情况控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.ProcessManage.Controllers.LogisticScanScreenController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-03 09:48
+            描 述：总生产情况控制器类
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.ProcessManage.Controllers.LogisticScanScreenController.GetAreaList(System.String,System.Nullable{System.Int32})">
+            <summary>
+            获取区域列表
+            </summary>
+            <param name="keyword">关键词</param>
+            <param name="type">类型</param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.ProcessManage.Controllers.SmartScreenController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-12-03 09:48
+            描 述：总生产情况控制器类
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.ProcessManage.Controllers.SmartScreenController.GetBoardDataJson">
+            <summary>
+            初始数据加载请求方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.QualityManage.Controllers.CheckoutDescriptionController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-04-23 15:23
+            描 述：质检参数控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.QualityManage.Controllers.NeedCheckController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-05-21 13:50
+            描 述：质检单管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.QualityManage.Controllers.ScapMaterialController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-05-21 13:57
+            描 述：不良物料管理控制器类
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.QualityManage.Controllers.ScapMaterialController.PhotoSaveIndex">
+            <summary>
+            图片转存至服务器
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.QualityManage.Controllers.ScapMaterialReturnController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-05-21 13:57
+            描 述：不良物料管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.RunMonitor.Controllers.BoardAccountController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-01-25 08:29
+            描 述：看板账户控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.SystemManage.Controllers.FlowschemeController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-07-10 08:49
+            描 述：流程设计控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.SystemManage.Controllers.FormController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-07-08 14:33
+            描 述：表单设计控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.SystemManage.Controllers.ModuleFieldsController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-05-21 14:38
+            描 述：字段管理控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.SystemManage.Controllers.PrintTemplateController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-01-14 13:23
+            描 述：打印模板控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.SystemManage.Controllers.ReportTemplateController">
+            <summary>
+            创 建：超级管理员
+            日 期：2021-08-25 16:06
+            描 述：报表模板控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.SystemOrganize.Controllers.DataPrivilegeRuleController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-06-01 09:44
+            描 述：数据权限控制器类
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.SystemOrganize.Controllers.SystemSetController">
+            <summary>
+            创 建：超级管理员
+            日 期：2020-06-12 13:50
+            描 述：系统设置控制器类
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.SystemOrganize.Controllers.UserController.DingSelfCancle">
+            <summary>
+            钉钉清除自身
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.SystemOrganize.Controllers.UserController.DingCancle(System.String)">
+            <summary>
+            钉钉清除
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.SystemSecurity.Controllers.AppLogController.getDirectory(System.Collections.Generic.List{WaterCloud.Code.Model.AppLogEntity},System.String)">
+            <summary>
+            获得指定路径下所有文件名
+            </summary>
+            <param name="sw">列表</param>
+            <param name="path">文件夹路径</param>
+        </member>
+        <member name="T:WaterCloud.Web.Areas.SystemSecurity.Controllers.OpenJobsController">
+            <summary>
+            定时任务
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.SystemSecurity.Controllers.OpenJobsController.QueryLocalHandlers">
+            <summary>
+            获取本地可执行的任务列表
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Areas.SystemSecurity.Controllers.OpenJobsController.ChangeStatus(System.String,System.Int32)">
+            <summary>
+            改变任务状态，启动/停止
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.CheckoutController">
+            <summary>
+            质检接口
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.GetDescriptionInfo">
+            <summary>
+            获取缺陷信息 
+            </summary>
+            <param name="code">编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.getdescList(System.Collections.Generic.List{WaterCloud.Domain.QualityManage.CheckoutDescriptionEntity},System.Collections.Generic.List{WaterCloud.Domain.QualityManage.CheckoutDescriptionEntity},System.String,System.String)">
+            <summary>
+            递归获取
+            </summary>
+            <param name="data"></param>
+            <param name="list"></param>
+            <param name="parentId"></param>
+            <param name="Description"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.GetAllInfo">
+            <summary>
+            获取待检验信息 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.GetTwoAllInfo">
+            <summary>
+            获取二次待检验信息 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.GetReturnInfo">
+            <summary>
+            获取返回正常物料信息 
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.GetInfoByCode(System.String)">
+            <summary>
+            获取流转箱信息根据流转箱编号 
+            </summary>
+            <param name="code">编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.GetWaitCheckoutInfoByCode(System.String)">
+            <summary>
+            获取待检验信息根据流转箱编号 
+            </summary>
+            <param name="code">编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.GetScapMaterialInfoByCode(System.String,System.Nullable{System.Boolean})">
+            <summary>
+            获取不良信息根据条码编号 
+            </summary>
+            <param name="code">编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.GetReturnScapMaterialInfoByCode(System.String)">
+            <summary>
+            获取不良信息根据条码编号 
+            </summary>
+            <param name="code">编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.GetBadMaterialList(System.String)">
+            <summary>
+            获取不良品物料列表
+            </summary>
+            <param name="keyword">关键词</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.NeedCheckJob(System.String)">
+            <summary>
+            质检申请
+            </summary>
+            <param name="code">流转箱编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.CheckoutCancle(System.String)">
+            <summary>
+            取消可疑
+            </summary>
+            <param name="batchCode">条码编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.ReturnCheckout(WaterCloud.Web.Controllers.CheckoutController.ReturnCheckoutRequest)">
+            <summary>
+            质检返库
+            </summary>
+            <param name="request">质检返库请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.ChangeScapState(WaterCloud.Web.Controllers.CheckoutController.ChangeScapStateRequest)">
+            <summary>
+            状态变动
+            </summary>
+            <param name="request">状态变动请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.TwoCheckoutForm(WaterCloud.Web.Controllers.CheckoutController.ChangeScapStateRequest)">
+            <summary>
+            二次质检
+            </summary>
+            <param name="request">二次质检请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.CheckoutForm(WaterCloud.Web.Controllers.CheckoutController.CheckoutRequest)">
+            <summary>
+            常规质检
+            </summary>
+            <param name="request">常规质检请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CheckoutController.PhotoSaveIndex">
+            <summary>
+            缺陷图片转存至服务器
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.CheckoutController.ReturnCheckoutRequest">
+            <summary>
+            质检返库请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CheckoutController.ReturnCheckoutRequest.batchCode">
+            <summary>
+            变动类型
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CheckoutController.ReturnCheckoutRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.CheckoutController.ChangeScapStateRequest">
+            <summary>
+            状态变动请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CheckoutController.ChangeScapStateRequest.batchCode">
+            <summary>
+            条码编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CheckoutController.ChangeScapStateRequest.isBack">
+            <summary>
+            变动状态
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.CheckoutController.CheckoutRequest">
+            <summary>
+            常规质检请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CheckoutController.CheckoutRequest.transferBoxCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CheckoutController.CheckoutRequest.batchCode">
+            <summary>
+            条码编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CheckoutController.CheckoutRequest.propList">
+            <summary>
+            缺陷列表
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CheckoutController.CheckoutRequest.num">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.CommonController">
+            <summary>
+            常规接口
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CommonController.GetAreaList(System.String,System.Nullable{System.Int32})">
+            <summary>
+            获取区域列表
+            </summary>
+            <param name="keyword">关键词</param>
+            <param name="type">类型</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CommonController.GetMaterialList(System.String)">
+            <summary>
+            获取物料列表
+            </summary>
+            <param name="keyword">关键词</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CommonController.GetLocationList(System.String,System.String,System.String,System.Boolean)">
+            <summary>
+            获取可用库位列表
+            </summary>
+            <param name="materialCode">物料编号</param>
+            <param name="eqpName">设备名称</param>
+            <param name="areaCode">区域编号</param>
+            <param name="isAll">全部</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CommonController.GetLocationListByLocation(System.String,System.String,System.Boolean)">
+            <summary>
+            获取可用库位列表
+            </summary>
+            <param name="locationCode">库位号</param>
+            <param name="isAll">全部</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CommonController.GetStorageByCode(System.String)">
+            <summary>
+            根据流转箱编号获取库存
+            </summary>
+            <param name="code">流转箱编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CommonController.GetStorageByMaterial(System.String,System.String)">
+            <summary>
+            根据物料编号获取库存
+            </summary>
+            <param name="code">物料编号</param>
+            <param name="eqpName">当前设备</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CommonController.GetStorageListByMaterial(System.String,System.String,System.Boolean)">
+            <summary>
+            根据物料编号获取库存列表
+            </summary>
+            <param name="code">物料编号</param>
+            <param name="eqpName">当前设备</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.CommonController.StorageChange(WaterCloud.Web.Controllers.CommonController.StorageChangeRequest)">
+            <summary>
+            库存变动
+            </summary>
+            <param name="request">库存变动请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.CommonController.StorageChangeRequest">
+            <summary>
+            库存变动请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CommonController.StorageChangeRequest.changeType">
+            <summary>
+            变动类型
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CommonController.StorageChangeRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CommonController.StorageChangeRequest.changeNum">
+            <summary>
+            变动数量
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CommonController.StorageChangeRequest.newTransferCode">
+            <summary>
+            新流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CommonController.StorageChangeRequest.newLocationCode">
+            <summary>
+            新库位
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.CommonController.StorageChangeRequest.description">
+            <summary>
+            描述
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.EqpRepairController.getEqplist">
+            <summary>
+            获取设备
+            </summary>
+            <param name="EqpUse"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.EqpRepairController.getManList">
+            <summary>
+            获取人员
+            </summary>
+            
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.EqpRepairController.getRepairInfoByDDUserId(System.String)">
+            <summary>
+            根据用户unionId获取工单管理
+            </summary>
+            <param name="ddUserId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.EqpRepairController.getAllRepairInfo(System.String,System.Int32,System.Int32,System.String)">
+            <summary>
+            获取所有维修单
+            </summary>
+            <param name="ddUserId"></param>
+            <param name="currentpage"></param>
+            <param name="pagesize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.EqpRepairController.getRepairFlowByRepairId(System.String)">
+            <summary>
+            获取维修单流程明细
+            </summary>
+            <param name="repairId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.EqpRepairController.getRepairInfoByRepairId(System.String)">
+            <summary>
+            根据主键获取工单详细信息
+            </summary>
+            <param name="Repairid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.EqpRepairController.EqpCallRepair(WaterCloud.Web.Controllers.EqpCallRepairRequest)">
+            <summary>
+            设备报修
+            </summary>
+            <param name="request">请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.EqpRepairController.UpdateEqpRepairInfo(WaterCloud.Web.Controllers.UpdateEqpRepairInfoRequest)">
+            <summary>
+            更新维修单状态
+            </summary>
+            <param name="request">请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.EqpCallRepairRequest">
+            <summary>
+            设备报修请求参数
+            。。
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.EqpCallRepairRequest.F_EqpId">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.EqpCallRepairRequest.F_CallRepairMan">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.InStorageController">
+            <summary>
+            入库接口
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.InStorageController.GetInStorageByCode(System.String)">
+            <summary>
+            获取入库单信息根据关键字
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.InStorageController.GetInStorageList(System.String)">
+            <summary>
+            获取作业入库单列表
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.InStorageController.GetUnInStorageByCode(System.String)">
+            <summary>
+            获取作业中入库单信息根据关键字
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.InStorageController.GetInStorageBandingByCode(System.String)">
+            <summary>
+            获取入库绑定信息根据流转箱编号
+            </summary>
+            <param name="code">编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.InStorageController.InStorageBanding(WaterCloud.Web.Controllers.InStorageController.InStorageBandingRequest)">
+            <summary>
+            入库绑定
+            </summary>
+            <param name="request">入库绑定请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.InStorageController.InStorageCancleBanding(System.String)">
+            <summary>
+            入库取消绑定
+            </summary>
+            <param name="code">流转箱编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.InStorageController.InStorageLocation(WaterCloud.Web.Controllers.InStorageController.InStorageLocationRequest)">
+            <summary>
+            入库上架
+            </summary>
+            <param name="request">入库上架请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.InStorageController.InStorageBandingRequest">
+            <summary>
+            入库绑定请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.InStorageController.InStorageBandingRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.InStorageController.InStorageBandingRequest.num">
+            <summary>
+            变动数量
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.InStorageController.InStorageBandingRequest.materialBatch">
+            <summary>
+            批号
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.InStorageController.InStorageBandingRequest.description">
+            <summary>
+            描述
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.InStorageController.InStorageBandingRequest.inStorageCode">
+            <summary>
+            入库单号
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.InStorageController.InStorageLocationRequest">
+            <summary>
+            入库上架请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.InStorageController.InStorageLocationRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.InStorageController.InStorageLocationRequest.locationCode">
+            <summary>
+            库位号
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.OutStorageController">
+            <summary>
+            出库接口
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.OutStorageController.GetOutStorageList(System.String)">
+            <summary>
+            获取作业出库单列表
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.OutStorageController.GetOutStorageBandingList(System.String)">
+            <summary>
+            获取装箱出库单列表
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.OutStorageController.GetOutStorageByCode(System.String)">
+            <summary>
+            获取出库单根据关键字
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.OutStorageController.GetUnOutStorageByCode(System.String)">
+            <summary>
+            获取作业中出库单根据关键字
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.OutStorageController.GetUnBandingInfoByCode(System.String)">
+            <summary>
+            获取未绑定信息根据出库单
+            </summary>
+            <param name="code">出库单号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.OutStorageController.OutStorage(WaterCloud.Web.Controllers.OutStorageController.OutStorageRequest)">
+            <summary>
+            产品出库
+            </summary>
+            <param name="request">产品出库请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.OutStorageController.OutStorageBanding(WaterCloud.Web.Controllers.OutStorageController.OutStorageBandingRequest)">
+            <summary>
+            出库装箱
+            </summary>
+            <param name="request">出库装箱请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.OutStorageController.OutStorageCancle(WaterCloud.Web.Controllers.OutStorageController.OutStorageCancleRequest)">
+            <summary>
+            取消产品下架
+            </summary>
+            <param name="request">取消产品下架请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.OutStorageController.OutStorageRequest">
+            <summary>
+            产品出库请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageRequest.num">
+            <summary>
+            下架数量
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageRequest.description">
+            <summary>
+            描述
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageRequest.outStorageCode">
+            <summary>
+            出库单号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageRequest.TargetTransferCode">
+            <summary>
+            目标流转箱
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.OutStorageController.OutStorageQueryRequest">
+            <summary>
+            产品出库请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageQueryRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageQueryRequest.outStorageCode">
+            <summary>
+            出库单号
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.OutStorageController.OutStorageBandingRequest">
+            <summary>
+            出库装箱请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageBandingRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageBandingRequest.num">
+            <summary>
+            变动数量
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageBandingRequest.description">
+            <summary>
+            描述
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageBandingRequest.outStorageCode">
+            <summary>
+            出库单号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageBandingRequest.TargetTransferCode">
+            <summary>
+            目标流转箱
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.OutStorageController.OutStorageCancleRequest">
+            <summary>
+            取消产品下架请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageCancleRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageCancleRequest.outStorageCode">
+            <summary>
+            出库单号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.OutStorageController.OutStorageCancleRequest.locationCode">
+            <summary>
+            目标库位
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.TaskJobController">
+            <summary>
+            调度任务接口
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.TaskJobController.GetUnDoTaskJob">
+            <summary>
+            获取未完成任务列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.TaskJobController.GetTaskJobForm(System.String)">
+            <summary>
+            获取任务信息
+            </summary>
+            <param name="jobCode">任务编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.TaskJobController.DoTaskJob(System.String)">
+            <summary>
+            获取
+            </summary>
+            <param name="jobCode">任务编号</param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.UserController">
+            <summary>
+            用户接口
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.UserController.Login(WaterCloud.Web.Controllers.UserController.LoginRequest)">
+            <summary>
+            用户登录
+            </summary>
+            <param name="request">登录请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.UserController.DingLogin(System.String)">
+            <summary>
+            钉钉用户登录
+            </summary>
+            <param name="code">授权码</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.UserController.DingBandingUser(WaterCloud.Web.Controllers.UserController.DingLoginRequest)">
+            <summary>
+            钉钉用户登录
+            </summary>
+            <param name="request">钉钉登录请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.UserController.GetMenuList">
+            <summary>
+            用户权限获取
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.UserController.GetMenuButtonListNew">
+            <summary>
+            菜单按钮信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.UserController.LoginOff">
+            <summary>
+            用户退出登录
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.UserController.LoginRequest">
+            <summary>
+            登录请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.UserController.LoginRequest.userName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.UserController.LoginRequest.password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.UserController.LoginRequest.localurl">
+            <summary>
+            域名
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.UserController.DingLoginRequest">
+            <summary>
+            登录请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.UserController.DingLoginRequest.userName">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.UserController.DingLoginRequest.password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.UserController.DingLoginRequest.code">
+            <summary>
+            授权码
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.UserController.DingLoginRequest.localurl">
+            <summary>
+            域名
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.WorkRunController">
+            <summary>
+            生产接口
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetUsingEqpList(System.String)">
+            <summary>
+            获取设备列表
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetHaveUseEqpList(System.String)">
+            <summary>
+            获取设备列表
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetHaveOutEqpList(System.String)">
+            <summary>
+            获取设备列表
+            </summary>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetUseTransferList(System.String)">
+            <summary>
+            获取设备使用物料列表
+            </summary>
+            <param name="eqpName">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetOutTransferList(System.String)">
+            <summary>
+            获取设备产出物料列表
+            </summary>
+            <param name="eqpName">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetWorkOrder(System.String,System.String)">
+            <summary>
+            获取设备工单
+            </summary>
+            <param name="eqpName">设备</param>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetUseMaterial(System.String,System.String)">
+            <summary>
+            获取设备需要物料列表
+            </summary>
+            <param name="eqpName">设备</param>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetOutMaterial(System.String,System.String)">
+            <summary>
+            获取设备当前产出物料
+            </summary>
+            <param name="eqpName">设备</param>
+            <param name="keyword">关键字</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetOutputMaterialBandingByCode(System.String)">
+            <summary>
+            获取产出绑定信息根据流转箱编号
+            </summary>
+            <param name="code">流转箱编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.GetConsumeMaterialByCode(System.String,System.String)">
+            <summary>
+            获取在用物料根据设备流转箱
+            </summary>
+            <param name="eqpName">设备</param>
+            <param name="code">流转箱编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.NeedMaterialJob(WaterCloud.Web.Controllers.WorkRunController.NeedMaterialJobRequest)">
+            <summary>
+            设备补料申请
+            </summary>
+            <param name="request">设备补料申请请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.ConsumeMaterial(WaterCloud.Web.Controllers.WorkRunController.ConsumeMaterialRequest)">
+            <summary>
+            设备使用物料
+            </summary>
+            <param name="request">请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterial(WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialRequest)">
+            <summary>
+            设备退回物料
+            </summary>
+            <param name="request">请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialJob(WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialJobRequest)">
+            <summary>
+            退回物料申请
+            </summary>
+            <param name="request">请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.OutputMaterial(WaterCloud.Web.Controllers.WorkRunController.OutputMaterialRequest)">
+            <summary>
+            设备产出物料
+            </summary>
+            <param name="request">请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialCancle(System.String)">
+            <summary>
+            设备产出物料取消
+            </summary>
+            <param name="code">流转箱编号</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialLocation(WaterCloud.Web.Controllers.WorkRunController.OutputMaterialLocationRequest)">
+            <summary>
+            产出上架
+            </summary>
+            <param name="request">请求对象</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.WorkRunController.FinishWorkOrderJob(System.String)">
+            <summary>
+            工单结束申请
+            </summary>
+            <param name="eqpName">设备</param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.WorkRunController.NeedMaterialJobRequest">
+            <summary>
+            补料申请请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.NeedMaterialJobRequest.eqpName">
+            <summary>
+            设备名
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.NeedMaterialJobRequest.materialCode">
+            <summary>
+            物料编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.NeedMaterialJobRequest.num">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.WorkRunController.ConsumeMaterialRequest">
+            <summary>
+            设备使用物料
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ConsumeMaterialRequest.eqpName">
+            <summary>
+            设备名
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ConsumeMaterialRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ConsumeMaterialRequest.num">
+            <summary>
+            数量
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ConsumeMaterialRequest.TargetTransferCode">
+            <summary>
+            新流转箱
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ConsumeMaterialRequest.description">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialRequest">
+            <summary>
+            设备退回物料请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialRequest.eqpName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialRequest.locationCode">
+            <summary>
+            库位号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialRequest.newTransferCode">
+            <summary>
+            新流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialRequest.description">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialJobRequest">
+            <summary>
+            设备退回物料申请请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialJobRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.ReturnMaterialJobRequest.eqpName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialLocationRequest">
+            <summary>
+            产出上架请求对象
+            。。
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialLocationRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialLocationRequest.locationCode">
+            <summary>
+            库位号
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialRequest">
+            <summary>
+            产出物料请求对象
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialRequest.transferCode">
+            <summary>
+            流转箱编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialRequest.num">
+            <summary>
+            变动数量
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialRequest.materialCode">
+            <summary>
+            物料编号
+            </summary>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialRequest.materialBatch">
+            <summary>
+            批号
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialRequest.description">
+            <summary>
+            描述
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.Controllers.WorkRunController.OutputMaterialRequest.eqpName">
+            <summary>
+            设备名称
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.BoardHomeController.GetBoardCode">
+            <summary>
+            获取当前看板信息请求方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.BoardHomeController.GetAreaList(System.String)">
+            <summary>
+            获取库区信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.BoardHomeController.GetInitDataJson">
+            <summary>
+            初始菜单列表请求方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.BoardHomeController.GetMenuListNew">
+            <summary>
+            菜单按钮信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.BoardHomeController.ToMenuJsonNew(System.Collections.Generic.List{WaterCloud.Domain.SystemManage.ModuleEntity})">
+            <summary>
+            菜单信息
+            </summary>
+            <param name="data"></param>
+            <param name="parentId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.BoardLoginController.CheckLoginState">
+            <summary>
+            验证登录状态请求接口
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.BoardLoginController.CheckLogin(System.String,System.String)">
+            <summary>
+            登录验证
+            </summary>
+            <param name="username">用户</param>
+            <param name="password">密码</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.BoardLoginController.DingLogin(System.String)">
+            <summary>
+            钉钉扫码登录
+            </summary>
+            <param name="code">临时授权</param>
+            <returns></returns>
+        </member>
+        <member name="F:WaterCloud.Web.Controllers.ClientsDataController.cacheKey">
+            <summary>
+            缓存操作类
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetClientsDataJson">
+            <summary>
+            初始数据加载请求方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.ClearCache">
+            <summary>
+            清空缓存请求方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetMenuFields">
+            <summary>
+            模块字段权限
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetQuickModuleList">
+            <summary>
+            快捷菜单列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetNoticeList">
+            <summary>
+            获取公告信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetInitDataJson">
+            <summary>
+            初始菜单列表请求方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetNoticeInfo">
+            <summary>
+            获取公告信息请求方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetUserCode">
+            <summary>
+            获取当前用户信息请求方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetQuickModule">
+            <summary>
+            获取快捷菜单请求方法
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetCoutData">
+            <summary>
+            获取数据信息接口
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetMenuListNew">
+            <summary>
+            菜单按钮信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.ToMenuJsonNew(System.Collections.Generic.List{WaterCloud.Domain.SystemManage.ModuleEntity},System.String)">
+            <summary>
+            菜单信息
+            </summary>
+            <param name="data"></param>
+            <param name="parentId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetDataItemList">
+            <summary>
+            字段信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetMenuButtonListNew">
+            <summary>
+            菜单按钮信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.ClientsDataController.GetMenuFieldsListNew">
+            <summary>
+            菜单字段信息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.LoginController.GetAuthCode">
+            <summary>
+            验证码获取（此接口已弃用）
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.LoginController.CheckLoginState">
+            <summary>
+            验证登录状态请求接口
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.LoginController.CheckLogin(System.String,System.String,System.String,System.String)">
+            <summary>
+            登录验证
+            </summary>
+            <param name="username">用户</param>
+            <param name="password">密码</param>
+            <param name="localurl">域名</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.LoginController.DingBandingUser(System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+            钉钉绑定
+            </summary>
+            <param name="username">用户</param>
+            <param name="password">密码</param>
+            <param name="localurl">域名</param>
+            <param name="OpenId">钉钉用户openId</param>
+            <param name="Nick">钉钉用户名称</param>
+            <param name="UnionId">钉钉用户应用Id</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.Controllers.LoginController.DingLogin(System.String)">
+            <summary>
+            钉钉扫码登录
+            </summary>
+            <param name="code">临时授权</param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.BaseController.OnActionExecutionAsync(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext,Microsoft.AspNetCore.Mvc.Filters.ActionExecutionDelegate)">
+            <summary>
+            演示模式过滤
+            </summary>
+            <param name="context"></param>
+            <param name="next"></param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.CustomerFileExtensionContentTypeProvider">
+            <summary>
+            mime文件
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.AuthorizeFilterAttribute">
+            <summary>
+            权限验证
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.AuthorizeFilterAttribute.OnActionExecutionAsync(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext,Microsoft.AspNetCore.Mvc.Filters.ActionExecutionDelegate)">
+            <summary>
+            验证
+            </summary>
+            <param name="context"></param>
+            <param name="next"></param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.LockAttribute">
+            <summary>
+            防重复提交
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.LockAttribute.OnActionExecutionAsync(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext,Microsoft.AspNetCore.Mvc.Filters.ActionExecutionDelegate)">
+            <summary>
+            拦截
+            </summary>
+            <param name="context"></param>
+            <param name="next"></param>
+            <returns></returns>
+        </member>
+        <member name="T:WaterCloud.Web.LoginFilterAttribute">
+            <summary>
+            验证token
+            </summary>
+        </member>
+        <member name="M:WaterCloud.Web.LoginFilterAttribute.OnActionExecutionAsync(Microsoft.AspNetCore.Mvc.Filters.ActionExecutingContext,Microsoft.AspNetCore.Mvc.Filters.ActionExecutionDelegate)">
+            <summary>
+            验证
+            </summary>
+            <param name="context"></param>
+            <param name="next"></param>
+            <returns></returns>
+        </member>
+        <member name="M:WaterCloud.Web.LoginFilterAttribute.RoleAuthorize">
+            <summary>
+            账户检测
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:WaterCloud.Web.AuthorizeAttribute._authorize">
+            <summary>
+            权限名称
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.GlobalExceptionFilter">
+            <summary>
+            全局异常过滤器
+            </summary>
+        </member>
+        <member name="T:WaterCloud.Web.ModelActionFilter">
+            <summary>
+            模型验证过滤器
+            </summary>
+        </member>
+    </members>
+</doc>

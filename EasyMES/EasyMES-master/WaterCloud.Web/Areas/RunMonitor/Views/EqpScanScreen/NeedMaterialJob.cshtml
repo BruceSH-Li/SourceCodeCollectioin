@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "EqpForm"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    var parentData = [];
+    function initForm(data) {
+        parentData = data;
+    }
+    layui.use(['jquery', 'form', 'laydate', 'common', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+        $(function () {
+            $("#MaterialId").bindSelect({
+                data: parentData,
+                id: "F_Id",
+                text: "F_MaterialName"
+            });
+            form.render();
+        });
+        wcLoading.close();
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            common.submitForm({
+                url: "/RunMonitor/EqpScanScreen/NeedMaterialJob",
+                param: { keyValue: keyValue, materialId: data.field.MaterialId },
+                success: function () {
+                    parent.getData();
+                }
+            })
+            return false;
+        });
+    });
+</script>
+<div class="layui-form select_option_to_layer" lay-filter="adminform">
+    <div style="margin: 25px; margin-left: 40px; margin-right: 40px;">
+        <div class="layui-form-item">
+            <select id="MaterialId" name="MaterialId" lay-verify="required">
+            </select>
+        </div>
+        <div class="layui-form-item layui-hide">
+            <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+        </div>
+    </div>
+</div>
+

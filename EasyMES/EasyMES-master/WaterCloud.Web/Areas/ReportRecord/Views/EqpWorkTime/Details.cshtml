@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'table', 'common', 'commonTable', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            commonTable = layui.commonTable,
+            common = layui.common;
+        //加载数据
+        wcLoading.close();
+        var keyValue = $.request("keyValue");
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            id: 'currentTableId',
+            url: '/ReportRecord/EqpWorkTime/GetEqpListJson?keyValue=' + keyValue,
+            search: false,
+            height: 'full-40',          
+            limit: 99999,//每页数据 默认
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count'] //自定义分页布局
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            toolbar: false,//工具栏
+            cols: [[
+                {
+                    field: 'F_EqpType', title: '设备类型', width: 120,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_EqpType"][d.F_EqpType] == null ? "" : top.clients.dataItems["Mes_EqpType"][d.F_EqpType];
+                    }
+                },
+                {
+                    field: 'F_EqpUse', title: '设备用途', width: 120,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_EqpUse"][d.F_EqpUse] == null ? "" : top.clients.dataItems["Mes_EqpUse"][d.F_EqpUse];
+                    }
+                },
+                { field: 'F_EqpName', title: '设备名称', minWidth: 120 },
+                { field: 'F_Description', title: '设备描述', minWidth: 120 },
+                {
+                    field: 'F_IsOtherEqp', title: '加载', width: 80,
+                    templet: function (d) {
+                        if (d.F_IsOtherEqp == true) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>是</span>";
+                        } else {
+                            return "<span class='layui-btn layui-btn-warm layui-btn-xs'>否</span>";
+                        }
+                    }
+                },
+            ]]
+        });
+    });
+</script>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+    </div>
+</div>

@@ -1,0 +1,119 @@
+﻿@{
+    ViewBag.Title = "Details"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'common', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common;
+        var locationCode = $.request("locationCode");
+        var type = $.request("type");
+        var areaList = [];
+        $(function () {
+            initControl();
+            common.ajax({
+                url: '/ClassTask/ControlJob/GetLocationJson',
+                dataType: 'json',
+                data: { type: type, locationCode: locationCode, areaCode: "",areaType:-1 },
+                async: false,
+                success: function (data) {
+                    $('#areaType').val(data.areaType);
+                    areaTypeChange(data.areaType);
+                    $('#area').val(data.area);
+                    areaChange(data.area);
+                    $('#location').html(data.location);
+                }
+            });
+            if (type == 1) {
+                $('#area').prop('disabled', true);
+                $('#areaType').prop('disabled', true);
+            }
+            form.render();
+        });
+        wcLoading.close();
+        //监听复选框
+        form.on('select(areaTypeChange)', function (data) {
+            areaTypeChange(data.value);
+        });
+        //监听复选框
+        form.on('select(areaChange)', function (data) {
+            areaChange(data.value);
+        });
+        function areaTypeChange(value) {
+            $("#area").empty();
+            var dataJson = {};
+            var thisvalue="";
+            for (var i = 0; i < areaList.length; i++) {
+                if (areaList[i].F_AreaType == value) {
+                    dataJson[areaList[i].F_AreaCode] = areaList[i].F_AreaCode;
+                    thisvalue = !thisvalue ? areaList[i].F_AreaCode : thisvalue;
+                }
+            }
+            $("#area").bindSelect({
+                data: dataJson,
+                id: "",
+            });
+            areaChange(thisvalue);
+            form.render();
+        }
+        function areaChange(value) {
+            var areaType = $('#areaType').val();
+            if (areaType!=0 && !areaType) {
+                areaType=-1
+            }
+            if (type == 0 && !!value) {
+                common.ajax({
+                    url: '/ClassTask/ControlJob/GetLocationJson',
+                    dataType: 'json',
+                    data: { type: type, areaCode: value, locationCode: locationCode, areaType: areaType },
+                    async: false,
+                    success: function (data) {
+                        $('#location').html(data.location);
+                    }
+                });
+            }
+            form.render();
+        }
+        function initControl() {
+            $("#areaType").bindSelect({
+                data: top.clients.dataItems['Mes_AreaType'],
+                id: "",
+            });
+            common.ajax({
+                url: '/MaterialManage/Area/GetListJson',
+                dataType: 'json',
+                async: false,
+                success: function (data) {
+                    areaList=data;
+                }
+            });
+        }
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">库区类型</label>
+                    <div class="layui-input-block">
+                        <select id="areaType" name="areaType" lay-filter="areaTypeChange">
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">库区</label>
+                    <div class="layui-input-block">
+                        <select id="area" name="area" lay-filter="areaChange">
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <h1 style="padding-top: 30px; text-align: center;color:red">库位号：</h1>
+            <h1 id="location" style="padding-top: 30px; text-align: center;color:red"></h1>
+        </div>
+    </div>
+</body>
+

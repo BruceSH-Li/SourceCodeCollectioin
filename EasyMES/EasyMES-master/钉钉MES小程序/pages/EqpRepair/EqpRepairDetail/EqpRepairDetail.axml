@@ -1,0 +1,163 @@
+<import-sjs from="/static/js/enum.sjs" name="typeEnum"></import-sjs>
+
+
+   <view a:if="{{type=='record'}}" class="topnavFix">
+      <view class="demo-title">{{repairInfo.F_RepairNo}}
+        <text class="demo-righttitle" style="color:green" onTap="ToRepairFlow">
+          进度明细<text class="arrow"></text>
+        </text>
+
+      </view>
+
+    <view class='order_process'>
+        <view class='process_wrap' a:for="{{processData}}" a:key="">
+          <view class='process'>
+            <view class='process_line' style="background:{{item.start}}"></view>
+            <image class='process_icon' src="{{item.icon}}"></image>
+            <view class='process_line' style="background:{{item.end}}"></view>
+          </view>
+          <text class='process_name'>{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+
+<view class="page"style="margin-top:{{type=='record'?'90px':'1rpx'}}">
+  <view class="page-description">设备信息</view>
+  <form onSubmit="onSubmit">
+    <view class="page-section">
+      <!--<picker onChange="bindObjPickerEqpChange" value="{{arrEqpIndex}}" range="{{objectEqpArray}}" range-key="F_EqpName"> -->
+      <view class="row">
+        <view class="row-title">设备</view>
+        <view class="row-extra">{{repairInfo.F_EqpName}}</view>
+        <!--<image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" /> -->
+      </view>
+      <!--</picker> -->
+    </view>
+    <view a:if="{{type!='record'}}" class="page-section">
+      <view class="row">
+        <view class="row-title">维修单号</view>
+        <view class="row-extra">{{repairInfo.F_RepairNo}}
+          <text class="uk-badge">{{typeEnum.RepairStatus(repairInfo.F_Status)}}</text>
+        </view>
+      </view>
+    </view>
+    <view class="page-description">故障信息</view>
+    <view class="page-section">
+      <view class="form-row">
+        <view class="form-row-label">报修人</view>
+        <view class="form-row-content" style="text-align: right">
+          <!--<input type="number" name="num" min="0" disabled="disabled" value="{{num}}" /> -->
+          <!--<input value="{{repairInfo.F_CallRepairMan}}" name="F_CallRepairMan" class="input" placeholder="请选择报修人" style="display:none" /> -->
+          <input disabled value="{{repairInfo.F_CallRepairManName}}" name="F_CallRepairManName" class="input"/>
+        </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="form-row">
+        <view class="form-row-label">报修时间</view>
+        <view class="form-row-content" style="text-align: right">
+          <input disabled value="{{repairInfo.F_CallRepairTime}}" class="input"/>
+        </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <!--<picker onChange="bindObjPickerProblemTypeChange" value="{{arrProblemTypeIndex}}" range="{{objectProblemTypeArray}}" range-key="F_ProblemTypeDesc"> -->
+      <view class="row">
+        <view class="row-title">故障分类</view>
+        <view class="row-extra">{{typeEnum.ProblemType(repairInfo.F_ProblemType)}}</view>
+        <!--<image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" /> -->
+      </view>
+      <!--</picker> -->
+    </view>
+    <view class="page-section">
+      <!--<picker onChange="bindObjPickerProblemClassChange" value="{{arrProblemClassIndex}}" range="{{objectProblemClassArray}}" range-key="F_ProblemClassDesc"> -->
+      <view class="row">
+        <view class="row-title">故障等级</view>
+        <view class="row-extra">{{typeEnum.ProblemClass(repairInfo.F_ProblemClass)}}</view>
+        <!--<image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" /> -->
+      </view>
+      <!--</picker> -->
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">故障描述</view>
+      <view class="page-section-demo" a:if="{{!selectShow}}">
+        <textarea disabled auto-height name="F_ProblemDesc" value="{{repairInfo.F_ProblemDesc}}" placeholder="描述" />
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">故障图片</view>
+    </view>
+    <view class="gallery">
+      <view class="item" a:for="{{images}}" a:key="index">
+        <image style="width: {{imageWidth}}px; height: {{imageWidth}}px" src="{{item}}" onTap="previewImage" data-index={{index}} mode="aspectFill" />
+        <!-- 删除按钮 -->
+        <!--<view class="delete" onTap="delete" data-index="{{index}}"><image style="left: {{imageWidth / 2 - 10}}px;" src="/static/images/delPicture.png" /></view> -->
+      </view>
+      <!--<view class="item"><image style="width: {{imageWidth}}px; height: {{imageWidth}}px" src="/static/images/addPicture.png" class="button-upload" onTap="chooseImage" /></view> -->
+    </view>
+    <view a:if="{{repairInfo.F_Status>1}}">
+      <view class="page-section">
+        <view class="row">
+          <view class="row-title">派工时间</view>
+          <view class="row-extra">{{repairInfo.F_DistributeTime}}</view>
+        </view>
+      </view>
+      <view class="page-description">维修人员</view>
+      <block a:for="{{repairInfo.repariManlist}}" a:for-item="item">
+        <view class="page-section">
+          <view class="row">
+            <view class="row-title">维修人{{index+1}}</view>
+            <view class="row-extra">{{item.F_RepairManName}}
+              <text class="uk-badge">{{typeEnum.RepairManStatus(item.F_Status)}}</text>
+            </view>
+          </view>
+          <view a:if="{{item.F_Status>1}}">
+            <view class="row">
+              <view class="row-title">维修开始时间</view>
+              <view class="row-extra">{{item.F_StartRepairTime}}</view>
+            </view>
+            <view class="row">
+              <view class="row-title">维修时长</view>
+              <view class="row-extra">{{item.repairhour}}h</view>
+            </view>
+          </view>
+          <view a:if="{{item.F_Status>2}}">
+            <view class="row">
+              <view class="row-title">维修结论</view>
+              <view class="row-extra">{{item.F_RepairResult}}</view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </view>
+
+
+    <view a:if="{{type=='PG'}}">
+      <!-- <picker onChange="bindObjPickerManChange" value="{{arrManIndex}}" range="{{objectManArray}}" range-key="F_RealName">
+        <button size="mini" type="primary">新增维修人员</button> -->
+        <!--<view class="row"><view class="row-title">设备</view><view class="row-extra">当前选择：{{objectEqpArray[arrEqpIndex].F_EqpName}}</view></view> -->
+      <!-- </picker> -->
+      <button size="mini" type="primary" onTap="openSelect">新增维修人员</button>
+
+      <!--级联选择器,组件didmount比onload先执行，所以要if判断父页面数据拿到后在渲染组件-->
+      <view a:if="{{objectManArray.length>0}}">
+        <cascadeselect selectShow="{{selectShow}}" selectValue="{{selectValue}}" list="{{objectManArray}}" onSelectSuccess="onSelectSuccess" onClose="closeSelect"/>
+      </view>
+
+
+      <view class="page-section">
+        <block a:for="{{ManList}}" a:for-item="item">
+          <view class="row">
+            <view class="row-title">新维修人</view>
+            <view class="row-extra">{{item.F_RepairManName}}</view>
+          </view>
+        </block>
+      </view>
+    </view>
+    <view a:if="{{type=='PG'}}" class="page-section">
+      <view>
+        <button type="primary" formType="submit">提交</button></view>
+    </view>
+  </form>
+</view>

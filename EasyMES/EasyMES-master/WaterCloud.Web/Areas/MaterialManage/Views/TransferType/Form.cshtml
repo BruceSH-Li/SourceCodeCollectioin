@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'table', 'common', 'commonTable', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            commonTable = layui.commonTable,
+            common = layui.common;
+        //加载数据
+        wcLoading.close();
+        var ItemId = $.request("ItemId");
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            id: 'currentTableId',
+            url: '/MaterialManage/TransferType/GetMaterialJson?ItemId='+ItemId,
+            search: false,
+            height: 'full-110',
+            toolbar: false,//工具栏
+            cols: [[
+                { type: 'checkbox' },
+                {
+                    field: 'F_MaterialType', title: '料号分类', width: 120, sort: true,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                    }
+                },
+                { field: 'F_MaterialCode', title: '料号编号', width: 170, sort: true },
+                { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true },
+                { field: 'F_MaterialDescription', title: '料号描述', minWidth: 120, sort: true },
+                { field: 'F_MaterialUnit', title: '料号单位', width: 120, sort: true },
+                { field: 'F_MaterialSize', title: '料号规格', width: 120, sort: true },
+                { field: 'F_MaterialBy', title: '料号材质', width: 120, hide: true },
+                { field: 'F_MaterialPic', title: '图片路径', width: 120, hide: true },
+                { field: 'F_Customer', title: '客户名称', width: 120, hide: true },
+                { field: 'F_CustomerProNO', title: '客户品号', width: 120, hide: true },
+            ]]
+        });
+        $(document).on("click", ".layui-table-body table.layui-table tbody tr", function () {
+            var index = $(this).attr('data-index');
+            var tableBox = $(this).parents('.layui-table-box');
+            //存在固定列
+            if (tableBox.find(".layui-table-fixed.layui-table-fixed-l").length > 0) {
+                tableDiv = tableBox.find(".layui-table-fixed.layui-table-fixed-l");
+            } else {
+                tableDiv = tableBox.find(".layui-table-body.layui-table-main");
+            }
+            var checkCell = tableDiv.find("tr[data-index=" + index + "]").find("td div.laytable-cell-checkbox div.layui-form-checkbox I");
+            if (checkCell.length > 0) {
+                checkCell.click();
+            }
+        });
+        //对td的单击事件进行拦截停止，防止事件冒泡再次触发上述的单击事件（Table的单击行事件不会拦截，依然有效）
+        $(document).on("click", "td div.laytable-cell-checkbox div.layui-form-checkbox", function (e) {
+            e.stopPropagation();
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            commonTable.reloadtable({
+                elem: 'currentTableId',
+                page: false,
+                where: { keyword: data.field.txt_keyword }
+            });
+            return false;
+        });
+        // 监听提交操作
+        form.on('submit(saveBtn)', function (data) {
+            var checkStatus = table.checkStatus("currentTableId").data;
+            var pvalue = [];
+            var pname = [];
+            var pcode = [];
+            for (var i = 0; i < checkStatus.length; i++) {
+                pvalue.push(checkStatus[i].F_Id);
+                pname.push(checkStatus[i].F_MaterialName);
+                pcode.push(checkStatus[i].F_MaterialCode);
+            }
+            var postData = {};
+            postData.ItemId = ItemId;
+            postData.keyValue = pvalue.join(",");
+            common.submitPost({
+                prompt: "注：您确定要选择{编号" + pcode.join(",") + ",名称：" + pname.join(",") + "}的数据吗？",
+                url: '/MaterialManage/TransferType/SubmitForm',
+                param: postData,
+                success: function () {
+                    $('button[lay-filter="data-search-btn"]').click();//按钮刷新
+                    common.parentreload('temp-search-btn');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset">
+            @*<legend>搜索信息</legend>*@
+            <div>
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">关键字:</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="txt_keyword" name="txt_keyword" autocomplete="off" class="layui-input" placeholder="">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-hide">
+                        <button class="layui-btn" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+    </div>
+</div>

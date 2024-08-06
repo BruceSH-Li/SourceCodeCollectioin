@@ -1,0 +1,95 @@
+<import-sjs from="/static/js/enum.sjs" name="Enum"></import-sjs>
+<view class="page">
+  <view class="page-description">常规检验</view>
+  <form onSubmit="onSubmit">
+
+    <!-- <scanbox id="abc" name="abc" placeHolder="自定义编号" label="标题" onScanCallBack="GetCheckoutInfo" onSearchCallBack="GetCheckoutInfo"></scanbox>  -->
+    <view class="page-section">
+      <picker onChange="bindObjPickerTypeChange" value="{{arrTypeIndex}}" range="{{objectTypeArray}}" range-key="CheckType">
+        <view class="row">
+          <view class="row-title requireLabel">检验类型</view>
+          <view class="row-extra">{{objectTypeArray[arrTypeIndex].CheckType}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <picker onChange="bindObjPickerChange" value="{{arrIndex}}" range="{{objectArray}}" range-key="F_TransferBoxCode">
+        <view class="row">
+          <view class="row-title requireLabel">流转箱编号</view>
+          <view class="row-extra">{{objectArray[arrIndex].F_TransferBoxCode}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">相关信息</view>
+        <view class="form-line"/>
+          <view style="padding:10rpx;display:{{storageHidden?'none':'block'}}">
+            <view class="page-section-demo">
+              <view>物料编号：{{entity.F_MaterialCode}}</view>
+            </view>
+            <view class="page-section-demo">
+              <view>物料名称：{{entity.F_MaterialName}}</view>
+            </view>
+            <view class="page-section-demo">
+              <view>物料批号：{{entity.F_MaterialBatch}}</view>
+            </view>
+            <view class="page-section-demo">
+              <view>数量：{{entity.F_Num}}</view>
+            </view>
+            <view class="page-section-demo">
+              <view>检验类型：
+                <text class="uk-badge">{{Enum.CheckoutType(entity.F_CheckType)}}</text></view>
+            </view>
+            <view class="page-section-demo">
+              <view>可疑数量:{{entity.F_ScapNum}}</view>
+            </view>
+      </view>
+    </view>
+    <view style="display:{{storageHidden?'none':'block'}}">
+      <view class="page-section">
+        <view class="page-section-title">条码编号</view>
+        <view class="page-section-demo">
+          <input value="{{batchCode}}" name="batchCode" class="input" placeholder="条码编号" onBlur="search"/>
+          <button size="mini" type="ghost" onTap="Scan_batchCode" class="scanbtn"></button>
+        </view>
+      </view>
+    </view>
+    <view style="display:{{btnHidden?'none':'block'}}">
+      <view class="page-section">
+        <view class="uk-grid uk-grid-width-1-2"style="text-align: center;" >
+          <view class="page-section-demo">缺陷列表</view>
+          <view class="page-section-demo"><button size="mini" type="primary"  onTap="AddScapImage">添加缺陷</button></view>    
+        </view> 
+        <view class="page-section-demo" a:for="{{propList}}" key="label-{{index}}">
+            <view class="uk-grid uk-grid-width-1-2">
+              <view>  
+                <text class="radio-text">{{item.F_Description}}</text>
+              </view>
+              <view class="uk-grid uk-grid-width-1-2">
+                <view>  
+                  <button size="mini" type="primary" data-attr='{{item.F_FilePath}}' onTap="LookImage">预览</button>
+                </view>
+                <view>  
+                  <button size="mini" type="primary" data-attr='{{index}}' onTap="DeleteScapImage">删除</button>
+                </view>
+              </view>
+            </view>
+          </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="form-row">
+        <view class="form-row-label requireLabel">数量</view>
+        <view class="form-row-content" style="text-align: right">
+          <input type="number" name="num" min="0" value="{{num}}" />
+        </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <view>
+        <button type="primary" formType="submit">提交</button></view>
+    </view>
+  </form>
+</view>

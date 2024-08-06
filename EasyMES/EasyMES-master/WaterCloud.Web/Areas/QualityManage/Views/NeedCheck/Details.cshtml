@@ -1,0 +1,162 @@
+﻿@{
+    ViewBag.Title = "Details"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'table', 'commonTable', 'common', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table, commonTable = layui.commonTable,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+        $("#F_MaterialType").bindSelect({
+            data: top.clients.dataItems['Mes_MaterialType'],
+            id: "",
+        });
+        $("#F_CheckType").bindSelect({
+            data: top.clients.dataItems['Mes_CheckType'],
+            id: "",
+        });
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            id: 'currentTableId',
+            search: false,
+            limit: 9999,//每页数据 默认
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count'] //自定义分页布局
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            defaultToolbar: [],
+            toolbar: '',//工具栏
+            data: [],
+            height: 'full-220',
+            cols: [[
+                { field: 'F_BatchCode', title: '条码编号', width: 170, sort: true },
+                {
+                    field: 'F_CheckType', title: '检验类型', width: 110, sort: true,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_CheckType"][d.F_CheckType] == null ? "" : top.clients.dataItems["Mes_CheckType"][d.F_CheckType];
+                    }
+                },
+                { field: 'F_Num', title: '可疑数量', width: 110, sort: true },
+                { field: 'F_ScapNum', title: '报废数量', width: 110, sort: true },
+                { field: 'F_ReturnNum', title: '退回数量', width: 110, sort: true },
+                { field: 'F_OtherNum', title: '剩余数量', width: 110, sort: true },
+                {
+                    field: 'F_IsCheck', title: '检验完成', width: 110, sort: true,
+                    templet: function (d) {
+                        if (d.F_IsCheck == true) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>是</span>";
+                        } else {
+                            return "<span class='layui-btn layui-btn-warm layui-btn-xs'>否</span>";
+                        }
+                    }
+                },
+                { field: 'F_CreatorUserName', title: '检验人', width: 110, sort: true },
+                {
+                    field: 'F_CreatorTime', title: '创建时间', width: 160
+                },
+            ]]
+        });
+        $(function () {
+            common.ajax({
+                url: '/QualityManage/NeedCheck/GetFormJson',
+                dataType: 'json',
+                data: { keyValue: keyValue },
+                async: false,
+                success: function (data) {
+                    common.val('adminform', data);
+                    common.setReadOnly('adminform');
+                    if (!!data.list && data.list.length > 0) {
+                        table.reload('currentTableId', {
+                            data: data.list
+                        });
+                    }
+                    form.render();
+                 }
+            });
+       });
+       wcLoading.close();
+   });
+</script>
+
+<body>
+    <div class="layuimini-container" lay-filter="adminform">
+        <div class="layuimini-main">
+            <form class="layui-form layuimini-form">
+                <div class="layui-form-item">
+                    <div class="layui-col-md6 layui-col-sm6 layui-hide">
+                        <label class="layui-form-label">检验类型</label>
+                        <div class="layui-input-block">
+                            <select id="F_CheckType" name="F_CheckType" lay-search>
+                                <option value="" selected>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6 layui-col-sm6 layui-hide">
+                        <label class="layui-form-label">流转箱编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="F_TransferBoxCode" name="F_TransferBoxCode" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md6 layui-col-sm6 layui-hide">
+                        <label class="layui-form-label">物料编号</label>
+                        <div class="layui-input-block">
+                            <input id="F_MaterialCode" name="F_MaterialCode" type="text" class="layui-input" />
+                        </div>
+                    </div>
+                    <div class="layui-col-md6 layui-col-sm6 layui-hide">
+                        <label class="layui-form-label">物料名称</label>
+                        <div class="layui-input-block">
+                            <input id="F_MaterialName" name="F_MaterialName" type="text" class="layui-input" />
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md6 layui-col-sm6 layui-hide">
+                        <label class="layui-form-label">物料分类</label>
+                        <div class="layui-input-block">
+                            <select id="F_MaterialType" name="F_MaterialType" lay-search>
+                                <option value="" selected>请选择</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6 layui-col-sm6 layui-hide">
+                        <label class="layui-form-label">物料批号</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="F_MaterialBatch" name="F_MaterialBatch" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md6 layui-col-sm6 layui-hide">
+                        <label class="layui-form-label">检验数量</label>
+                        <div class="layui-input-block">
+                            <input type="number" pattern="[0-9]*" id="F_Num" name="F_Num" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-col-md6 layui-col-sm6 layui-hide">
+                        <label class="layui-form-label">可疑数量</label>
+                        <div class="layui-input-block">
+                            <input type="number" pattern="[0-9]*" id="F_ScapNum" name="F_ScapNum" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md12">
+                        <label class="layui-form-label">不良列表</label>
+                        <div class="layui-input-block">
+                            <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+

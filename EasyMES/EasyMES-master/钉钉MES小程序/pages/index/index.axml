@@ -1,0 +1,189 @@
+<view class="page">
+  <view class="page-section">
+    <picker onChange="bindObjPickerChange" value="{{arrIndex}}" range="{{objectArray}}" range-key="name">
+      <view class="row">
+        <view class="row-title">工厂区域</view>
+        <view class="row-extra">{{objectArray[arrIndex].name}}</view>
+        <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+      </view>
+    </picker>
+  </view>
+  <view class="page-description">
+    <view a:if="{{userid}}">
+      <view class="input-label">您好： {{username}}</view>
+    </view>
+    <view a:else>
+      <!--<navigator open-type="navigate" url="/pages/User/Login/Login" class="login-navigator">您好：请先登录！</navigator> -->
+      <button type="warn" onTap="Login">
+        <am-icon type="people"></am-icon>
+         点此进行登入
+      </button>
+    </view>
+  </view>
+  <view a:if="{{menuList}}">
+    <view a:if="{{menuList.MesProduceApp}}">
+      <view class="page-section">
+        <view class="page-section-title">生产应用</view>
+        <view class="page-section-demo">
+          <view class="uk-grid uk-grid-width-1-2">
+            <view a:if="{{menuList.MesProduceApp.NeedMaterialJob}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/NeedMaterialJob/NeedMaterialJob" class="index-navigator" hover-class="index-navigator-hover">生产领料申请</navigator>
+            </view>
+            <view a:if="{{menuList.MesProduceApp.ReturnMaterialJob}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/ReturnMaterialJob/ReturnMaterialJob" class="index-navigator" hover-class="index-navigator-hover">生产退料申请</navigator>
+            </view>
+            <view a:if="{{menuList.MesProduceApp.FinishWorkOrderJob}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/FinishWorkOrderJob/FinishWorkOrderJob" class="index-navigator" hover-class="index-navigator-hover">工单结束申请</navigator>
+            </view>
+            <view a:if="{{menuList.MesProduceApp.GetWorkOrderInfo}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/GetWorkOrderInfo/GetWorkOrderInfo" class="index-navigator" hover-class="index-navigator-hover">工单查询</navigator>
+            </view>
+            <view a:if="{{menuList.MesProduceApp.OutputMaterial}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/OutputMaterial/OutputMaterial" class="index-navigator" hover-class="index-navigator-hover">生产产出物料</navigator>
+            </view>
+            <view a:if="{{menuList.MesProduceApp.OutputMaterialCancle}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/OutputMaterialCancle/OutputMaterialCancle" class="index-navigator" hover-class="index-navigator-hover">生产产出取消</navigator>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view a:if="{{menuList.MesLogisticsApp}}">
+      <view class="page-section">
+        <view class="page-section-title">物流应用</view>
+        <view class="page-section-demo">
+          <view class="uk-grid uk-grid-match uk-grid-width-1-2">
+            <view a:if="{{menuList.MesLogisticsApp.ConsumeMaterial}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/ConsumeMaterial/ConsumeMaterial" class="index-navigator" hover-class="index-navigator-hover">物流领用物料</navigator>
+            </view>
+            <view a:if="{{menuList.MesLogisticsApp.ConsumeMaterial1}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/ConsumeMaterial2/ConsumeMaterial2" class="index-navigator" hover-class="index-navigator-hover">扫码领用物料</navigator>
+            </view>
+            <view a:if="{{menuList.MesLogisticsApp.OutputMaterialLocation}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/OutputMaterialLocation/OutputMaterialLocation" class="index-navigator" hover-class="index-navigator-hover">物流产出上架</navigator>
+            </view>
+            <view a:if="{{menuList.MesLogisticsApp.OutputMaterialLocation1}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/OutputMaterialLocation2/OutputMaterialLocation2" class="index-navigator" hover-class="index-navigator-hover">扫码产出上架</navigator>
+            </view>
+            <view a:if="{{menuList.MesLogisticsApp.ReturnMaterial}}">
+              <navigator open-type="navigate" url="/pages/WorkRun/ReturnMaterial/ReturnMaterial" class="index-navigator" hover-class="index-navigator-hover">物流退回物料</navigator>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view a:if="{{menuList.MesInstorageApp}}">
+      <view class="page-section">
+        <view class="page-section-title">入库应用</view>
+        <view class="page-section-demo">
+          <view class="uk-grid uk-grid-width-1-2">
+            <!--<view><navigator open-type="navigate" url="/pages/InStorage/GetInStorageInfo/GetInStorageInfo" class="index-navigator" hover-class="index-navigator-hover">入库单查询</navigator></view> -->
+            <view a:if="{{menuList.MesInstorageApp.InStorageBanding}}">
+              <navigator open-type="navigate" url="/pages/InStorage/InStorageBanding/InStorageBanding" class="index-navigator" hover-class="index-navigator-hover">入库绑定</navigator>
+            </view>
+            <view a:if="{{menuList.MesInstorageApp.InStorageCancleBanding}}">
+              <navigator open-type="navigate" url="/pages/InStorage/InStorageCancleBanding/InStorageCancleBanding" class="index-navigator" hover-class="index-navigator-hover">入库取消绑定</navigator>
+            </view>
+            <view a:if="{{menuList.MesInstorageApp.InStorageLocation}}">
+              <navigator open-type="navigate" url="/pages/InStorage/InStorageLocation/InStorageLocation" class="index-navigator" hover-class="index-navigator-hover">入库上架</navigator>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view a:if="{{menuList.MesOutstorageApp}}">
+      <view class="page-section">
+        <view class="page-section-title">出库应用</view>
+        <view class="page-section-demo">
+          <view class="uk-grid uk-grid-width-1-2">
+            <!--<view><navigator open-type="navigate" url="/pages/OutStorage/GetOutStorageInfo/GetOutStorageInfo" class="index-navigator" hover-class="index-navigator-hover">出库单查询</navigator></view> -->
+            <view a:if="{{menuList.MesOutstorageApp.OutStorage}}">
+              <navigator open-type="navigate" url="/pages/OutStorage/OutStorage/OutStorage" class="index-navigator" hover-class="index-navigator-hover">产品下架</navigator>
+            </view>
+            <view a:if="{{menuList.MesOutstorageApp.OutStorage1}}">
+              <navigator open-type="navigate" url="/pages/OutStorage/OutStorage2/OutStorage2" class="index-navigator" hover-class="index-navigator-hover">扫码下架</navigator>
+            </view>
+            <view a:if="{{menuList.MesOutstorageApp.OutStorageBandingCancle}}">
+              <navigator open-type="navigate" url="/pages/OutStorage/OutStorageCancle/OutStorageCancle" class="index-navigator" hover-class="index-navigator-hover">取消产品下架</navigator>
+            </view>
+            <view a:if="{{menuList.MesOutstorageApp.OutStorageBanding}}">
+              <navigator open-type="navigate" url="/pages/OutStorage/OutStorageBanding/OutStorageBanding" class="index-navigator" hover-class="index-navigator-hover">出库装箱</navigator>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view a:if="{{menuList.MesCheckoutApp}}">
+      <view class="page-section">
+        <view class="page-section-title iconfont icon-kucunguanli">质检应用</view>
+        <view class="page-section-demo">
+          <view class="uk-grid uk-grid-width-1-2">
+            <view a:if="{{menuList.MesCheckoutApp.CheckoutInfo}}">
+              <navigator open-type="navigate" url="/pages/Checkout/CheckoutInfo/CheckoutInfo" class="index-navigator" hover-class="index-navigator-hover">不良查询</navigator>
+            </view>
+            <view a:if="{{menuList.MesCheckoutApp.CheckoutJob}}">
+              <navigator open-type="navigate" url="/pages/Checkout/CheckoutJob/CheckoutJob" class="index-navigator" hover-class="index-navigator-hover">质检申请</navigator>
+            </view>
+            <view a:if="{{menuList.MesCheckoutApp.FirstCheckout}}">
+              <navigator open-type="navigate" url="/pages/Checkout/FirstCheckout/FirstCheckout" class="index-navigator iconfont icon-kucunguanli" hover-class="index-navigator-hover">常规检验</navigator>
+            </view>
+            <view a:if="{{menuList.MesCheckoutApp.CheckoutCancle}}">
+              <navigator open-type="navigate" url="/pages/Checkout/CheckoutCancle/CheckoutCancle" class="index-navigator iconfont icon-kucunguanli" hover-class="index-navigator-hover">取消可疑</navigator>
+            </view>
+            <view a:if="{{menuList.MesCheckoutApp.TwoCheckout}}">
+              <navigator open-type="navigate" url="/pages/Checkout/TwoCheckout/TwoCheckout" class="index-navigator iconfont icon-kucunguanli" hover-class="index-navigator-hover">二次检验</navigator>
+            </view>
+            <view a:if="{{menuList.MesCheckoutApp.ReturnCheckout}}">
+              <navigator open-type="navigate" url="/pages/Checkout/ReturnCheckout/ReturnCheckout" class="index-navigator iconfont icon-kucunguanli" hover-class="index-navigator-hover">质检返库</navigator>
+            </view>
+            <view a:if="{{menuList.MesCheckoutApp.ChangeCheckoutState}}">
+              <navigator open-type="navigate" url="/pages/Checkout/ChangeCheckoutState/ChangeCheckoutState" class="index-navigator iconfont icon-kucunguanli" hover-class="index-navigator-hover">状态变动</navigator>
+            </view>
+            <view a:if="{{menuList.MesCheckoutApp.BadStorageInfo}}">
+              <navigator open-type="navigate" url="/pages/Checkout/BadStorageInfo/BadStorageInfo" class="index-navigator iconfont icon-kucunguanli" hover-class="index-navigator-hover">不良品汇总</navigator>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view a:if="{{menuList.MesStorageApp}}">
+      <view class="page-section">
+        <view class="page-section-title">库存应用</view>
+        <view class="page-section-demo">
+          <view class="uk-grid uk-grid-width-1-2">
+            <view a:if="{{menuList.MesStorageApp.GetStorage}}">
+              <navigator open-type="navigate" url="/pages/Storage/GetStorage/GetStorage" class="index-navigator" hover-class="index-navigator-hover">流转箱查询</navigator>
+            </view>
+            <view a:if="{{menuList.MesStorageApp.AreaStorage}}">
+              <navigator open-type="navigate" url="/pages/Storage/AreaStorage/AreaStorage" class="index-navigator" hover-class="index-navigator-hover">库存汇总</navigator>
+            </view>
+            <view a:if="{{menuList.MesStorageApp.StorageMove}}">
+              <navigator open-type="navigate" url="/pages/Storage/StorageMove/StorageMove" class="index-navigator" hover-class="index-navigator-hover">流转箱移库</navigator>
+            </view>
+            <view a:if="{{menuList.MesStorageApp.StorageChange}}">
+              <navigator open-type="navigate" url="/pages/Storage/StorageChange/StorageChange" class="index-navigator" hover-class="index-navigator-hover">流转箱转移</navigator>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view a:if="{{menuList.MesHotlineApp}}">
+      <view class="page-section">
+        <view class="page-section-title">设备相关</view>
+        <view class="page-section-demo">
+          <view class="uk-grid uk-grid-width-1-2">
+            <view a:if="{{menuList.MesHotlineApp.EqpCallRepair}}">
+              <navigator open-type="navigate" url="/pages/EqpRepair/EqpCallRepair/EqpCallRepair" class="index-navigator" hover-class="index-navigator-hover">故障报修</navigator>
+            </view>
+            <view a:if="{{menuList.MesHotlineApp.EqpRepairInfo}}">
+              <navigator open-type="navigate" url="/pages/EqpRepair/EqpRepairInfo/EqpRepairInfo" class="index-navigator" hover-class="index-navigator-hover">设备维修</navigator>
+            </view>
+            <view a:if="{{menuList.MesHotlineApp.EqpRepairRecord}}">
+              <navigator open-type="navigate" url="/pages/EqpRepair/EqpRepairRecord/EqpRepairRecord" class="index-navigator" hover-class="index-navigator-hover">维修单记录</navigator>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

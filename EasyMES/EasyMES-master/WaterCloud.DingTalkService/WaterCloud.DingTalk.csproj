@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DingDing.SDK.NetCore" Version="2021.1.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WaterCloud.Code\WaterCloud.Code.csproj" />
+    <ProjectReference Include="..\WaterCloud.Domain\WaterCloud.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

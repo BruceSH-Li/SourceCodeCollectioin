@@ -1,0 +1,214 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+
+            <fieldset class="table-search-fieldset layui-hide" id="searchField">
+                @*<legend>搜索信息</legend>*@
+                <div>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label required">开始日期:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="startTime" name="startTime" lay-verify="required" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">结束日期:</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="endTime" name="endTime" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">关键字:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="" nametxt_keyword="txt_keyword" autocomplete="off" class="layui-input" placeholder="">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </fieldset>
+
+            <script type="text/html" id="toolbarDemo">
+                <div class="layui-btn-container" id="toolbar">
+                    <button id="NF-add" authorize="yes" class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="add"><i class="layui-icon">&#xe640;</i>清空记录</button>
+                </div>
+            </script>
+            <script type="text/html" id="currentTableBar">
+                <a id="NF-details" authorize class="layui-btn layui-btn-sm layui-btn-normal" lay-event="details"><i class="layui-icon">&#xe60b;</i></a>
+            </script>
+            <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        </div>
+    </div>
+    <script>
+        function getCurrentMonthFirst() {
+            var date = new Date();
+            date.setDate(1);
+            var month = parseInt(date.getMonth() + 1);
+            var day = date.getDate();
+            if (month < 10) {
+                month = '0' + month
+            }
+            if (day < 10) {
+                day = '0' + day
+            }
+            return date.getFullYear() + '/' + month + '/' + day;
+        }
+        layui.use(['jquery', 'form', 'table', 'laydate', 'common', 'optimizeSelectOption', 'commonTable'], function () {
+            var $ = layui.jquery,
+                form = layui.form,
+                table = layui.table,
+                laydate = layui.laydate,
+                commonTable = layui.commonTable,
+                common = layui.common;
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#startTime'
+                , trigger: 'click'
+                , type: 'date'
+                , format: 'yyyy/MM/dd',
+            });
+            //执行一个laydate实例
+            laydate.render({
+                elem: '#endTime'
+                , trigger: 'click'
+                , type: 'date'
+                , format: 'yyyy/MM/dd',
+            });
+            $('#startTime').val(getCurrentMonthFirst());
+            //加载数据
+            wcLoading.close();
+            //权限控制(js是值传递)
+            toolbarDemo.innerHTML = common.authorizeButtonNew(toolbarDemo.innerHTML);
+            commonTable.rendertable({
+                elem: '#currentTableId',
+                id: 'currentTableId',
+                url: '/ReportRecord/EqpWorkTime/GetGridJson',
+                filter: {
+                    clearFilter: false,
+                    //数据量大，data就不需要了
+                    items: ['column', 'condition', 'editCondition', 'excel']
+                },
+                limit: 99999,//每页数据 默认
+                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                    layout: ['count'] //自定义分页布局
+                    , first: false //不显示首页
+                    , last: false //不显示尾页
+                },
+                where: { startTime: $('#startTime').val() },
+                totalRow: true,
+                cols: [[
+                    { field: 'F_UserName', title: '值班人', width: 150, filter: true, totalRowText: '合计' },
+                    {
+                        field: 'F_StartTime', title: '开始时间', width: 200,
+                        templet: function (d) {
+                            if (d.F_StartTime) {
+                                var time = new Date(d.F_StartTime);
+                                return time.Format("yyyy-MM-dd hh:mm");
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        field: 'F_EndTime', title: '结束时间', width: 200,
+                        templet: function (d) {
+                            if (d.F_EndTime) {
+                                var time = new Date(d.F_EndTime);
+                                return time.Format("yyyy-MM-dd hh:mm");
+                            }
+                            return '';
+                        }
+                    },
+                    {
+                        field: 'F_TimeNum', title: '时长', width: 120, filter: true, totalRow: true
+                    },
+                    { field: 'F_Description', title: '备注', minWidth: 120, filter: true },
+                    { title: '操作', width: 90, toolbar: '#currentTableBar', align: "center" }
+                ]]
+            });
+            //select验证
+            form.verify({
+                required: function (value, item) {
+                    var msg = "必填项不能为空";
+                    value = $.trim(value);
+                    var isEmpty = !value || value.length < 1;
+                    // 当前验证元素是select且为空时,将页面定位至layui渲染的select处，或自定义想定位的位置
+                    if (item.tagName == 'SELECT' && isEmpty) {
+                        $("html").animate({
+                            scrollTop: $(item).siblings(".layui-form-select").offset().top - 74
+                        }, 50);
+                    }
+                    if (isEmpty) {
+                        return msg;
+                    }
+                }
+            });
+            // 监听搜索操作
+            form.on('submit(data-search-btn)', function (data) {
+                var queryJson = JSON.stringify(data.field);
+                //执行搜索重载
+                commonTable.reloadtable({
+                    elem: 'currentTableId',
+                    page:false,
+                    where: { startTime: data.field.startTime, endTime: data.field.endTime, keyword: data.field.txt_keyword }
+                });
+                return false;
+            });
+
+            /**
+             * toolbar监听事件
+             */
+            table.on('toolbar(currentTableFilter)', function (obj) {
+                if (obj.event === 'add') {  // 监听删除操作
+                    common.modalOpen({
+                        title: "清空记录",
+                        url: "/ReportRecord/EqpWorkTime/Form",
+                        width: "300px",
+                        height: "200px",
+                    });
+                }
+                else if (obj.event === 'TABLE_SEARCH') {
+                    var _that = $("#searchField");
+                    if (_that.hasClass("layui-hide")) {
+                        _that.removeClass('layui-hide');
+                    } else {
+                        _that.addClass('layui-hide');
+                    }
+                }
+                return false;
+            });
+            //toolrow监听事件
+            table.on('tool(currentTableFilter)', function (obj) {
+                if (obj.event === 'details') {
+                    common.modalOpen({
+                        title: "查看设备",
+                        url: "/ReportRecord/EqpWorkTime/Details?keyValue=" + obj.data.F_Id,
+                        width: "650px",
+                        height: "500px",
+                        btn: []
+                    });
+                }
+                return false;
+            });
+        });
+    </script>
+
+</body>
+</html>

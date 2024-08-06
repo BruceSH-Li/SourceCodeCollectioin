@@ -1,0 +1,160 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common', 'optimizeSelectOption', 'inputAttr'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common,
+            laydate = layui.laydate;
+        var inputAttr = layui.inputAttr;
+        inputAttr.init({
+            // 重新定义根节点
+            root: ".layui-form",
+            // 事件托管
+            event: {
+                // 当点击清除按钮内容被清理
+                clearable: function (event, dom) {
+                    //console.log({ event: event, dom: dom });
+                }
+            }
+        });
+        var keyValue = $.request("keyValue");
+        var ids = $.request("ids");
+        var eqpId = $.request("eqpId");
+        var startTime = $.request("startTime");
+        var endTime = $.request("endTime");
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#F_StartTime'
+            , trigger: 'click'
+            , type: 'datetime'
+            , format: 'yyyy/MM/dd HH:mm:ss',
+        });
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#F_EndTime'
+            , trigger: 'click'
+            , type: 'datetime'
+            , format: 'yyyy/MM/dd HH:mm:ss',
+        });
+        $('#F_StartTime').val(startTime);
+        $('#F_EndTime').val(endTime);
+        $('#batchcode').focus();
+        $(function () {
+            initControl();
+            form.render();
+            //输入框的值改变时触发
+            $("#batchcode").on("input", debounce(GetTransfer, 1000));
+        });
+        wcLoading.close();
+        function initControl() {
+            $("#F_UserId").bindSelect({
+                url: "/ProcessManage/WorkOrderRun/GetWorkUser?ids=" + ids +"&eqpId="+eqpId,
+                id: 'F_Id',
+                text: 'F_RealName',
+            });
+        }
+        function debounce(fn, delay) {
+            var timeOut = null;//存放settimeout返回值
+            return function (e) {
+                clearTimeout(timeOut);//清除定时器
+                timeOut = setTimeout(() => {
+                    fn.call(this, arguments);
+                }, delay)
+            }
+        }
+        function GetTransfer() {
+            if (!!$('#batchcode').val()) {
+                $('#F_UserId').val($('#batchcode').val());
+            }
+            else {
+                $('#F_UserId').val('');
+            }
+            form.render();
+        }
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var postData = data.field;
+            var oDate1 = new Date(data.field.F_StartTime);
+            var oDate2 = new Date(data.field.F_EndTime);
+            if (oDate1 >= oDate2) {
+                common.modalMsg("值班结束时间必须小于值班开始时间", "warning");
+                return false;
+            }
+            if (oDate1 < new Date(startTime) || oDate2 > new Date(endTime)) {
+                common.modalMsg("值班时间必须在排班时间内", "warning");
+                return false;
+            }
+            var F_TimeNum = oDate2.getHours();
+            if (oDate2.getMinutes() >= 30) {
+                F_TimeNum += 0.5;
+            }
+            if (oDate1.getDate() != oDate2.getDate() != 0) {
+                F_TimeNum += 24;
+            }
+            F_TimeNum = F_TimeNum - oDate1.getHours();
+            if (oDate1.getMinutes() > 0) {
+                F_TimeNum -= 0.5;
+            }
+            if (oDate1.getMinutes() > 30) {
+                F_TimeNum -= 0.5;
+            }
+            postData.F_TimeNum = F_TimeNum;
+            postData.F_Id = 0;
+            postData.F_UserName = $("#F_UserId option:selected").text();
+            var cacheData = common.currentWindow().layui.table.cache.currentTable;
+            cacheData.push(postData);
+            common.currentWindow().layui.table.reload('currentTable', {
+                data: cacheData
+            });
+            common.modalClose();
+            return false;
+        });
+    });
+</script>
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">条码</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="batchcode" name="batchcode" autocomplete="off" class="layui-input" clearable>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">值班人</label>
+                    <div class="layui-input-block">
+                        <select id="F_UserId" name="F_UserId" lay-verify="required" lay-search>
+                            <option value="" selected>请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">开始时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_StartTime" name="F_StartTime" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">结束时间</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_EndTime" name="F_EndTime" lay-verify="required" class="layui-input ">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <textarea id="F_Description" name="F_Description" class="layui-textarea" placeholder="请输入备注"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>

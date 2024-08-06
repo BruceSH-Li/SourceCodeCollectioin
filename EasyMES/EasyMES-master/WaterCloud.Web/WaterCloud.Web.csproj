@@ -1,0 +1,94 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <UserSecretsId>c1fb91bb-fd9e-4a3a-8c93-b84e89a0941a</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <Version>0.0.0.7</Version>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <DocumentationFile>WaterCloud.Web.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>false</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <RuntimeHostConfigurationOption Include="System.Drawing.EnableUnixSupport" Value="true" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="DataProtection\**" />
+    <Content Remove="DataProtection\**" />
+    <EmbeddedResource Remove="DataProtection\**" />
+    <None Remove="DataProtection\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\js\lay-module\inputAttr\inputAttr.js" />
+    <None Include="wwwroot\lib\layui\font\iconfont.svg" />
+    <None Include="wwwroot\lib\layui\font\iconfont.woff2" />
+    <None Include="wwwroot\lib\layui\layui.js" />
+    <None Include="wwwroot\lib\layui\modules\all.js" />
+    <None Include="wwwroot\lib\layui\modules\carousel.js" />
+    <None Include="wwwroot\lib\layui\modules\code.js" />
+    <None Include="wwwroot\lib\layui\modules\colorpicker.js" />
+    <None Include="wwwroot\lib\layui\modules\dropdown.js" />
+    <None Include="wwwroot\lib\layui\modules\element.js" />
+    <None Include="wwwroot\lib\layui\modules\flow.js" />
+    <None Include="wwwroot\lib\layui\modules\form.js" />
+    <None Include="wwwroot\lib\layui\modules\jquery.js" />
+    <None Include="wwwroot\lib\layui\modules\lay.js" />
+    <None Include="wwwroot\lib\layui\modules\laydate.js" />
+    <None Include="wwwroot\lib\layui\modules\layedit.js" />
+    <None Include="wwwroot\lib\layui\modules\layer.js" />
+    <None Include="wwwroot\lib\layui\modules\laypage.js" />
+    <None Include="wwwroot\lib\layui\modules\laytpl.js" />
+    <None Include="wwwroot\lib\layui\modules\layui.all.js" />
+    <None Include="wwwroot\lib\layui\modules\mobile.js" />
+    <None Include="wwwroot\lib\layui\modules\rate.js" />
+    <None Include="wwwroot\lib\layui\modules\slider.js" />
+    <None Include="wwwroot\lib\layui\modules\table.js" />
+    <None Include="wwwroot\lib\layui\modules\transfer.js" />
+    <None Include="wwwroot\lib\layui\modules\tree.js" />
+    <None Include="wwwroot\lib\layui\modules\upload.js" />
+    <None Include="wwwroot\lib\layui\modules\util.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.4.0" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+    <PackageReference Include="iTextSharp.LGPLv2.Core.Fix" Version="1.4.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.9" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="6.0.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+    <PackageReference Include="Quartz" Version="3.5.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="System.DirectoryServices.Protocols" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WaterCloud.CodeGenerator\WaterCloud.CodeGenerator.csproj" />
+    <ProjectReference Include="..\WaterCloud.Code\WaterCloud.Code.csproj" />
+    <ProjectReference Include="..\WaterCloud.Service\WaterCloud.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Areas\PlanManage\Views\InStoragePlan\Index.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Dockerfile">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+
+</Project>

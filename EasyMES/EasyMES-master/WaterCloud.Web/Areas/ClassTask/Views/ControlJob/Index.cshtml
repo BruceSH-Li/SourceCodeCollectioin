@@ -1,0 +1,269 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+ }
+ <div class="layuimini-container">
+     <div class="layuimini-main">
+         <fieldset class="table-search-fieldset layui-hide" id="searchField">
+             <div>
+                 <form class="layui-form layui-form-pane" >
+                     <div class="layui-form-item">
+                         <div class="layui-inline">
+                             <label class="layui-form-label">关键字:</label>
+                             <div class="layui-input-inline">
+                                 <input type="text" id="txt_keyword" name="txt_keyword" autocomplete="off" class="layui-input" >
+                             </div>
+                         </div>
+                        <div class="layui-inline"> 
+                             <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                         </div>
+                     </div>
+                 </form>
+             </div>
+         </fieldset>
+         <script type="text/html" id="toolbarDemo">
+             <div class="layui-btn-container" id="toolbar">
+                 <button id="NF-add" name="NF-add" authorize class="layui-btn layui-btn-sm" lay-event="add"><i class="layui-icon">&#xe654;</i>新增</button>
+                 <button id="NF-details" name="NF-details" authorize class="layui-btn layui-btn-sm layui-btn-normal layui-hide" lay-event="details"> <i class="layui-icon">&#xe60b;</i>查看</button>
+                 <button id="NF-Run" name="NF-Run" authorize class="layui-btn layui-btn-sm data-add-btn layui-hide" lay-event="Run"> <i class="fa fa-play-circle"></i> 作业</button>
+                 <button id="NF-delete" name="NF-delete" authorize class="layui-btn layui-btn-sm layui-btn-danger layui-hide" lay-event="delete">  <i class="fa fa-stop-circle"></i> 关闭</button>
+             </div>
+         </script>
+         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+         <script type="text/html" id="currentTableBar">
+             <a id="NF-details" authorize class="layui-btn layui-btn-sm layui-btn-normal" lay-event="details"><i class="layui-icon">&#xe60b;</i></a>
+             <a id="NF-Run" authorize class="layui-btn layui-btn-sm" lay-event="Run"><i class="fa fa-play-circle"></i></a>
+             <a id="NF-delete" authorize class="layui-btn layui-btn-danger layui-btn-sm" lay-event="delete"><i class="fa fa-stop-circle"></i></a>
+         </script>  
+     </div>
+ </div>
+ <script>
+     layui.use(['jquery', 'form','table','commonTable', 'common','optimizeSelectOption'], function () {
+         var $ = layui.jquery,
+             form = layui.form,
+             table = layui.table,commonTable = layui.commonTable
+             common = layui.common;
+         //权限控制(js是值传递)
+         currentTableBar.innerHTML = common.authorizeButtonNew(currentTableBar.innerHTML);
+         toolbarDemo.innerHTML = common.authorizeButtonNew(toolbarDemo.innerHTML);
+         commonTable.rendertable({
+             elem: '#currentTableId',
+             id: 'currentTableId',
+             url: '/ClassTask/ControlJob/GetGridJson',
+             where: { type: 0 },
+             cols: [[
+                 //此处需修改
+                 { type: "radio", width: 50 },
+                 { field: 'F_JobCode', title: '调度编号', width: 180, sort: true, filter: true },
+                 {
+                     field: 'F_JobState', title: '任务状态', width: 120, sort: true, filter: true, filter: true,
+                     templet: function (d) {
+                         if (d.F_JobState == 0) {
+                             return "<span class='layui-btn layui-btn-normal layui-btn-xs'>等待中</span>";
+                         }
+                         if (d.F_JobState == 1) {
+                             return "<span class='layui-btn layui-btn-warm layui-btn-xs'>执行中</span>";
+                         }
+                         if (d.F_JobState == 2) {
+                             return "<span class='layui-btn layui-btn-xs'>已完成</span>";
+                         }
+                         if (d.F_JobState == 3) {
+                             return "<span class='layui-btn layui-btn-danger layui-btn-xs'>已关闭</span>";
+                         }
+                     }
+                 },
+                 {
+                     field: 'F_JobType', title: '调度类型', width: 120, sort: true, filter: true,
+                     templet: function (d) {
+                         return top.clients.dataItems["Mes_ControlJobType"][d.F_JobType] == null ? "" : top.clients.dataItems["Mes_ControlJobType"][d.F_JobType];
+                     }
+                 },
+                 {
+                     field: 'F_NeedTime', title: '需求时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                 },
+                 { field: 'F_JobInfo', title: '调度信息', minWidth: 200, sort: true, filter: true },
+                 { field: 'F_Priority', title: '优先级', width: 120, sort: true, filter: true },
+                 {
+                     field: 'F_CreatorTime', title: '创建时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                 },
+                 {
+                     field: 'F_IsOutTime', title: '超时', width: 120, sort: true, filter: true,
+                     templet: function (d) {
+                         if (d.F_IsOutTime == true) {
+                             return "<span class='layui-btn layui-btn-danger layui-btn-xs'>是</span>";
+                         }
+                         return "<span class='layui-btn layui-btn-normal layui-btn-xs'>否</span>";
+                     }
+                 },
+                 {
+                     field: 'F_DoneTime', title: '开始时间', width: 160, sort: true, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                 },
+                 {
+                     field: 'F_FinishTime', title: '完成时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                 },
+                { title: '操作', width: 175, toolbar: '#currentTableBar', align: "center" }
+             ]]
+         });
+         //common.iframeInterval(function () {
+         //    common.reload('data-search-btn');
+         //}, 10000); //指定10秒刷新一次
+         // 监听搜索操作
+         form.on('submit(data-search-btn)', function (data) {
+             //执行搜索重载
+             commonTable.reloadtable({
+                 elem: 'currentTableId',
+                 curr: 1,
+                 where: { keyword: data.field.txt_keyword,type:0}
+             });
+             return false;
+         });
+         wcLoading.close();
+         //行点击事件监听，控制按钮显示
+         var oneList = ["NF-edit", "NF-details", "NF-delete","NF-Run"];//选择1条显示
+         commonTable.tableRowClick("radio", "currentTableFilter", "currentTableId", oneList);
+         //toolbar监听事件
+         table.on('toolbar(currentTableFilter)', function (obj) { 
+             var data = table.checkStatus('currentTableId').data;
+             var id = data.length > 0 ? data[0].F_Id : null;
+             if (obj.event === 'add') {  // 监听添加操作
+                 common.modalOpen({
+                     title: "添加任务",
+                     url: "/ClassTask/ControlJob/Form",
+                     width: "500px",
+                     height: "500px",
+                 });
+             } 
+             else if (obj.event === 'delete') {
+                if (data.length == 0) {
+                     common.modalMsg("未选中数据", "warning");
+                     return false;
+                 }
+                var ids = [];
+                for (var i = 0; i < data.length; i++) {
+                    ids.push(data[i].F_Id);
+                 }
+                 common.submitPost({
+                     prompt: "注：您确定要【关闭】该项任务吗？",
+                     url: "/ClassTask/ControlJob/DeleteForm",
+                     param: { keyValue: ids.join(',') },
+                     success: function () {
+                         common.reload('data-search-btn');
+                     }
+                 });
+           }
+           else if (obj.event === 'Run') {
+                if (data.length == 0) {
+                   common.modalMsg("未选中数据", "warning");
+                   return false;
+                 }
+                 if (data[0].F_JobState > 0) {
+                     if (data[0].F_JobType == 6) {
+                         common.openNewTabByIframe({
+                             title: "工单作业",
+                             href: "/ProcessManage/WorkOrderRun/Index",
+                         });
+                     }
+                     else if (data[0].F_JobType != 5) {
+                         common.openNewTabByIframe({
+                             title: "任务详情",
+                             href: "/ClassTask/ControlJob/Details?keyValue=" + id,
+                         });
+                     }
+                     return false;
+                 }
+                 common.submitPost({
+                     prompt: "注：您确定要执行这项数据吗？",
+                     url: "/ClassTask/ControlJob/RunForm",
+                     param: { keyValue: id },
+                     success: function () {
+                         common.parentreload('data-search-btn');
+                         if (data[0].F_JobType == 6) {
+                             common.openNewTabByIframe({
+                                 title: "工单作业",
+                                 href: "/ProcessManage/WorkOrderRun/Index",
+                             });
+                         }
+                         else if (data[0].F_JobType != 5) {
+                             common.openNewTabByIframe({
+                                 title: "任务详情",
+                                 href: "/ClassTask/ControlJob/Details?keyValue=" + id,
+                             });
+                         }
+                     }
+                 });
+           }
+           else if (obj.event === 'details') {
+                if (data.length == 0) {
+                   common.modalMsg("未选中数据", "warning");
+                   return false;
+                 }
+                 common.openNewTabByIframe({
+                     title: "任务详情",
+                     href: "/ClassTask/ControlJob/Details?keyValue=" + id,
+                 });
+           }
+           else if (obj.event === 'TABLE_SEARCH') {
+                var _that = $("#searchField");
+                if (_that.hasClass("layui-hide")) {
+                   _that.removeClass('layui-hide');
+                } else {
+                   _that.addClass('layui-hide');
+                }
+           }
+           return false;
+       });
+        //toolrow监听事件
+        table.on('tool(currentTableFilter)', function (obj) {
+             var id = obj.data.F_Id;
+            if (obj.event === 'delete') {
+                common.submitPost({
+                    prompt: "注：您确定要【关闭】该项任务吗？",
+                    url: "/ClassTask/ControlJob/DeleteForm",
+                    param: { keyValue: id },
+                    success: function () {
+                        common.reload('data-search-btn');
+                    }
+                });
+            }
+            else if (obj.event === 'Run') {
+                if (obj.data.F_JobState > 0) {
+                    if (obj.data.F_JobType == 6) {
+                        common.openNewTabByIframe({
+                            title: "工单作业",
+                            href: "/ProcessManage/WorkOrderRun/Index",
+                        });
+                    }
+                    else if (obj.data.F_JobType != 5) {
+                        common.openNewTabByIframe({
+                            title: "任务详情",
+                            href: "/ClassTask/ControlJob/Details?keyValue=" + id,
+                        });
+                    }
+                    return false;
+                }
+                common.submitPost({
+                    prompt: "注：您确定要执行这项数据吗？",
+                    url: "/ClassTask/ControlJob/RunForm",
+                    param: { keyValue: id },
+                    success: function () {
+                        common.parentreload('data-search-btn');
+                        common.modalOpen({
+                            title: "查看界面",
+                            url: "/ClassTask/ControlJob/Details?keyValue=" + id,
+                            width: "500px",
+                            height: "500px",
+                            btn: []
+                        });
+                    }
+                });
+            }
+            else if (obj.event === 'details') {
+                common.openNewTabByIframe({
+                    title: "任务详情",
+                    href: "/ClassTask/ControlJob/Details?keyValue=" + id,
+                });
+            }
+            return false;
+        });
+   });
+</script>

@@ -1,0 +1,737 @@
+﻿@{
+    ViewBag.Title = "Details"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<style>
+    .layui-form-item {
+        margin-bottom: 0px;
+    }
+    .layuimini-container .table-search-fieldset {
+        padding: 0px 10px 10px 10px;
+    }
+    .layuimini-main {
+        margin: 0px 10px 0px 10px;
+    }
+    .layui-fluid {
+        padding: 0 0px;
+    }
+    .layui-card {
+        border: 1px solid #e6e6e6;
+    }
+</style>
+<script>
+    layui.use(['jquery', 'form', 'commonTable', 'common', 'table', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            commonTable = layui.commonTable,
+            table = layui.table,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+        common.iframeInterval(function () {
+            reload();
+        }, 10000); //指定10秒刷新一次
+        $(function () {
+            initControl();
+            common.ajax({
+                url: '/ClassTask/ControlJob/GetFormJson',
+                dataType: 'json',
+                data: { keyValue: keyValue },
+                async: false,
+                success: function (data) {
+                    common.removeEmpty('adminform', data);
+                    common.val('adminform', data);
+                    switch (data.F_JobType) {
+                        case 0:
+                            $('#currentTableId').parent().addClass('layui-col-md6');
+                            $('#currentTableId').parent().addClass('layui-col-xs6');
+                            $('#currentTableId').parent().removeClass('layui-hide');
+                            $('#currentTable').parent().addClass('layui-col-md6');
+                            $('#currentTable').parent().addClass('layui-col-xs6');
+                            $('#currentTable').parent().removeClass('layui-hide');
+                            commonTable.rendertable({
+                                elem: '#currentTableId',
+                                id: 'currentTableId',
+                                data: data.storages,
+                                defaultToolbar: false,
+                                toolbar: '',//工具栏
+                                height: 'full-320',
+                                limit: 9999,//每页数据 默认
+                                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                    layout: ['count'] //自定义分页布局
+                                    , first: false //不显示首页
+                                    , last: false //不显示尾页
+                                },
+                                search: false,
+                                cols: [[
+                                    { field: 'F_TransferBoxCode', title: '流转箱编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_LocationCode', title: '库位编号', minWidth: 120, sort: true, filter: true },
+                                    {
+                                        field: 'F_MaterialType', title: '料号分类', width: 105, sort: true, filter: true,
+                                        templet: function (d) {
+                                            return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                                        }
+                                    },
+                                    { field: 'F_MaterialCode', title: '料号编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true, filter: true },
+                                    { field: 'F_MaterialUnit', title: '料号单位', width: 120, sort: true, filter: true },
+                                    { field: 'F_MaterialBatch', title: '批号', width: 180, sort: true, filter: true },
+                                    { field: 'F_Num', title: '数量', width: 105, sort: true, filter: true },
+                                    {
+                                        field: 'F_CreatorTime', title: '创建时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+
+                                ]]
+                            });
+                            //监听行双击击事件（双击事件为：rowDouble）
+                            table.on('rowDouble(currentTableFilter)', function (obj) {
+                                var type = 1;
+                                var locationCode = obj.data.F_LocationCode;
+                                if (!locationCode) {
+                                    return false;
+                                }
+                                common.modalOpen({
+                                    title: "库位定位",
+                                    url: "/ClassTask/ControlJob/Location?type=" + type + "&locationCode=" + locationCode,
+                                    width: "400px",
+                                    height: "400px",
+                                    btn: []
+                                });
+                            });
+                            commonTable.rendertable({
+                                elem: '#currentTable',
+                                id: 'currentTable',
+                                data: data.uses,
+                                defaultToolbar: false,
+                                toolbar: '',//工具栏
+                                height: 'full-320',
+                                limit: 9999,//每页数据 默认
+                                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                    layout: ['count'] //自定义分页布局
+                                    , first: false //不显示首页
+                                    , last: false //不显示尾页
+                                },
+                                search: false,
+                                cols: [[
+                                    { field: 'F_TransferBoxCode', title: '流转箱编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_EqpName', title: '设备名称', width: 120, sort: true, filter: true },
+                                    {
+                                        field: 'F_MaterialType', title: '料号分类', width: 105, sort: true, filter: true,
+                                        templet: function (d) {
+                                            return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                                        }
+                                    },
+                                    { field: 'F_MaterialCode', title: '料号编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true, filter: true },
+                                    { field: 'F_MaterialUnit', title: '料号单位', width: 120, sort: true, filter: true },
+                                    { field: 'F_MaterialBatch', title: '批号', width: 180, sort: true, filter: true },
+                                    { field: 'F_Num', title: '数量', width: 105, sort: true, filter: true },
+                                    { field: 'F_ProcessName', title: '工序名称', width: 120, sort: true, filter: true },
+                                    { field: 'F_WorkOrderCode', title: '工单编号', width: 120, sort: true, filter: true },
+                                    { field: 'F_WorkOrderRunSort', title: '执行顺序', width: 120, sort: true, filter: true },
+                                    {
+                                        field: 'F_CreatorTime', title: '领用时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+                                ]]
+                            });
+                            $('#text1').html("库存列表");
+                            $('#text2').html("领用列表");
+                            break;
+                        case 1:
+                            $('#currentTableId').parent().addClass('layui-col-md6');
+                            $('#currentTableId').parent().addClass('layui-col-xs6');
+                            $('#currentTableId').parent().removeClass('layui-hide');
+                            $('#currentTable').parent().addClass('layui-col-md6');
+                            $('#currentTable').parent().addClass('layui-col-xs6');
+                            $('#currentTable').parent().removeClass('layui-hide');
+                            commonTable.rendertable({
+                                elem: '#currentTableId',
+                                id: 'currentTableId',
+                                data: data.instorageTemps,
+                                defaultToolbar: false,
+                                toolbar: '',//工具栏
+                                height: 'full-320',
+                                limit: 9999,//每页数据 默认
+                                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                    layout: ['count'] //自定义分页布局
+                                    , first: false //不显示首页
+                                    , last: false //不显示尾页
+                                },
+                                search: false,
+                                cols: [[
+                                    { field: 'F_TransferBoxCode', title: '流转箱编号', minWidth: 170, sort: true, filter: true },
+                                    {
+                                        field: 'F_MaterialType', title: '料号分类', width: 105, sort: true, filter: true,
+                                        templet: function (d) {
+                                            return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                                        }
+                                    },
+                                    { field: 'F_MaterialCode', title: '料号编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true, filter: true },
+                                    { field: 'F_MaterialUnit', title: '料号单位', width: 105, sort: true, filter: true },
+                                    { field: 'F_MaterialBatch', title: '批号', width: 180, sort: true, filter: true },
+                                    { field: 'F_Num', title: '数量', width: 80, sort: true, filter: true },
+                                    { field: 'F_BandingUserName', title: '绑定人', width: 90, sort: true, filter: true },
+                                    {
+                                        field: 'F_BandingTime', title: '绑定时间', width: 160, sort: true,
+                                        templet: function (d) {
+                                            if (d.F_BandingTime) {
+                                                var time = new Date(d.F_BandingTime);
+                                                return time.Format("yyyy-MM-dd hh:mm:ss");
+                                            }
+                                            return '';
+                                        }
+                                    }
+                                ]]
+                            });
+                            //监听行双击击事件（双击事件为：rowDouble）
+                            table.on('rowDouble(currentTableFilter)', function (obj) {
+                                var type = 0;
+                                var transferBoxCode = obj.data.F_TransferBoxCode;
+                                if (!transferBoxCode) {
+                                    return false;
+                                }
+                                common.modalOpen({
+                                    title: "库位定位",
+                                    url: "/ClassTask/ControlJob/Location?type=" + type,
+                                    width: "400px",
+                                    height: "400px",
+                                    btn: []
+                                });
+                            });
+                            commonTable.rendertable({
+                                elem: '#currentTable',
+                                id: 'currentTable',
+                                data: data.instorages,
+                                defaultToolbar: false,
+                                toolbar: '',//工具栏
+                                height: 'full-320',
+                                limit: 9999,//每页数据 默认
+                                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                    layout: ['count'] //自定义分页布局
+                                    , first: false //不显示首页
+                                    , last: false //不显示尾页
+                                },
+                                search: false,
+                                cols: [[
+                                    { field: 'F_TransferBoxCode', title: '流转箱编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_LocationCode', title: '库位编号', minWidth: 180, sort: true, filter: true },
+                                    {
+                                        field: 'F_MaterialType', title: '料号分类', width: 105, sort: true, filter: true,
+                                        templet: function (d) {
+                                            return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                                        }
+                                    },
+                                    { field: 'F_MaterialCode', title: '料号编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true, filter: true },
+                                    { field: 'F_MaterialUnit', title: '料号单位', width: 105, sort: true, filter: true },
+                                    { field: 'F_MaterialBatch', title: '批号', width: 180, sort: true, filter: true },
+                                    { field: 'F_Num', title: '数量', width: 80, sort: true, filter: true },
+                                    { field: 'F_BandingUserName', title: '绑定人', width: 90, sort: true, filter: true },
+                                    {
+                                        field: 'F_BandingTime', title: '绑定时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+                                    { field: 'F_CreatorUserName', title: '上架人', width: 90, sort: true, filter: true },
+                                    {
+                                        field: 'F_CreatorTime', title: '上架时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+                                ]]
+                            });
+                            $('#text1').html("绑定列表");
+                            $('#text2').html("入库列表");
+                            break;
+                        case 2:
+                            $('#currentTableId').parent().addClass('layui-col-md6');
+                            $('#currentTableId').parent().addClass('layui-col-xs6');
+                            $('#currentTableId').parent().removeClass('layui-hide');
+                            $('#currentTable').parent().addClass('layui-col-md6');
+                            $('#currentTable').parent().addClass('layui-col-xs6');
+                            $('#currentTable').parent().removeClass('layui-hide');
+                            commonTable.rendertable({
+                                elem: '#currentTableId',
+                                id: 'currentTableId',
+                                data: data.storages,
+                                defaultToolbar: false,
+                                toolbar: '',//工具栏
+                                height: 'full-320',
+                                limit: 9999,//每页数据 默认
+                                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                    layout: ['count'] //自定义分页布局
+                                    , first: false //不显示首页
+                                    , last: false //不显示尾页
+                                },
+                                search: false,
+                                cols: [[
+                                    { field: 'F_TransferBoxCode', title: '流转箱编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_LocationCode', title: '库位编号', minWidth: 180, sort: true, filter: true },
+                                    {
+                                        field: 'F_MaterialType', title: '料号分类', width: 105, sort: true, filter: true,
+                                        templet: function (d) {
+                                            return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                                        }
+                                    },
+                                    { field: 'F_MaterialCode', title: '料号编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true, filter: true },
+                                    { field: 'F_MaterialUnit', title: '料号单位', width: 120, sort: true, filter: true },
+                                    { field: 'F_MaterialBatch', title: '批号', width: 180, sort: true, filter: true },
+                                    { field: 'F_Num', title: '数量', width: 80, sort: true, filter: true },
+                                    { field: 'F_CreatorUserName', title: '下架人', width: 90, sort: true, filter: true },
+                                    {
+                                        field: 'F_CreatorTime', title: '下架时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+                                ]]
+                            });
+                            //监听行双击击事件（双击事件为：rowDouble）
+                            table.on('rowDouble(currentTableFilter)', function (obj) {
+                                var type = 1;
+                                var outCode = $('#F_OutStorageCode').val();
+                                common.ajax({
+                                    url: '/ClassTask/ControlJob/GetStorageByOutStorage',
+                                    dataType: 'json',
+                                    data: { keyValue: outCode },
+                                    async: false,
+                                    success: function (data) {
+                                        common.modalOpen({
+                                            title: "库位定位",
+                                            url: "/ClassTask/ControlJob/Location?type=" + type + "&locationCode=" + data.F_LocationCode,
+                                            width: "400px",
+                                            height: "400px",
+                                            btn: []
+                                        });
+                                    }
+                                });
+                            });
+                            commonTable.rendertable({
+                                elem: '#currentTable',
+                                id: 'currentTable',
+                                data: data.outstorages,
+                                defaultToolbar: false,
+                                toolbar: '',//工具栏
+                                height: 'full-320',
+                                limit: 9999,//每页数据 默认
+                                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                    layout: ['count'] //自定义分页布局
+                                    , first: false //不显示首页
+                                    , last: false //不显示尾页
+                                },
+                                search: false,
+                                cols: [[
+                                    { field: 'F_TransferBoxCode', title: '流转箱编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_LocationCode', title: '库位编号', minWidth: 180, sort: true, filter: true },
+                                    {
+                                        field: 'F_MaterialType', title: '料号分类', width: 105, sort: true, filter: true,
+                                        templet: function (d) {
+                                            return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                                        }
+                                    },
+                                    { field: 'F_MaterialCode', title: '料号编号', width: 170, sort: true, filter: true },
+                                    { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true, filter: true },
+                                    { field: 'F_MaterialUnit', title: '料号单位', width: 120, sort: true, filter: true },
+                                    { field: 'F_MaterialBatch', title: '批号', width: 180, sort: true, filter: true },
+                                    { field: 'F_Num', title: '数量', width: 80, sort: true, filter: true },
+                                    { field: 'F_CreatorUserName', title: '下架人', width: 90, sort: true, filter: true },
+                                    {
+                                        field: 'F_CreatorTime', title: '下架时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+                                    { field: 'F_BandingUserName', title: '绑定人', width: 90, sort: true, filter: true },
+                                    {
+                                        field: 'F_BandingTime', title: '绑定时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+                                ]]
+                            });
+                            $('#text1').html("出库列表");
+                            $('#text2').html("绑定列表");
+                            break;
+                        case 3:
+                            $('#currentTableId').parent().removeClass('layui-hide');
+                            $('#currentTable').parent().remove();
+                            commonTable.rendertable({
+                                elem: '#currentTableId',
+                                id: 'currentTableId',
+                                data: data.locations,
+                                defaultToolbar: false,
+                                toolbar: '',//工具栏
+                                height: 'full-320',
+                                limit: 9999,//每页数据 默认
+                                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                    layout: ['count'] //自定义分页布局
+                                    , first: false //不显示首页
+                                    , last: false //不显示尾页
+                                },
+                                search: false,
+                                cols: [[
+                                    { field: 'F_LocationCode', title: '库位编号', minWidth: 140, sort: true, filter: true },
+                                    { field: 'F_SortCode', title: '顺序', width: 140, sort: true, filter: true },
+                                    {
+                                        field: 'F_LocationState', title: '使用', width: 100, sort: true, filter: true,
+                                        templet: function (d) {
+                                            if (d.F_LocationState == true) {
+                                                return "<span class='layui-btn layui-btn-normal layui-btn-xs'>使用</span>";
+                                            } else {
+                                                return "<span class='layui-btn layui-btn-warm layui-btn-xs'>空置</span>";
+                                            }
+                                        }
+                                    },
+                                    {
+                                        field: 'F_EnabledMark', title: '状态', width: 100, sort: true, filter: true,
+                                        templet: function (d) {
+                                            if (d.F_EnabledMark == true) {
+                                                return "<span class='layui-btn layui-btn-normal layui-btn-xs'>有效</span>";
+                                            } else {
+                                                return "<span class='layui-btn layui-btn-warm layui-btn-xs'>无效</span>";
+                                            }
+                                        }
+                                    },
+                                    {
+                                        field: 'F_CreatorTime', title: '创建时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+                                ]]
+                            });
+                            //监听行双击击事件（双击事件为：rowDouble）
+                            table.on('rowDouble(currentTableFilter)', function (obj) {
+                                var type = 1;
+                                var locationCode = obj.data.F_LocationCode;
+                                if (!locationCode) {
+                                    return false;
+                                }
+                                common.modalOpen({
+                                    title: "库位定位",
+                                    url: "/ClassTask/ControlJob/Location?type=" + type + "&locationCode=" + locationCode,
+                                    width: "400px",
+                                    height: "400px",
+                                    btn: []
+                                });
+                            });
+                            $('#text1').html("库位列表");
+                            break;
+                        case 4:
+                            $('#currentTableId').parent().removeClass('layui-hide');
+                            $('#currentTable').parent().remove();
+                            commonTable.rendertable({
+                                elem: '#currentTableId',
+                                id: 'currentTableId',
+                                data: data.locations,
+                                defaultToolbar: false,
+                                toolbar: '',//工具栏
+                                height: 'full-320',
+                                limit: 9999,//每页数据 默认
+                                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                    layout: ['count'] //自定义分页布局
+                                    , first: false //不显示首页
+                                    , last: false //不显示尾页
+                                },
+                                search: false,
+                                cols: [[
+                                    { field: 'F_LocationCode', title: '库位编号', minWidth: 140, sort: true, filter: true },
+                                    { field: 'F_SortCode', title: '顺序', width: 140, sort: true, filter: true },
+                                    {
+                                        field: 'F_LocationState', title: '使用', width: 100, sort: true, filter: true,
+                                        templet: function (d) {
+                                            if (d.F_LocationState == true) {
+                                                return "<span class='layui-btn layui-btn-normal layui-btn-xs'>使用</span>";
+                                            } else {
+                                                return "<span class='layui-btn layui-btn-warm layui-btn-xs'>空置</span>";
+                                            }
+                                        }
+                                    },
+                                    {
+                                        field: 'F_EnabledMark', title: '状态', width: 100, sort: true, filter: true,
+                                        templet: function (d) {
+                                            if (d.F_EnabledMark == true) {
+                                                return "<span class='layui-btn layui-btn-normal layui-btn-xs'>有效</span>";
+                                            } else {
+                                                return "<span class='layui-btn layui-btn-warm layui-btn-xs'>无效</span>";
+                                            }
+                                        }
+                                    },
+                                    {
+                                        field: 'F_CreatorTime', title: '创建时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+                                ]]
+                            });
+                            //监听行双击击事件（双击事件为：rowDouble）
+                            table.on('rowDouble(currentTableFilter)', function (obj) {
+                                var type = 1;
+                                var locationCode = obj.data.F_LocationCode;
+                                if (!locationCode) {
+                                    return false;
+                                }
+                                common.modalOpen({
+                                    title: "库位定位",
+                                    url: "/ClassTask/ControlJob/Location?type=" + type + "&locationCode=" + locationCode,
+                                    width: "400px",
+                                    height: "400px",
+                                    btn: []
+                                });
+                            });
+                            $('#text1').html("库位列表");
+                            break;
+                        case 7:
+                            $('#currentTableId').parent().removeClass('layui-hide');
+                            $('#currentTable').parent().remove();
+                            commonTable.rendertable({
+                                elem: '#currentTableId',
+                                id: 'currentTableId',
+                                data: data.locations,
+                                defaultToolbar: false,
+                                toolbar: '',//工具栏
+                                height: 'full-320',
+                                limit: 9999,//每页数据 默认
+                                page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                                    layout: ['count'] //自定义分页布局
+                                    , first: false //不显示首页
+                                    , last: false //不显示尾页
+                                },
+                                search: false,
+                                cols: [[
+                                    { field: 'F_LocationCode', title: '库位编号', minWidth: 140, sort: true, filter: true },
+                                    { field: 'F_SortCode', title: '顺序', width: 140, sort: true, filter: true },
+                                    {
+                                        field: 'F_LocationState', title: '使用', width: 100, sort: true, filter: true,
+                                        templet: function (d) {
+                                            if (d.F_LocationState == true) {
+                                                return "<span class='layui-btn layui-btn-normal layui-btn-xs'>使用</span>";
+                                            } else {
+                                                return "<span class='layui-btn layui-btn-warm layui-btn-xs'>空置</span>";
+                                            }
+                                        }
+                                    },
+                                    {
+                                        field: 'F_EnabledMark', title: '状态', width: 100, sort: true, filter: true,
+                                        templet: function (d) {
+                                            if (d.F_EnabledMark == true) {
+                                                return "<span class='layui-btn layui-btn-normal layui-btn-xs'>有效</span>";
+                                            } else {
+                                                return "<span class='layui-btn layui-btn-warm layui-btn-xs'>无效</span>";
+                                            }
+                                        }
+                                    },
+                                    {
+                                        field: 'F_CreatorTime', title: '创建时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' }
+                                    },
+                                ]]
+                            });
+                            //监听行双击击事件（双击事件为：rowDouble）
+                            table.on('rowDouble(currentTableFilter)', function (obj) {
+                                var type = 1;
+                                var locationCode = obj.data.F_LocationCode;
+                                if (!locationCode) {
+                                    return false;
+                                }
+                                common.modalOpen({
+                                    title: "库位定位",
+                                    url: "/ClassTask/ControlJob/Location?type=" + type + "&locationCode=" + locationCode,
+                                    width: "400px",
+                                    height: "400px",
+                                    btn: []
+                                });
+                            });
+                            $('#text1').html("库位列表");
+                            break;
+                    }
+                    common.setReadOnly('adminform');
+                    form.render();
+                }
+            });
+        });
+        wcLoading.close();
+        function reload() {
+            common.ajax({
+                url: '/ClassTask/ControlJob/GetFormJson',
+                dataType: 'json',
+                data: { keyValue: keyValue },
+                async: false,
+                success: function (data) {
+                    common.removeEmpty('adminform', data);
+                    common.val('adminform', data);
+                    switch (data.F_JobType) {
+                        case 0:
+                            table.reload('currentTableId', {
+                                data: data.storages
+                            })
+                            table.reload('currentTable', {
+                                data: data.uses
+                            })
+                            break;
+                        case 1:
+                            table.reload('currentTableId', {
+                                data: data.instorageTemps
+                            })
+                            table.reload('currentTable', {
+                                data: data.instorages
+                            })
+                            break;
+                        case 2:
+
+                            table.reload('currentTableId', {
+                                data: data.storages
+                            })
+                            table.reload('currentTable', {
+                                data: data.outstorages
+                            })
+                            break;
+                        case 3:
+                            table.reload('currentTableId', {
+                                data: data.locations
+                            })
+                            break;
+                        case 4:
+                            table.reload('currentTableId', {
+                                data: data.locations
+                            })
+                            break;
+                        case 7:
+                            table.reload('currentTableId', {
+                                data: data.locations
+                            })
+                            break;
+                    }
+                    form.render();
+                }
+            });
+        }
+        function initControl() {
+            $("#F_JobType").bindSelect({
+                data: top.clients.dataItems['Mes_ControlJobType'],
+                id: "",
+            });
+        }
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <fieldset class="table-search-fieldset">
+                <legend>任务信息</legend>
+                <div class="layui-form layuimini-form" lay-filter="adminform">
+                    <div class="layui-form-item">
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">调度类型</label>
+                            <div class="layui-input-inline">
+                                <select id="F_JobType" name="F_JobType">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">调度编号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_JobCode" name="F_JobCode" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">设备名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_NeedEqpName" name="F_NeedEqpName" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">入库单号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_InStorageCode" name="F_InStorageCode" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">出库单号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_OutStorageCode" name="F_OutStorageCode" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">流转箱编号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_TransferBoxCode" name="F_TransferBoxCode" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">库位编号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_LocationCode" name="F_LocationCode" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">物料编号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_MaterialCode" name="F_MaterialCode" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">物料名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_MaterialName" name="F_MaterialName" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">物料单位</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_MaterialUnit" name="F_MaterialUnit" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">计划数量</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_Num" name="F_Num" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">已绑定数量</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_BandingNum" name="F_BandingNum" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">待绑定数量</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_NeedBandingNum" name="F_NeedBandingNum" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">作业数量</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_NeedNum" name="F_NeedNum" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">已作业数量</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_FinishNum" name="F_FinishNum" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline layui-hide">
+                            <label class="layui-form-label">待作业数量</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="F_NeedDoNum" name="F_NeedDoNum" class="layui-input">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-hide">
+                        <label class="layui-form-label">调度信息</label>
+                        <div class="layui-input-block">
+                            <input id="F_JobInfo" name="F_JobInfo" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="layui-fluid">
+                <div class="layui-row">
+                    <div class="layui-card layui-hide" style="padding:0px 5px 0px 0px">
+                        <h5 id="text1"></h5>
+                        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+                    </div>
+                    <div class="layui-card layui-hide" style="padding:0px 0px 0px 5px">
+                        <h5 id="text2"></h5>
+                        <table class="layui-hide" id="currentTable" lay-filter="currentTable"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

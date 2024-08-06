@@ -1,0 +1,61 @@
+﻿@{
+    ViewBag.Title = "RemarkDetail";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    wcLoading.close();
+    var EqpId = $.request("EqpId");
+    var month = $.request("Month");
+    //var res = JSON.parse(keyValue);
+    ////权限字段
+    //common.authorizeFields('adminform');
+
+    var html = "";
+
+    //if (!(res != null && res.length > 0)) {
+    //    html += '<li class="layui-timeline-item"><i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop layui-timeline-axis"></i><div class="layui-timeline-content layui-text">';
+    //    html += '<div class="layui-timeline-title">暂无日志记录</div>';
+    //    html += '</div></li>';
+    //} else {
+    //    res.forEach(element => {
+    //        html += '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis"></i><div class="layui-timeline-content layui-text">';
+    //        html += '<h3 class="layui-timeline-title">' + element.F_DATE + '</h3>';
+    //        html += '<p>' + element.F_PLCSTATUS + '</p>';
+    //        html += '</div></li>';
+    //    });
+    //}
+    //$("#my_id .content").html(html);
+
+    $.get("/EquipmentManage/EqpPqcCheckMD/GetRemarkDetailJson",
+        { eqpid: EqpId, month: month }, function (d) {
+            var res = JSON.parse(d);
+            if (!(res != null && res.length > 0)) {
+                html += '<li class="layui-timeline-item"><i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop layui-timeline-axis"></i><div class="layui-timeline-content layui-text">';
+                html += '<div class="layui-timeline-title">该月无点检特别事项记录</div>';
+                html += '</div></li>';
+            } else {
+
+                res.forEach(element => {
+                    if (element.dayRemark != "") {
+                        html += '<li class="layui-timeline-item"><i class="layui-icon layui-timeline-axis"></i><div class="layui-timeline-content layui-text">';
+                        html += '<h3 class="layui-timeline-title">' + element.day + '号' + element.shift + '</h3>';
+                        html += '<p>' + element.dayRemark + '</p>';
+                        html += '</div></li>';
+                    }
+                });
+            }
+            $("#my_id .content").html(html);
+        });
+
+</script>
+
+<body>
+    <div id="my_id" class="layuimini-container">
+        <div class="layuimini-main">
+            <ul class="layui-timeline content">
+            </ul>
+        </div>
+    </div>
+
+</body>
+

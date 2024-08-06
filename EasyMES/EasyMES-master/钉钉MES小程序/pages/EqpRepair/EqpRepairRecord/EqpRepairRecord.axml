@@ -1,0 +1,79 @@
+<import-sjs from="/static/js/enum.sjs" name="typeEnum"></import-sjs>
+  <view class="topnavFix">
+  <search-bar
+    value="{{value}}"
+    focus="{{false}}"
+    disabled="{{false}}"
+    maxLength="{{20}}"
+    showVoice="{{showVoice}}"
+    placeholder="搜索维修单号或报修人"
+    onInput="handleInput"
+    onClear="handleClear"
+    onCancel="handleCancel"
+    onSubmit="handleSubmit"
+    showCancelButton="{{false}}" showSearchButton="{{showSearchButton}}"/>
+    <!-- <button size="mini" type="primary">Button</button> -->
+  </view>
+<view style="padding: 10rpx;margin-top:30px">
+  <tabs tabs="{{tabs}}"
+    tabsName="activeTab"
+    onTabClick="handleTabClick"
+    onChange="handleTabChange"
+    onPlusClick="handlePlusClick"
+    activeTab="{{activeTab}}"
+    showPlus="{{false}}"
+    swipeable="{{false}}"
+    capsule="{{typeCapsule}}"
+    hasSubTitle="{{false}}"
+    tabBarUnderlineWidth="20px"
+    tabContentHeight="{{activeTab === 0 ? '130px' : activeTab === 2 ? '200px' : '50vh'}}"
+    stickyBar="{{true}}">
+
+   <block a:for="{{tabs}}">
+<tab-content key="{{index}}" tabId="{{index}}" activeTab="{{activeTab}}" a:if="{{index === 0}}"> 
+  <view a:if="{{Nodatadispaly}}">
+    <view class="tab-content" style="height: 100px;">
+      <text>查无记录！</text>
+    </view>
+  </view>
+  <view a:else>
+    <block a:for="{{query}}" a:for-item="item">
+      <view class="demo-title">{{item.F_EqpName}}
+        <text class="demo-righttitle" style="color:{{typeEnum.RepairStatusColor(item.F_Status)}}">
+          {{typeEnum.RepairStatus(item.F_Status)}}
+        </text>
+      </view>
+
+      <view class="tab-content1" onTap="DetailRepair" data-F_RepairId="{{item.F_Id}}">
+        <view class="uk-width-4-4">
+              维修单号：{{item.F_RepairNo}}
+          <view/>
+              故障描述：{{item.F_ProblemDesc.substr(0,10)}}...
+          <view/>
+              报修人员：{{item.F_CallRepairManName}}
+          <view/>
+              报修时间：{{item.F_CallRepairTime}}
+          <view/>
+        </view>
+      </view>
+    </block>
+    <view a:if="{{hasMoreData}}" style="width: 100%;height: 50rpx;text-align: center;margin-top: 30rpx;color: #D3D3D3">
+      <text>下拉加载更多</text>
+    </view>
+    <view a:else style="width: 100%;height: 50rpx;text-align: center;margin-top: 50rpx;color: #D3D3D3">
+      <text>已经到底了~</text>
+    </view>
+
+  </view>
+</tab-content>
+
+<tab-content key="{{index}}" tabId="{{index}}" activeTab="{{activeTab}}"
+        a:else>
+  <view class="tab-content">content of {{item.title}}</view>
+</tab-content>
+</block>
+
+  </tabs>
+</view>
+
+

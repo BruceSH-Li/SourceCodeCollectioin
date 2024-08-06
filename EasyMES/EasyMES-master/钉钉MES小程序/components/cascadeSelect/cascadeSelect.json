@@ -1,0 +1,9 @@
+{
+  "component": true,
+  "usingComponents": {
+    "popup": "mini-ali-ui/es/popup/index",
+    "tabs": "mini-ali-ui/es/tabs/index",
+    "tab-content": "mini-ali-ui/es/tabs/tab-content/index",
+    "search-bar": "mini-ali-ui/es/search-bar/index"
+  }
+}

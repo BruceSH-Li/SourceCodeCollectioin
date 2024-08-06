@@ -1,0 +1,69 @@
+<view class="page">
+  <view class="page-description">物流产出上架</view>
+  <form onSubmit="onSubmit">
+    <view class="page-section">
+      <picker onChange="bindObjPickerEqpChange" value="{{arrEqpIndex}}" range="{{objectEqpArray}}" range-key="F_EqpName">
+        <view class="row">
+          <view class="row-title requireLabel">设备</view>
+          <view class="row-extra">{{objectEqpArray[arrEqpIndex].F_EqpName}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <picker onChange="bindObjPickerChange" value="{{arrIndex}}" range="{{objectArray}}" range-key="F_TransferBoxCode">
+        <view class="row">
+          <view class="row-title requireLabel">流转箱编号</view>
+          <view class="row-extra">{{objectArray[arrIndex].F_TransferBoxCode}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">产出物料绑定信息</view>
+      <view class="form-line"/>
+      <view style="padding:10rpx;display:{{hidden?'none':'block'}}">
+        <view class="page-section-demo">
+          <view>物料编号：{{entity.F_MaterialCode}}</view>
+        </view>
+        <view class="page-section-demo">
+          <view>物料名称：{{entity.F_MaterialName}}</view>
+        </view>
+        <view class="page-section-demo">
+          <view>批号：{{entity.F_MaterialBatch}}</view>
+        </view>
+        <view class="page-section-demo">
+          <view>数量：{{entity.F_Num}}</view>
+        </view>
+      </view>
+    </view>
+    <view class="page-section">
+        <view style="display:{{hidden?'none':'block'}}">
+          <button size="mini" type="primary"  onTap="GetLocation">获取规则库位</button>
+          <button size="mini" type="primary" style="float:right;" onTap="GetAllLocation">获取所有库位</button>
+        </view>
+    </view>
+    <view class="page-section">
+      <picker onChange="bindObjPickerOutChange" value="{{arrOutIndex}}" range="{{objectOutArray}}" range-key="Prefix">
+        <view class="row">
+          <view class="row-title requireLabel">库位编号</view>
+          <view class="row-extra">{{objectOutArray[arrOutIndex].Prefix}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <picker onChange="bindObjPickerlocationChange" value="{{arrlocationIndex}}" range="{{objectlocationArray}}" range-key="F_LocationCode">
+        <view class="row">
+          <view class="row-title requireLabel">库位号</view>
+          <view class="row-extra">{{objectlocationArray[arrlocationIndex].F_LocationCode}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <view>
+        <button type="primary" formType="submit">提交</button></view>
+    </view>
+  </form>
+</view>

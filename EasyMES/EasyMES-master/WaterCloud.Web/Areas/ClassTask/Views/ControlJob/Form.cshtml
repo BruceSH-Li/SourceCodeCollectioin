@@ -1,0 +1,120 @@
+﻿@{
+    ViewBag.Title = "Form"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common','optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+
+        $(function () {
+            initControl();
+            if (!!keyValue) {
+                 common.ajax({
+                   url: '/ClassTask/ControlJob/GetFormJson',
+                   dataType: 'json',
+                   data: { keyValue: keyValue },
+                   async: false,
+                   success: function (data) {
+                       common.val('adminform', data);
+                    }
+               });
+            }
+            else {
+                var code = new Date().formatDate('yyyyMMddhhmmss');
+                $('#F_JobCode').val("CJ_" + code);
+            }
+           form.render();
+       });
+       wcLoading.close();
+
+       function initControl() {
+           //此处需修改
+           //绑定数据源
+           //类型为下拉框时
+       }
+
+       //监听提交
+       form.on('submit(saveBtn)', function (data) {
+           var postData = data.field;
+           postData.F_JobInfo = "库位号为" + postData.F_LocationCode + ",变动数量为" + postData.F_NeedNum + ",信息为" + postData.F_JobInfo + "的库位进行库存变动";
+           common.submitForm({
+               url: '/ClassTask/ControlJob/SubmitForm?keyValue=' + keyValue,
+               param: postData,
+               success: function () {
+                   common.parentreload('data-search-btn');
+               }
+           })
+           return false;
+       });
+    });
+    function search() {
+        layui.use(['jquery', 'form', 'common'], function () {
+            var $ = layui.$,
+                common = layui.common;
+            var parentform = window.name;
+            common.modalOpen({
+                title: "选择库存",
+                url: "/MaterialManage/Storage/AddForm?parentform=" + parentform + "&name=" + "F_LocationCode" + "&value=" + "F_NeedId" + "&ids=" + $('#F_NeedId').val(),
+                width: "650px",
+                height: "600px",
+            });
+        });
+    }
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">调度编号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_JobCode" name="F_JobCode" autocomplete="off" lay-verify="required" placeholder="请输入调度编号" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">调度类型</label>
+                    <div class="layui-input-block">
+                        <select id="F_JobType" name="F_JobType" required>
+                            <option value="4">库存变动</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text layui-hide">
+                    <label class="layui-form-label required">调度信息</label>
+                    <div class="layui-input-block">
+                        <textarea id="F_JobInfo" name="F_JobInfo" lay-verify="required" class="layui-textarea" placeholder="请输入调度信息"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">库位号</label>
+                    <div class="layui-input-block">
+                        <input id="F_LocationCode" name="F_LocationCode" type="text" lay-verify="required" placeholder="请输入库位号" maxlength="50" autocomplete="off" class="layui-input" onclick="search()" />
+                        <input id="F_NeedId" name="F_NeedId" type="text" hidden />
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">移动数量</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="F_NeedNum" name="F_NeedNum" lay-verify="required|number" placeholder="请输入移动数量" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">优先级</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="F_Priority" name="F_Priority" lay-verify="required|number" placeholder="请输入优先级" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input" value="0">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

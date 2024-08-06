@@ -1,0 +1,7 @@
+    <view class="page-section">
+      <view class="page-section-title requireLabel">{{label}}</view>
+      <view class="page-section-demo">
+        <input value="{{scanCode}}" name="{{name}}" class="input" placeholder="{{placeHolder}}" onBlur="onSearch"/>
+        <button size="mini" type="ghost" onTap="onScan" class="scanbtn"></button>
+      </view>
+    </view>

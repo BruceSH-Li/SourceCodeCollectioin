@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<link href="~/js/lay-module/flow/WaterFlow.css" rel="stylesheet" />
+@*<link href="/css/formpreview.css" rel="stylesheet" />*@
+<script>
+    layui.use([ 'jquery', 'waterflow', 'flowlayout', 'common'], function () {
+        var common = layui.common,
+            $ = layui.jquery;
+        var keyValue = $.request("keyValue");
+        var flowDesignPanel;
+        $(function () {
+            common.ajax({
+                url: '/ProcessManage/WorkOrder/GetFlow',
+                dataType: 'json',
+                data: { keyValue: keyValue },
+                async: false,
+                success: function (data) {
+                    flowDesignPanel = $('#flowPanel').flowdesign({
+                        haveTool: false,
+                        useName: "设备",
+                        tagName: { "0": "待执行", "1": "执行中", "2": "执行完成" },
+                        tagClass: { "0": "#5bc0de", "1": "#f0ad4e", "2": "#5cb85c" },
+                        needNoTag: false,
+                        resultName: "工单状态",
+                        timeName: "完成时间",
+                        remarkName: "说明"
+                        , isprocessing: true
+                        , nodeData: data.nodes
+                        , flowcontent: data
+                    });
+                    flowDesignPanel.reinitSize($(window).width() - 50, $(window).height() - 100);
+                }
+            });
+        });
+        $(window).resize(function () {
+            flowDesignPanel.reinitSize($(window).width() - 50, $(window).height() - 100);
+        });
+        wcLoading.close();
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div id="flowPanel"></div>
+        </div>
+    </div>
+</body>
+

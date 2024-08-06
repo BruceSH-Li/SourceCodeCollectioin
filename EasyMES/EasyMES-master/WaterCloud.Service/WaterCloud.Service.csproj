@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+</PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="WaterCloud.Service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Quartz" Version="3.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WaterCloud.Code\WaterCloud.Code.csproj" />
+    <ProjectReference Include="..\WaterCloud.Data\WaterCloud.DataBase.csproj" />
+    <ProjectReference Include="..\WaterCloud.DingTalkService\WaterCloud.DingTalk.csproj" />
+    <ProjectReference Include="..\WaterCloud.Domain\WaterCloud.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

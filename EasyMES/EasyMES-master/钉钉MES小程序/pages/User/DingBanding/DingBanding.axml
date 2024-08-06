@@ -1,0 +1,20 @@
+<view class="page">
+  <view class="input-label" style="text-align:center">账号绑定</view>
+  </view>
+  <form onSubmit="onSubmit" class="login-form">
+    <view class="page-section">
+      <view class="input-group {{userid_focus ? 'active' : ''}}">
+        <text class="input-label requireLabel">帐号</text>
+        <input type="text" cursor-spacing="30" name="userName" id="userid" placeholder="请输入账号名" onFocus="inputFocus" onBlur="inputBlur" />
+      </view>
+      <view class="input-group {{passwd_focus ? 'active' : ''}}">
+        <text class="input-label requireLabel">密码</text>
+        <input password="true" cursor-spacing="30" name="password" id="passwd" placeholder="请输入密码" onFocus="inputFocus" onBlur="inputBlur" />
+      </view>
+    </view>
+    <view class="page-section">
+      <view>
+        <button type="primary" formType="submit">绑定</button></view>
+    </view>
+  </form>
+</view>

@@ -1,0 +1,103 @@
+﻿@{
+    ViewBag.Title = "Form"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'common','optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+
+
+        $(function () {
+            initControl();
+            if (!!keyValue) {
+                 common.ajax({
+                   url: '/MaterialManage/TransferBox/GetFormJson',
+                   dataType: 'json',
+                   data: { keyValue: keyValue },
+                   async: false,
+                   success: function (data) {
+                       common.val('adminform', data);
+                    }
+               });
+            }
+            else {
+                var code = new Date().formatDate('yyyyMMddhhmmss');
+                $('#F_TransferCode').val("TC_"+code);
+            }
+           form.render();
+       });
+       wcLoading.close();
+
+       function initControl() {
+           $("#F_TransferType").bindSelect({
+               data: top.clients.dataItems['Mes_TransferType'],
+               id: "",
+           });
+       }
+
+       //监听提交
+       form.on('submit(saveBtn)', function (data) {
+           var postData = data.field;
+           if (!postData["F_EnabledMark"]) postData["F_EnabledMark"] = false;
+           if (!postData["F_IsTemp"]) postData["F_IsTemp"] = false;
+           common.submitForm({
+               url: '/MaterialManage/TransferBox/SubmitForm?keyValue=' + keyValue,
+               param: postData,
+               success: function () {
+                   common.parentreload('data-search-btn');
+               }
+           })
+           return false;
+       });
+   });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">流转箱类型</label>
+                    <div class="layui-input-block">
+                        <select id="F_TransferType" name="F_TransferType" lay-verify="required" lay-search>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">流转箱编号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_TransferCode" name="F_TransferCode" autocomplete="off" maxlength="50" lay-verify="required" placeholder="请输入流转箱编号" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">流转箱最大数</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="F_TransferMaxNum" name="F_TransferMaxNum" lay-verify="required|number" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">选项</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="F_EnabledMark" id="F_EnabledMark" checked="" value="true" title="有效标识">
+                        <input type="checkbox" name="F_IsTemp" id="F_IsTemp" checked="" value="true" title="临时标识">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text layui-hide">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <textarea id="F_Description" name="F_Description" class="layui-textarea" placeholder="请输入备注"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

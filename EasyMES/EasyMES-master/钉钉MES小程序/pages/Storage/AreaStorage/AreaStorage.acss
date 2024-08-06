@@ -1,0 +1,8 @@
+.radio {
+  display: inline-block;
+  margin-bottom: 20rpx;
+  margin-right: 30rpx;
+}
+.radio-text {
+  line-height: 1.8;
+}

@@ -1,0 +1,76 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/InStorage/InStorageBanding/InStorageBanding",
+    "pages/InStorage/InStorageCancleBanding/InStorageCancleBanding",
+    "pages/InStorage/InStorageLocation/InStorageLocation",
+    "pages/Storage/StorageChange/StorageChange",
+    "pages/OutStorage/OutStorage/OutStorage",
+    "pages/OutStorage/OutStorageBanding/OutStorageBanding",
+    "pages/OutStorage/OutStorageCancle/OutStorageCancle",
+    "pages/TaskJob/DoTaskJob/DoTaskJob",
+    "pages/TaskJob/MyTaskJob/MyTaskJob",
+    "pages/User/Login/Login",
+    "pages/User/Setting/Setting",
+    "pages/WorkRun/NeedMaterialJob/NeedMaterialJob",
+    "pages/WorkRun/ConsumeMaterial/ConsumeMaterial",
+    "pages/WorkRun/ReturnMaterial/ReturnMaterial",
+    "pages/WorkRun/ReturnMaterialJob/ReturnMaterialJob",
+    "pages/WorkRun/OutputMaterial/OutputMaterial",
+    "pages/WorkRun/OutputMaterialCancle/OutputMaterialCancle",
+    "pages/WorkRun/OutputMaterialLocation/OutputMaterialLocation",
+    "pages/WorkRun/FinishWorkOrderJob/FinishWorkOrderJob",
+    "pages/User/DingBanding/DingBanding",
+    "pages/Storage/StorageMove/StorageMove",
+    "pages/Storage/GetStorage/GetStorage",
+    "pages/Storage/AreaStorage/AreaStorage",
+    "pages/Checkout/CheckoutInfo/CheckoutInfo",
+    "pages/WorkRun/GetWorkOrderInfo/GetWorkOrderInfo",
+    "pages/Checkout/TwoCheckout/TwoCheckout",
+    "pages/Checkout/CheckoutJob/CheckoutJob",
+    "pages/Checkout/CheckoutCancle/CheckoutCancle",
+    "pages/Checkout/FirstCheckout/FirstCheckout",
+    "pages/Checkout/ReturnCheckout/ReturnCheckout",
+    "pages/Checkout/ChangeCheckoutState/ChangeCheckoutState",
+    "pages/Checkout/AddScapImage/AddScapImage",
+    "pages/EqpRepair/EqpCallRepair/EqpCallRepair",
+    "pages/EqpRepair/EqpRepairInfo/EqpRepairInfo",
+    "pages/EqpRepair/EqpRepairDetail/EqpRepairDetail",
+    "pages/EqpRepair/EqpRepairRecord/EqpRepairRecord",
+    "pages/EqpRepair/EqpRepairFlow/EqpRepairFlow",
+    "pages/Checkout/BadStorageInfo/BadStorageInfo",
+    "pages/WorkRun/OutputMaterialLocation2/OutputMaterialLocation2",
+    "pages/WorkRun/ConsumeMaterial2/ConsumeMaterial2",
+    "pages/OutStorage/OutStorage2/OutStorage2"
+  ],
+  "window": {
+    "defaultTitle": "MES小程序",
+    "allowsBounceVertical": "YES",
+    "pullRefresh": true
+  },
+  "tabBar": {
+    "textColor": "#666666",
+    "selectedColor": "#49a9ee",
+    "backgroundColor": "#ffffff",
+    "items": [
+      {
+        "pagePath": "pages/index/index",
+        "icon": "static/images/toolbar_scan.png",
+        "activeIcon": "static/images/toolbar_scan_active.png",
+        "name": "扫码应用"
+      },
+      {
+        "pagePath": "pages/TaskJob/MyTaskJob/MyTaskJob",
+        "icon": "static/images/toolbar_job.png",
+        "activeIcon": "static/images/toolbar_job_active.png",
+        "name": "我的任务"
+      },
+      {
+        "pagePath": "pages/User/Setting/Setting",
+        "icon": "static/images/toolbar_setting.png",
+        "activeIcon": "static/images/toolbar_setting_active.png",
+        "name": "设置"
+      }
+    ]
+  }
+}

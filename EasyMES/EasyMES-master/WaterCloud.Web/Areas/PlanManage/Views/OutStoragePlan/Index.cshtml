@@ -1,0 +1,206 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+<script>
+
+    layui.use(['jquery', 'form', 'table', 'soulTable', 'common', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table, soulTable = layui.soulTable,
+            common = layui.common;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#StartDay'
+            , trigger: 'click'
+            , type: 'date'
+            , format: 'yyyy/MM/dd',
+            value: new Date().Format("yyyy/MM/dd")
+        });
+
+        function getOption(name, value) {
+            var result = '';
+            if (name = "id") {
+                viewObj.typeData.forEach(t => {
+                    if (t.id == value) {
+                        result = t.name;
+                        //break;
+                    }
+                });
+
+            }
+            else if (name = "name") {
+                viewObj.typeData.forEach(t => {
+                    if (t.name == value) {
+                        result = t.id;
+                        //break;
+                    }
+                });
+            }
+            return result;
+        }
+
+        window.cols_arr = [];
+        var resdata = [];
+
+        $(function () {
+            loadData();
+            loadtable();
+            form.render();
+        });
+
+        function loadData() {
+            common.ajax({
+                url: '/PlanManage/OutStoragePlan/GetGridJson',
+                dataType: 'json',
+                data: {
+                    startDay: $('#StartDay').val(),
+                    CountDay: $('#CountDay').val()
+                },
+                async: false,
+                success: function (data) {
+                    resdata = data;
+                }
+            });
+        }
+
+        function loadtable() {
+            var all_date = resdata.cols;
+
+            window.cols_arr[0] = [];
+            window.cols_arr[0][0] = { field: 'F_MaterialId', title: '物料Id', align: 'center', width: 200,hide:true };
+            window.cols_arr[0][1] = { field: 'F_MaterialName', title: '物料名称', align: 'center', width: 200 };
+            all_date.forEach(function (value, i) {
+                window.cols_arr[0][i + 2] = ({
+                    field: value, title: value, align: 'center', minWidth: 100, contextmenu: {
+                        // 表头右键菜单配置
+                        header: [
+                            {
+                                name: '显示全部计划',
+                                click: function (obj) {
+                                    common.submitPost({
+                                        prompt: "注：您确定要启用这天计划吗？",
+                                        url: "/PlanManage/OutStoragePlan/EnabledAllForm",
+                                        param: { currentdate: obj.field },
+                                        success: function () {
+                                            common.reload('data-search-btn');
+                                        }
+                                    });
+                                }
+                            },
+                            {
+                                name: '删除全部计划',
+                                click: function (obj) {
+                                    common.submitPost({
+                                        prompt: "注：您确定要删除这天计划吗？",
+                                        url: "/PlanManage/OutStoragePlan/DeleteAllForm",
+                                        param: { currentdate: obj.field },
+                                        success: function () {
+                                            common.reload('data-search-btn');
+                                        }
+                                    });
+                                }
+                            }
+                        ],
+                        // 表格内容右键菜单配置
+                        body: [
+                            {
+                                name: '制定计划',
+                                click: function (obj) {
+                                    common.modalOpen({
+                                        title: !obj.text ? "制定计划" :"制定计划",
+                                        url: "/PlanManage/OutStoragePlan/Form?keyValue=" + obj.field + "&materialId=" + obj.row.F_MaterialId,
+                                        width: "700px",
+                                        height: "650px",
+                                        btn: [],
+                                        end: function (index, layero) {
+                                            common.reload('data-search-btn');
+                                        }
+                                    });
+                                }
+                            },
+                            {
+                                name: '删除计划',
+                                click: function (obj) {
+                                    if (!obj.text) {
+                                        common.modalMsg("计划不存在", "warning");
+                                        return false;
+                                    }
+                                    common.deleteForm({
+                                        url: "/PlanManage/OutStoragePlan/DeleteForm",
+                                        param: { currentdate: obj.field, materialId: obj.row.F_MaterialId },
+                                        success: function () {
+                                            common.reload('data-search-btn');
+                                        }
+                                    });
+                                }
+                            }
+                        ]
+                    }
+                })
+            })
+            tableRender(window.cols_arr, resdata.data);
+        }
+
+        function tableRender(cols_arr, obj) {
+            table.render({
+                elem: '#currentTableId',
+                id: 'currentTableId',
+                data: obj,
+                cols: cols_arr,
+                limit: 999999,//每页数据 默认
+                height:'full-120',
+                autoColumnWidth: {
+                    init: true
+                },
+                done: function (res) {
+                    soulTable.render(this)
+                }
+            });
+        }
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+
+            loadData();
+            loadtable();
+            return false;
+        });
+        wcLoading.close();
+
+    });
+</script>
+
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset" id="searchField">
+            <div>
+                <form class="layui-form layui-form-pane">
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">起始日期</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="StartDay" name="StartDay" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">天数</label>
+                            <div class="layui-input-inline">
+                                <input type="number" pattern="[0-9]*" id="CountDay" name="CountDay" lay-verify="required|number" oninput="if(value.length>8)value=value.slice(0,8)" value="7" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+    </div>
+</div>
+

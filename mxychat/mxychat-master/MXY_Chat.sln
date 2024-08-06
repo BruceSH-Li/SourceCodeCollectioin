@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MXY_Chat.Client", "MXY_Chat.Client\MXY_Chat.Client.csproj", "{3E001A5D-3339-476A-9144-7F5D5CD1D7CF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "cmdServer", "cmdServer\cmdServer.csproj", "{C51AED2B-C33A-4AB5-A7E7-5ECB37722E44}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E001A5D-3339-476A-9144-7F5D5CD1D7CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E001A5D-3339-476A-9144-7F5D5CD1D7CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E001A5D-3339-476A-9144-7F5D5CD1D7CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E001A5D-3339-476A-9144-7F5D5CD1D7CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C51AED2B-C33A-4AB5-A7E7-5ECB37722E44}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C51AED2B-C33A-4AB5-A7E7-5ECB37722E44}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C51AED2B-C33A-4AB5-A7E7-5ECB37722E44}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C51AED2B-C33A-4AB5-A7E7-5ECB37722E44}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5CE280C4-59A2-4CFA-AB7B-4CF9FAA41E4A}
+	EndGlobalSection
+EndGlobal

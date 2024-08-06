@@ -1,0 +1,466 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+<div class="layui-fluid" style="padding:0 0px">
+    <div class="layui-row layui-col-space5">
+        <div class="layui-col-md7 layui-col-xs5">
+            <div class="layui-card" style="padding: 5px;">
+                <fieldset class="table-search-fieldset" style="border:1px solid #e6e6e6">
+                    <legend>维修单</legend>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">维修单:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="F_RepairNo" name="F_RepairNo" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">工位:</label>
+                                <div class="layui-input-inline">
+                                    <select id="F_EqpId" name="F_EqpId" lay-filter="splitType" lay-search>
+                                        <option value="" selected>请选择</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline layui-hide">
+                                <label class="layui-form-label">状态:</label>
+                                <div class="layui-input-inline">
+                                    <select id="F_Status" name="F_Status" lay-filter="splitType">
+                                        <option value="" selected>请选择</option>
+                                        <option value="1">报修等待派工</option>
+                                        <option value="2">已派工</option>
+                                        <option value="3">维修中</option>
+                                        <option value="4">维修完成等待确认</option>
+                                        <option value="4">关闭</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <label class="layui-form-label">报修时间段</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="StartTime" name="StartTime" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="EndTime" name="EndTime" autocomplete="off" class="layui-input">
+
+                                </div>
+                                <div class="layui-input-inline">
+                                    <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </fieldset>
+                <script type="text/html" id="toolbarDemo">
+                    <div class="layui-btn-container" id="toolbar">
+                        <button id="NF-add" name="NF-add" authorize class="layui-btn layui-btn-sm data-add-btn" lay-event="add"><i class="layui-icon">&#xe654;</i>报修</button>
+                        <button id="TF-add" name="TF-add" authorize class="layui-btn layui-btn-sm data-add-btn layui-hide" lay-event="tf-add"><i class="layui-icon">&#xe654;</i>派工</button>
+                        <button id="NF-edit" name="NF-edit" authorize class="layui-btn layui-btn-sm layui-btn-warm data-edit-btn layui-hide" lay-event="edit"><i class="layui-icon">&#xe642;</i>修改</button>
+                        <button id="NF-delete" name="NF-delete" authorize class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn layui-hide" lay-event="delete"> <i class="layui-icon">&#xe640;</i>删除</button>
+                        <button id="NF-details" name="NF-details" authorize class="layui-btn layui-btn-sm layui-btn-normal data-info-btn layui-hide" lay-event="details"> <i class="layui-icon">&#xe60b;</i>查看</button>
+                    </div>
+                </script>
+                <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+            </div>
+        </div>
+        <div class="layui-col-md5 layui-col-xs7">
+            <div class="layui-card" style="padding: 5px;">
+                <fieldset class="table-search-fieldset" style="border:1px solid #e6e6e6">
+                    <legend>派工</legend>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">维修单:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="temp_F_RepairNo" name="temp_F_RepairNo" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="temp-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                            </div>
+                        </div>
+                    </form>
+                </fieldset>
+                <script type="text/html" id="toolbarTemp">
+                    <div class="layui-btn-container" id="tool">
+                        @*<button id="TF-add" name="TF-add" authorize class="layui-btn layui-btn-sm data-add-btn" lay-event="add"><i class="layui-icon">&#xe654;</i>派工</button>*@
+                        <button id="TF-details" name="TF-details" authorize class="layui-btn layui-btn-sm layui-btn-normal data-info-btn layui-hide" lay-event="details"> <i class="layui-icon">&#xe60b;</i>查看</button>
+                        <button id="TF-delete" name="TF-delete" authorize class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn layui-hide" lay-event="delete"> <i class="layui-icon">&#xe640;</i>删除</button>
+                    </div>
+                </script>
+                <table class="layui-hide" id="currentTable" lay-filter="currentTable"></table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    layui.use(['jquery', 'form', 'table', 'commonTable', 'common', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table, commonTable = layui.commonTable,
+            laydate = layui.laydate
+        common = layui.common;
+
+        laydate.render({
+            elem: '#StartTime'
+            , trigger: 'click'
+            , type: 'datetime'
+            , format: 'yyyy/MM/dd',
+            value: new Date((new Date()).getTime() - 24 * 60 * 60 * 1000 * 7)
+        });
+
+        laydate.render({
+            elem: '#EndTime'
+            , trigger: 'click'
+            , type: 'datetime'
+            , format: 'yyyy/MM/dd',
+            value: new Date()
+        });
+
+        $(function () {
+            initControl();
+            form.render();
+        });
+
+        function initControl() {
+            layui.$('#F_EqpId').bindSelect({
+                url: "/EquipmentManage/EqpPqcCheckItem/GetEqpListJson",
+                id: "F_Id",
+                text: "F_EqpName"
+            });
+        }
+
+        var entity;
+        var itemId;
+        var wxid;
+        //权限控制(js是值传递)
+        toolbarDemo.innerHTML = common.authorizeButtonNew(toolbarDemo.innerHTML);
+        toolbarTemp.innerHTML = common.authorizeButtonNew(toolbarTemp.innerHTML);
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            id: 'currentTableId',
+            url: '/EquipmentManage/EqpRepair/GetGridJson',
+            search: false,
+            defaultToolbar: [],
+            height: 'full-180',
+            where: {
+                RepairNo: $('#F_RepairNo').val(),
+                EqpId: $('#F_EqpId').val(),
+                StartTime: $('#StartTime').val(),
+                EndTime: $('#EndTime').val(),
+                Status: $('#F_Status').val()
+            },
+            cols: [[
+                //{ type: "checkbox", width: 50 },
+                { field: 'F_RepairNo', title: '维修单号', width: 200, sort: true, filter: true },
+                {
+                    field: 'F_Status', title: '状态', width: 140, sort: true, filter: true,
+                    templet: function (d) {
+                        if (d.F_Status == 1) {
+                            return "<span class='layui-btn layui-btn-danger layui-btn-xs'>报修等待派工</span>";
+                        }
+                        if (d.F_Status == 2) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>已派工</span>";
+                        }
+                        if (d.F_Status == 3) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>正在维修</span>";
+                        }
+                        if (d.F_Status == 4) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>维修完成等待确认</span>";
+                        }
+                        if (d.F_Status == 99) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>关闭</span>";
+                        }
+
+                    }
+                },
+                { field: 'F_EqpName', title: '工位', width: 100, sort: true, filter: true },
+                {
+                    field: 'F_ProblemType', title: '故障分类', width: 110, sort: true, filter: true,
+                    templet: function (d) {
+                        if (d.F_ProblemType == 1) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>人</span>";
+                        }
+                        if (d.F_ProblemType == 2) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>机</span>";
+                        }
+                        if (d.F_ProblemType == 3) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>料</span>";
+                        }
+                        if (d.F_ProblemType == 4) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>法</span>";
+                        }
+                        if (d.F_ProblemType == 5) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>环</span>";
+                        }
+
+                    }
+                },
+                {
+                    field: 'F_ProblemClass', title: '故障等级', width: 110, sort: true, filter: true,
+                    templet: function (d) {
+                        if (d.F_ProblemClass == 1) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>低</span>";
+                        }
+                        if (d.F_ProblemClass == 2) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>中</span>";
+                        }
+                        if (d.F_ProblemClass == 3) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>高</span>";
+                        }
+                    }
+                },
+                { field: 'F_ProblemDesc', title: '故障描述', width: 110, sort: true, filter: true },
+                { field: 'F_PhotoPath', title: '故障图片路径', width: 140, sort: true, filter: true },
+                { field: 'F_CallRepairManName', title: '报修人', width: 110, sort: true, filter: true },
+                { field: 'F_CallRepairTime', title: '报修时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' } },
+                { field: 'F_DistributeTime', title: '派工时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' } },
+                { field: 'F_StartRepairTime', title: '维修开始时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' } },
+                { field: 'F_EndRepairTime', title: '维修结束时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' } },
+
+                //{ field: 'F_ConfirmMan', title: '确认人ID,同报修人', width: 100,sort: true,filter: true },
+                { field: 'F_ConfirmTime', title: '确认时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' } },
+                //{ title: '操作', width: 170, toolbar: '#currentTableBar', align: "center" }
+            ]]
+        });
+        commonTable.rendertable({
+            elem: '#currentTable',
+            id: 'currentTable',
+            toolbar: '#toolbarTemp',//工具栏
+            data: [],
+            search: false,
+            limit: 9999,//每页数据 默认
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count'] //自定义分页布局
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            defaultToolbar: [],
+            height: 'full-130',
+            cols: [[
+                { type: "checkbox", width: 50 },
+                {
+                    field: 'F_Status', title: '状态', width: 90, sort: true, filter: true,
+                    templet: function (d) {
+                        if (d.F_Status == 1) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>派工</span>";
+                        }
+                        if (d.F_Status == 2) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>维修中</span>";
+                        }
+                        if (d.F_Status == 99) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>维修结束</span>";
+                        }
+                    }
+                },
+                {
+                    field: 'F_RepairManName', title: '维修人', width: 120, sort: true, filter: true,
+
+                },
+                {
+                    field: 'F_DistributeTime', title: '派工时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' },
+
+                },
+                { field: 'F_StartRepairTime', title: '维修开始时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' } },
+
+                {
+                    field: 'F_EndRepairTime', title: '维修结束时间', width: 160, sort: true, filter: { type: 'date[yyyy/MM/dd HH:mm:ss]' },
+                },
+                {
+                    field: 'F_RepairResult', title: '维修结果', width: 120, sort: true, filter: true,
+                },
+            ]]
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+
+            var oDate1 = new Date(data.field.StartTime);
+            var oDate2 = new Date(data.field.EndTime);
+            if (oDate1 > oDate2) {
+                common.modalMsg("结束时间不能早于开始时间", "warning");
+                return false;
+            }
+
+            //执行搜索重载
+            commonTable.reloadtable({
+                elem: 'currentTableId',
+                curr: 1,
+                where: {
+                    RepairNo: data.field.F_RepairNo,
+                    EqpId: data.field.F_EqpId,
+                    StartTime: data.field.StartTime,
+                    EndTime: data.field.EndTime,
+                    Status: data.field.F_Status
+                }
+            });
+            entity = null;
+            itemId = null;
+            wxid = null;
+            return false;
+        });
+        // 监听搜索操作
+        form.on('submit(temp-search-btn)', function (data) {
+            //执行搜索重载
+            common.ajax({
+                url: '/EquipmentManage/EqpRepair/GetRepairManListJson',
+                dataType: 'json',
+                data: {itemId:itemId , RepairNo: data.field.temp_F_RepairNo },
+                async: false,
+                success: function (data) {
+                    //debugger;
+                    if (data) {
+                        table.reload('currentTable', {
+                            data: data
+                        });
+                        //itemId = data.data.F_Id;
+                    }
+                    
+                }
+            });
+            item = null;
+            return false;
+        });
+        wcLoading.close();
+        table.on('row(currentTableFilter)', function (obj) {
+            obj.tr.addClass("layui-table-click").siblings().removeClass("layui-table-click");
+            entity = obj;
+            itemId = obj.data.F_Id;
+            wxid = obj.data.F_RepairNo;
+            $('[name="NF-edit"]').removeClass("layui-hide");
+            $('[name="NF-details"]').removeClass("layui-hide");
+            $('[name="NF-delete"]').removeClass("layui-hide");
+            $('[name="TF-add"]').removeClass("layui-hide");
+            $("#temp_F_RepairNo").val(wxid);
+            $('button[lay-filter="temp-search-btn"]').click();//按钮刷新
+        })
+
+        //var oneListM = ["NF-edit", "NF - details"];
+        //var moreListM = ["NF-delete"];
+        //commonTable.tableRowClick("checkbox", "currentTableFilter", "currentTableId", oneListM, moreListM);
+
+        //行点击事件监听，控制按钮显示
+        var moreList = ["TF-delete"];//选择多条显示
+        var oneList=["TF-details"]
+        commonTable.tableRowClick("checkbox", "currentTable", "currentTable", oneList, moreList);
+        //toolbar监听事件
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                common.modalOpen({
+                    title: "报修",
+                    url: "/EquipmentManage/EqpRepair/Form",
+                    width: "600px",
+                    height: "800px",
+                });
+            }
+            else if (obj.event === 'delete') {
+                if (entity == null) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                common.deleteForm({
+                    url: "/EquipmentManage/EqpRepair/DeleteForm",
+                    param: { keyValue: entity.data.F_Id },
+                    success: function () {
+                        common.reload('data-search-btn');
+                        entity = null;
+                    }
+                });
+            }
+            else if (obj.event === 'edit') {
+                if (entity == null) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                common.modalOpen({
+                    title: "编辑界面",
+                    url: "/EquipmentManage/EqpRepair/Form?keyValue=" + entity.data.F_Id,
+                    width: "500px",
+                    height: "500px",
+                });
+            }
+            else if (obj.event === 'details') {
+                if (entity == null) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                common.modalOpen({
+                    title: "查看界面",
+                    url: "/EquipmentManage/EqpRepair/Details?keyValue=" + entity.data.F_Id,
+                    width: "500px",
+                    height: "500px",
+                    btn: []
+                });
+            }
+            else if (obj.event === 'tf-add') {
+                if (entity == null) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                common.modalOpen({
+                    title: "派工",
+                    url: "/EquipmentManage/EqpRepair/ManRecordForm?repairId="+entity.data.F_Id+"&repairNo="+entity.data.F_RepairNo,
+                    width: "500px",
+                    height: "500px",
+                    //btn: []
+                });
+            }
+            return false;
+        });
+        //tool监听事件
+        table.on('toolbar(currentTable)', function (obj) {
+            var data = table.checkStatus('currentTable').data;
+            if (obj.event === 'add') {  // 监听添加操作
+                if (!itemId&&!wxid) {
+                    common.modalMsg("请先选择维修单", "warning");
+                    return false;
+                }
+                common.modalOpen({
+                    title: "派工",
+                    url: "/EquipmentManage/EqpRepair/ManRecordForm?repairNo="+wxid,
+                    width: "500px",
+                    height: "500px",
+                });
+            }
+            else if (obj.event === 'details')
+            {
+                //if () {
+                //    common.modalMsg("请先选择维修单", "warning");
+                //    return false;
+                //}
+                common.modalOpen({
+                    title: "查看详细",
+                    url: "/EquipmentManage/EqpRepair/ManRecordDetails?keyValue=" + data[0].F_Id + "&repairNo=" + $('#temp_F_RepairNo').val(),
+                    width: "700px",
+                    height: "800px",
+                });
+            }
+            else if (obj.event === 'delete') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                var ids = [];
+                for (var i = 0; i < data.length; i++) {
+                    ids.push(data[i].F_Id);
+                }
+                common.deleteForm({
+                    url: "/EquipmentManage/EqpRepair/ManRecordDeleteForm",
+                    param: { keyValue: ids.join(',') },
+                    success: function () {
+                        common.reload('temp-search-btn');
+                        entity = null;
+                    }
+                });
+            }
+            return false;
+        });
+    });
+</script>
+
+

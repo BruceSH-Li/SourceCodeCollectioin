@@ -1,0 +1,212 @@
+@import "./static/css/uikit.min.acss";
+page {
+  background-color: #F7F7F7;
+  border: 1px solid rgba(0, 0, 0, 0);
+  box-sizing: border-box;
+}
+
+.page {
+  font-family: -apple-system-font, Helvetica Neue, Helvetica, sans-serif;
+  font-size: 24rpx;
+  padding: 32rpx;
+  flex: 1;
+}
+
+.page-description {
+  margin-bottom: 32rpx;
+  font-weight: bold
+}
+
+.page-section {
+  background: #fff;
+  margin-bottom: 32rpx;
+  border-radius:15rpx;
+}
+
+
+.page-section-title {
+  padding: 16rpx 32rpx;
+}
+
+.page-section-demo {
+  padding: 0 32rpx 16rpx 32rpx;
+}
+
+.page-section-btns {
+  border-top: 1px solid #ddd;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.page-section-btns>view {
+  flex: 1;
+  height: 84rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  color: #49a9ee;
+}
+
+.page-section-btns>view+view {
+  border-left: 1px solid #ddd;
+}
+
+.bc_blue {
+  background-color: #49A9EE;
+}
+
+.bc_red {
+  background-color: #F04134;
+}
+
+.bc_yellow {
+  background-color: #FFBF00;
+}
+
+.bc_green {
+  background-color: #00A854;
+}
+
+.form-row {
+  display: flex;
+  align-items: center;
+  padding: 0 30rpx;
+  height: 88rpx;
+  align-items: center;
+}
+
+.form-row-label {
+  width: 180rpx;
+  margin-right: 10rpx;
+  text-align: left;
+  color: #000;
+}
+
+.form-row-content {
+  flex: 1;
+}
+
+.form-line {
+  height: 1px;
+  background-color: #ddd;
+  margin-left: 30rpx;
+}
+
+.login-navigator {
+  background-color: #FFBF00;
+  color: #fff;
+  margin: 20rpx 0;
+  padding: 20rpx;
+  text-align: center;
+  display: inline-block
+}
+
+.index-navigator {
+  background-color: #49A9EE;
+  color: #fff;
+  margin: 20rpx 0;
+  padding: 20rpx;
+  text-align: center;
+}
+
+.index-navigator-hover {
+  background-color: #F04134;
+  color: #fff;
+}
+
+.scanbtn {
+  background: url(/static/images/toolbar_scan_active.png) no-repeat center;
+  border: 0
+}
+
+.requireLabel:before {
+  content: '* ';
+  color: red;
+}
+
+.login-form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  padding: 25rpx 10rpx;
+  margin: 40rpx 3%;
+  background: #fff;
+  border-radius: 5px;
+  border: 2px solid #f4f4f4;
+  transition: all .25s ease-in-out;
+}
+
+.input-group.active {
+  border: 2px solid #7acfa6;
+}
+
+.input-label {
+  color: #888;
+  font-size: 13pt;
+  height: 25rpx;
+  line-height: 25rpx;
+  padding: 0 25rpx;
+  border-right: 1px solid #d8d8d8;
+}
+
+.input-group input, .input-group picker {
+  flex: 1;
+  font-size: 13pt;
+  min-height: 52rpx;
+  height: 52rpx;
+  line-height: 52rpx;
+  padding: 0 25rpx;
+}
+
+.title {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25rpx;
+}
+
+.title_icon {
+  display: block;
+  width: 21rpx;
+  height: 11rpx;
+}
+
+.date-radio {
+  padding: 26rpx;
+}
+.date-radio label + label {
+  margin-left: 20rpx;
+}
+.row {
+  display: flex;
+  align-items: center;
+  padding: 0 30rpx;
+}
+.row-title {
+  flex: 1;
+  padding-top: 28rpx;
+  padding-bottom: 28rpx;
+  /* font-size: 34rpx; */
+  color: #000;
+}
+.row-extra {
+  flex-basis: initial;
+  font-size: 32rpx;
+  color: #888;
+}
+.row-arrow {
+  width: 32rpx;
+  height: 32rpx;
+  margin-left: 16rpx;
+}
+
+

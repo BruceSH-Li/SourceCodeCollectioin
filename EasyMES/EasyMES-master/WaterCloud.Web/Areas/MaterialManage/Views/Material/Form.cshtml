@@ -1,0 +1,405 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+
+    layui.use(['jquery', 'form', 'laydate', 'common', 'optimizeSelectOption', 'table', 'upload'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common,
+            table = layui.table,
+            upload = layui.upload;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+
+        var CpkTableData;
+        var tableIns;
+        var tableId = "CpkTableId";
+        var tableFilter = "CpkTableFilter";
+
+        $(function () {
+            initControl();
+            $('#F_Customer').parent().parent().addClass('layui-hide');
+            $('#F_CustomerProNO').parent().parent().addClass('layui-hide');
+            if (!!keyValue) {
+                common.ajax({
+                    url: '/MaterialManage/Material/GetFormJson',
+                    dataType: 'json',
+                    data: { keyValue: keyValue },
+                    async: false,
+                    success: function (data) {
+                        common.val('adminform', data);
+                        MaterialTypeChange(data.F_MaterialType);
+                        if (!!data.F_CpkStData) {
+                            CpkTableData = JSON.parse(data.F_CpkStData);
+                        }
+                    }
+                });
+            }
+            else {
+                var code = new Date().formatDate('yyyyMMddhhmmss');
+                $('#F_MaterialCode').val("MC_" + code);
+            }
+            form.render();
+
+            tableIns = table.render({
+                elem: '#' + tableId
+                , data: CpkTableData
+                , cols: [[
+                    { title: '序号', type: 'numbers', width: 40 }
+                    , { field: 'field_name', title: '分析字段', width: 120, edit: 'text' }
+                    , { field: 'st', title: '标准值', width: 120, edit: 'text' }
+                    , { field: 'st_tu', title: '上偏差', width: 120, edit: 'text' }
+                    , { field: 'st_tl', title: '下偏差', width: 120, edit: 'text' }
+                    , { field: 'st_pic', title: '图像', minWidth: 80, edit: 'text' }
+                    , { title: '操作', width: 210, toolbar: '#CpkTableBar', align: "left" }
+
+                ]]
+                , page: false
+                , done: function (res, curr, count) {
+
+                    //普通图片上传
+                    var uploadInst1 = upload.render({
+                        elem: '.uploads'
+                        , url: '/FileManage/Uploadfile/Upload' //改成您自己的上传接口
+                        , size: 1024
+                        , accept: 'images'
+                        , acceptMime: 'image/jpeg,image/png'
+                        , exts: 'jpg|png|gif|bmp|jpeg'
+                        , data: { filetype: 1, fileby: '标准出炉热成像图' }
+                        , auto: true//自动提交
+                        //, bindAction: "#submit"//绑定真正提交的按钮
+                        , choose: function (obj) {
+
+                            //预读本地文件示例，不支持ie8
+                            obj.preview(function (index, file, result) {
+
+                                //$('#hotPic1').attr('src', result); //图片链接（base64）
+
+                                //$('#uploader-list').html(
+                                //    '<div id="" class="file-iteme">' +
+                                //    '<div class="handle"><i class="layui-icon layui-icon-delete"></i></div>' +
+                                //    '<img style="width: 100px;height: 100px;" src=' + result + '>' +
+                                //    '<div class="info">' + 33 + '</div>' +
+                                //    '</div>'
+                                //);
+
+                            });
+
+                        }
+                        , done: function (res) {
+                            //如果上传失败
+                            if (res.code > 0) {
+                                //失败状态，并实现重传
+                                //var demoText = $('#warnText1');
+                                //demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload1">重试</a>');
+                                //demoText.find('.demo-reload1').on('click', function () {
+                                //    uploadInst1.upload();
+                                //});
+                                common.modalMsg(res.msg, "warning");
+                                return false;
+                            }
+                            //$('#F_HotPic1').val(res.data[0].src);
+                            //loadPic('#uploader-list1', res.data[0].src);
+                            var d = [];
+                            d.LAY_TABLE_INDEX = this.item.attr('value');
+                            d.st_pic = res.data[0].src;
+                            tableActive.updateRow(d);
+
+                            return common.modalMsg("上传成功", "success");
+
+                            //上传成功
+                            //common.submitForm({
+                            //    url: '/SystemOrganize/SystemSet/SetSubmitForm',
+                            //    param: postData,
+                            //    success: function () {
+                            //        common.parentreload('data-search-btn');
+                            //    }
+                            //})
+                        }
+                        , error: function () {
+
+                            ////演示失败状态，并实现重传
+                            //var demoText = $('#warnText1');
+                            //demoText.html('<span style="color: #FF5722;">上传失败</span> <a class="layui-btn layui-btn-xs demo-reload1">重试</a>');
+                            //demoText.find('.demo-reload1').on('click', function () {
+                            //    uploadInst1.upload();
+                            //});
+                        }
+                    });
+
+
+                }
+            });
+
+
+
+
+        });
+
+        wcLoading.close();
+
+
+        //定义表格操作
+        var tableActive = {
+            //添加行
+            addNewRow: function (field_name, st, st_tu, st_tl, st_pic) {
+                //获取表格当前数据
+                var oldData = table.cache["CpkTableId"];
+                if (!oldData) {
+                    oldData = [];
+                }
+                //新行数据
+                var newRow = {
+                    field_name: field_name,
+                    st: st,
+                    st_tu: st_tu,
+                    st_tl: st_tl,
+                    st_pic: st_pic
+                };
+                //将新行插入表格数据中
+                oldData.push(newRow);
+                //如果原table渲染时指定了数据url
+                //重载时需要设置url: null
+                //使用新数据重载表格
+                tableIns.reload({
+                    url: null,
+                    data: oldData
+                });
+            },
+            //删除行
+            deleteRow: function () {
+                var oldData = table.cache[tableId];
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    //在table工具栏监听时删除对应行dom结构
+                    //行不存在则从数据中删除
+                    if (!row || !(row != null && row.LAY_TABLE_INDEX >= 0)) {
+                        oldData.splice(i, 1);    //删除一项
+                    }
+                    continue;
+                }
+                tableIns.reload({
+                    url: null,
+                    data: oldData
+                });
+            },
+            //更新数据
+            updateRow: function (data) {
+                //更新表数据
+                var oldData = table.cache[tableId];
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    if (row.LAY_TABLE_INDEX == data.LAY_TABLE_INDEX) {
+                        $.extend(oldData[i], data);
+                        continue;
+                    }
+                }
+                tableIns.reload({
+                    url: null,
+                    data: oldData
+                });
+            },
+
+
+            //保存cpk参考数据
+            saveTable: function () {
+
+                var oldData = table.cache[tableId];
+                if (!!oldData) {
+                    for (var i = 0, row; i < oldData.length; i++) {
+                        row = oldData[i];
+                        if (!row.field_name && !row.st && !row.st_tu && !row.st_tl && !row.st_pic) {
+                            oldData.splice(i, 1);    //删除空项
+                            continue;
+                        }
+                    }
+                }
+                return oldData;
+            }
+
+        };
+
+        //新增行
+        $("#addRow").on("click", function () {
+            tableActive.addNewRow("", "", "", "", "");
+        });
+
+        //监听工具条，删除行
+        table.on("tool(" + tableFilter + ")", function (obj) {
+            var data = obj.data, event = obj.event, tr = obj.tr; //获得当前行 tr 的DOM对象;
+
+            switch (event) {
+                case "deleteRow":
+                    layer.confirm('确定删除该行么？', { icon: 6, title: '提示' }, function (index) {
+                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                        layer.close(index);
+                        tableActive.deleteRow();
+                    });
+                    break;
+
+            }
+        });
+
+        function initControl() {
+            $("#F_MaterialType").bindSelect({
+                data: top.clients.dataItems['Mes_MaterialType'],
+                id: "",
+            });
+        }
+        //监听复选框
+        form.on('select(MaterialType)', function (data) {
+            MaterialTypeChange(data.value);
+            form.render();
+        });
+        function MaterialTypeChange(value) {
+            if (value == "2") {
+                $('#F_Customer').parent().parent().removeClass('layui-hide');
+                $('#F_CustomerProNO').parent().parent().removeClass('layui-hide');
+            }
+            else {
+                $('#F_Customer').parent().parent().addClass('layui-hide');
+                $('#F_CustomerProNO').parent().parent().addClass('layui-hide');
+                $('#F_Customer').val("");
+                $('#F_CustomerProNO').val("");
+            }
+        }
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var postData = data.field;
+
+            //取cpk参考数据
+            var cpkdata = tableActive.saveTable();
+            if (!!cpkdata) {
+                postData["F_CpkStData"] = JSON.stringify(cpkdata);
+            }
+            //return false;
+
+            if (!postData["F_EnabledMark"]) postData["F_EnabledMark"] = false;
+            if (!postData["F_NeedCheckout"]) postData["F_NeedCheckout"] = false;
+            common.submitForm({
+                url: '/MaterialManage/Material/SubmitForm?keyValue=' + keyValue,
+                param: postData,
+                success: function () {
+                    common.parentreload('data-search-btn');
+                }
+            })
+            return false;
+        });
+    });
+</script>
+
+<body>
+    <script type="text/html" id="CpkTableBar">
+        <a id="deleteRow" authorize class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="deleteRow"><i class="layui-icon">&#xe640;</i>移除</a>
+        <a id="uploadPic" authorize class="layui-btn layui-btn-sm uploads" value="{{d.LAY_TABLE_INDEX}}" lay-event="uploadPic"><i class="layui-icon">&#xe62f;</i>上传图片</a>
+    </script>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">物料分类</label>
+                    <div class="layui-input-block">
+                        <select id="F_MaterialType" name="F_MaterialType" lay-filter="MaterialType" lay-verify="required" lay-search>
+                            <option value="" selected>请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">物料编号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_MaterialCode" name="F_MaterialCode" autocomplete="off" maxlength="50" lay-verify="required" placeholder="请输入物料编号" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">物料名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_MaterialName" name="F_MaterialName" autocomplete="off" maxlength="50" lay-verify="required" placeholder="请输入物料名称" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">容器值</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="F_ContainerNum" name="F_ContainerNum" lay-verify="required|number" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">领用倍数限制</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="F_ReceiveNum" name="F_ReceiveNum" lay-verify="required|number" oninput="if(value.length>8)value=value.slice(0,8)" value="2" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">物料描述</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_MaterialDescription" name="F_MaterialDescription" maxlength="50" autocomplete="off" placeholder="请输入物料描述" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">物料单位</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_MaterialUnit" name="F_MaterialUnit" autocomplete="off" maxlength="50" lay-verify="required" placeholder="请输入物料单位" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">物料规格</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_MaterialSize" name="F_MaterialSize" autocomplete="off" maxlength="50" placeholder="请输入物料规格" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">物料材质</label>
+                    <div class="layui-input-block">
+                        <div class="layui-input-block">
+                            <input type="text" id="F_MaterialBy" name="F_MaterialBy" autocomplete="off" maxlength="50" placeholder="请输入物料材质" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">客户名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_Customer" name="F_Customer" autocomplete="off" maxlength="50" placeholder="请输入客户名称" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">客户品号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_CustomerProNO" name="F_CustomerProNO" autocomplete="off" maxlength="50" placeholder="请输入客户品号" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">数模号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_ModelRefer" name="F_ModelRefer" autocomplete="off" maxlength="50" placeholder="请输入数模号" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">扫描Cpk标准值表</label>
+                    <div style="padding:4px;border:1px solid #E0E0E0" class="layui-input-block">
+                        <button id="addRow" name="addRow" authorize class="layui-btn layui-btn-sm data-add-btn"><i class="layui-icon">&#xe654;</i>新增一行</button>
+                        <table class="layui-hide layui-table-cell" id="CpkTableId" lay-filter="CpkTableFilter"></table>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">选项</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="F_EnabledMark" id="F_EnabledMark" checked="" value="true" title="有效标识">
+                        <input type="checkbox" name="F_NeedCheckout" id="F_NeedCheckout" value="true" title="需要检验">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text layui-hide">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <textarea id="F_Description" name="F_Description" class="layui-textarea" placeholder="请输入备注"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

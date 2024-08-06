@@ -1,0 +1,45 @@
+<import-sjs from="/static/js/enum.sjs" name="Enum"></import-sjs>
+<view class="page">
+  <view class="page-description">录入缺陷</view>
+  <form onSubmit="onSubmit">
+
+    <!-- <scanbox id="abc" name="abc" placeHolder="自定义编号" label="标题" onScanCallBack="GetCheckoutInfo" onSearchCallBack="GetCheckoutInfo"></scanbox>  -->
+    <view class="page-section">
+      <view class="requireLabel">缺陷类型</view>
+      <picker onChange="bindObjPickerTypeChange" value="{{arrTypeIndex}}" range="{{objectTypeArray}}" range-key="Description">
+        <view class="row">
+          <view class="row-title"></view>
+          <view class="row-extra">{{objectTypeArray[arrTypeIndex].Description}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <view class="requireLabel">缺陷信息</view>
+      <picker onChange="bindObjPickerChange" value="{{arrIndex}}" range="{{objectArray}}" range-key="F_Description">
+        <view class="row">
+          <view class="row-title"></view>
+          <view class="row-extra">{{objectArray[arrIndex].F_Description}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <button size="mini" type="primary"  onTap="AddScapImage">上传图片</button>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">预览图片</view>
+        <view class="form-line"/>
+          <view style="padding:10rpx;display:{{imageHidden?'none':'block'}}">
+            <image class="image"
+              data-name="scaleToFill"
+              onTap="LookImage"
+              mode="scaleToFill" data-attr='{{filePath}}' src="{{filePath}}" onError="imageError" onLoad="imageLoad" />
+        </view>
+    </view>
+    <view class="page-section">
+      <view>
+        <button type="primary" formType="submit">提交</button></view>
+    </view>
+  </form>
+</view>

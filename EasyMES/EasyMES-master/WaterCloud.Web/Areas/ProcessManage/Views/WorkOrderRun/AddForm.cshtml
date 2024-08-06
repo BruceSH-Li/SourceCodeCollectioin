@@ -1,0 +1,181 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'table', 'common', 'commonTable', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            commonTable = layui.commonTable,
+            common = layui.common;
+        //加载数据
+        wcLoading.close();
+        var keyValue = $.request("keyValue");
+        var parentform = $.request("parentform");
+        var currentWindow = !parent[parentform] ? common.currentWindow() : parent[parentform];
+        var materialId = $.request("materialId");
+        var ids = $.request("ids");
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            id: 'currentTableId',
+            url: '/ProcessManage/WorkOrderRun/GetAddListJson?keyValue=' + keyValue + '&materialId=' + materialId + "&ids=" + ids,
+            search: false,
+            height: 'full-110',
+            limit: 99999,//每页数据 默认
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count'] //自定义分页布局
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            toolbar: false,//工具栏
+            cols: [[
+                { type: 'radio' },
+                {
+                    field: 'F_EqpType', title: '设备类型', width: 120,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_EqpType"][d.F_EqpType] == null ? "" : top.clients.dataItems["Mes_EqpType"][d.F_EqpType];
+                    }
+                },
+                {
+                    field: 'F_EqpUse', title: '设备用途', width: 120,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_EqpUse"][d.F_EqpUse] == null ? "" : top.clients.dataItems["Mes_EqpUse"][d.F_EqpUse];
+                    }
+                },
+                {
+                    field: 'F_MouldType', title: '模具类型', width: 110, sort: true,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_MouldType"][d.F_MouldType] == null ? "" : top.clients.dataItems["Mes_MouldType"][d.F_MouldType];
+                    }
+                },
+                { field: 'F_EqpName', title: '设备名称', minWidth: 120 },
+                { field: 'F_Description', title: '设备描述', minWidth: 120 },
+                { field: 'F_DieNum', title: '模具编号', width: 110 },
+                {
+                    field: 'F_IsOtherEqp', title: '加载', width: 80, sort: true,
+                    templet: function (d) {
+                        if (d.F_IsOtherEqp == true) {
+                            return "<span class='layui-btn layui-btn-normal layui-btn-xs'>是</span>";
+                        } else {
+                            return "<span class='layui-btn layui-btn-warm layui-btn-xs'>否</span>";
+                        }
+                    }
+                },
+            ]]
+        });
+        //行点击事件监听，控制按钮显示
+        commonTable.tableRowClick("radio", "currentTableFilter", "currentTableId");
+        // 监听双击事件
+        table.on('rowDouble(currentTableFilter)', function (obj) {
+            var pname = obj.data.F_EqpName;
+            common.modalConfirm("注：您确定要选择{设备名称：" + pname + "}的数据吗？", function (r) {
+                if (r) {
+                    var cacheData = currentWindow.layui.table.cache.currentTableId;;
+                    if (!!materialId) {
+                        if (cacheData.length > 0) {
+                            if (obj.data.F_EqpUse==7) {
+                                currentWindow.$('#F_MouldNum').val(obj.data.F_MoldingNum);
+                                currentWindow.$('#F_MouldNum').removeAttr('disabled');
+                                currentWindow.$('#F_MouldNum').parent().parent().removeClass('layui-hide');
+                            }
+                            obj.data.F_IsMaster = false;
+                            cacheData.push(obj.data);
+                            currentWindow.layui.table.reload('currentTableId', {
+                                data: cacheData
+                            });
+                        }
+                    }
+                    else {
+                        if (cacheData.length == 0) {
+                            obj.data.F_IsMaster = true;
+                            cacheData.push(obj.data);
+                            currentWindow.layui.table.reload('currentTableId', {
+                                data: cacheData
+                            });
+                        }
+                    }
+                    common.modalClose();
+                }
+            });
+            return false;
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            commonTable.reloadtable({
+                elem: 'currentTableId',
+                page: false,
+                where: { keyword: data.field.txt_keyword }
+            });
+            return false;
+        });
+        // 监听提交操作
+        form.on('submit(saveBtn)', function (data) {
+            var checkStatus = table.checkStatus("currentTableId").data;
+            var pname;
+            var obj = {};
+            if (checkStatus.length > 0) {
+                pname = checkStatus[0].F_EqpName;
+                obj.data = checkStatus[0];
+            }
+            if (checkStatus.length != 0) {
+                common.modalConfirm("注：您确定要选择{设备名称" + pname + "}的数据吗？", function (r) {
+                    if (r) {
+                        var cacheData = currentWindow.layui.table.cache.currentTableId;;
+                        if (!!materialId) {
+                            if (cacheData.length > 0) {
+                                if (obj.data.F_EqpUse == 7) {
+                                    currentWindow.$('#F_MouldNum').val(obj.data.F_MoldingNum);
+                                    currentWindow.$('#F_MouldNum').removeAttr('disabled');
+                                    currentWindow.$('#F_MouldNum').parent().parent().removeClass('layui-hide');
+                                }
+                                obj.data.F_IsMaster = false;
+                                cacheData.push(obj.data);
+                                currentWindow.layui.table.reload('currentTableId', {
+                                    data: cacheData
+                                });
+                            }
+                        }
+                        else {
+                            if (cacheData.length == 0) {
+                                obj.data.F_IsMaster = true;
+                                cacheData.push(obj.data);
+                                currentWindow.layui.table.reload('currentTableId', {
+                                    data: cacheData
+                                });
+                            }
+                        }
+                        common.modalClose();
+                    }
+                });
+            }
+            return false;
+        });
+    });
+</script>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset">
+            <div>
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">关键字:</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="txt_keyword" name="txt_keyword" autocomplete="off" class="layui-input" placeholder="">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-hide">
+                        <button class="layui-btn" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+    </div>
+</div>

@@ -1,0 +1,135 @@
+﻿@{
+    ViewBag.Title = "EqpForm";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common', 'optimizeSelectOption', 'inputAttr'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common;
+        var inputAttr = layui.inputAttr;
+        inputAttr.init({
+            // 重新定义根节点
+            root: ".layui-form",
+            // 事件托管
+            event: {
+                // 当点击清除按钮内容被清理
+                clearable: function (event, dom) {
+                    console.log({ event: event, dom: dom });
+                }
+            }
+        });
+        var keyValue = $.request("keyValue");
+        $('#F_TransferBoxCode').focus();
+        var parentData = [];
+        $(function () {
+            common.ajax({
+                url: '/RunMonitor/EqpScanScreen/GetOutMaterialList',
+                dataType: 'json',
+                data: { keyValue: keyValue },
+                async: false,
+                success: function (data) {
+                    parentData = data;
+                    $("#MaterialId").bindSelect({
+                        data: parentData,
+                        id: "F_Id",
+                        text: "F_MaterialName"
+                    });
+                    if (!!data) {
+                        MaterialChange(data[0].F_Id);
+                    }
+                }
+            });
+            common.ajax({
+                url: '/RunMonitor/EqpScanScreen/GetReadyBoxes',
+                dataType: 'json',
+                data: { keyValue: keyValue },
+                async: false,
+                success: function (data) {
+                    if (!!data&&data.length>0) {
+                        $('#F_TransferBoxCode').val(data[0].F_TransferBoxCode);
+                    }
+                }
+            });
+            form.render();
+        });
+        wcLoading.close();
+        //监听提交
+        form.on('select(MaterialChange)', function (data) {
+            MaterialChange(data.value);
+            return false;
+        });
+        function MaterialChange(value) {
+            for (var i = 0; i < parentData.length; i++) {
+                if (parentData[i].F_Id == value) {
+                    var materialBatch = "";
+                    if (parentData[i].F_BatchType == 1) {
+                        materialBatch = parentData[i].F_BatchPrefix + "-" + new Date().SmallFormat("yyMMDDhhmmss");
+                        $('#F_MaterialBatch').val(materialBatch);
+                    }
+                    else {
+                        common.ajax({
+                            url: '/RunMonitor/EqpScanScreen/GetBatch',
+                            dataType: 'json',
+                            async: false,
+                            success: function (data) {
+                                if (!!data && data.length > 0) {
+                                    materialBatch = data;
+                                    $('#F_MaterialBatch').val(materialBatch);
+                                }
+                            }
+                        });
+                    }
+                    $('#F_Num').val(parentData[i].F_ContainerNum);
+                }
+            }
+        }
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            common.submitForm({
+                url: "/RunMonitor/EqpScanScreen/OutputMaterial",
+                param: { keyValue: keyValue, materialId: data.field.MaterialId, transferBoxCode: data.field.F_TransferBoxCode, materialBatch: data.field.F_MaterialBatch, num: data.field.F_Num },
+                success: function () {
+                    parent.getData();
+                }
+            })
+            return false;
+        });
+    });
+</script>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layuimini-form " lay-filter="adminform">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">物料</label>
+                <div class="layui-input-block">
+                    <select id="MaterialId" name="MaterialId" lay-filter="MaterialChange" lay-verify="required">
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">流转箱</label>
+                <div class="layui-input-block">
+                    <input id="F_TransferBoxCode" name="F_TransferBoxCode" autocomplete="off" class="layui-input" lay-verify="required" clearable/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">物料批次</label>
+                <div class="layui-input-block">
+                    <input id="F_MaterialBatch" name="F_MaterialBatch" readonly class="layui-input"  lay-verify="required"/>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">数量</label>
+                <div class="layui-input-block">
+                    <input id="F_Num" name="F_Num" class="layui-input"  lay-verify="required"/>
+                </div>
+            </div>
+            <div class="layui-form-item layui-hide">
+                <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

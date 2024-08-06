@@ -1,0 +1,23 @@
+{
+  "modes": [
+    {
+      "title": "111",
+      "page": "pages/EqpRepair/EqpRepairInfo/EqpRepairInfo",
+      "update": true
+    },
+    {
+      "title": "dotaskjob",
+      "page": "pages/TaskJob/DoTaskJob/DoTaskJob"
+    },
+    {
+      "title": "index",
+      "page": "pages/index/index",
+      "update": true
+    },
+    {
+      "title": "入库绑定",
+      "page": "pages/InStorage/InStorageBanding/InStorageBanding"
+    }
+  ],
+  "current": 2
+}

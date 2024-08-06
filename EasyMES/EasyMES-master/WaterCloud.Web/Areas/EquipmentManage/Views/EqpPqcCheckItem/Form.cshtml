@@ -1,0 +1,106 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'common', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+        var EqpId = $.request("EqpId");
+        //权限字段
+        common.authorizeFields('adminform');
+        //此处需修改
+
+        $(function () {
+            initControl();
+            if (!!keyValue) {
+                common.ajax({
+                    url: '/EquipmentManage/EqpPqcCheckItem/GetFormJson',
+                    dataType: 'json',
+                    data: { keyValue: keyValue },
+                    async: false,
+                    success: function (data) {
+                        common.val('adminform', data);
+                        $('#F_EqpId').prop('disabled', true);
+                    }
+                });
+            }
+            else {
+                if (!!EqpId) {
+                    $("#F_EqpId").val(EqpId);
+                }
+            }
+            form.render();
+        });
+        wcLoading.close();
+
+        function initControl() {
+            $("#F_EqpId").bindSelect({
+                url: "/EquipmentManage/EqpPqcCheckItem/GetEqpListJson",
+                id: "F_Id",
+                text: "F_EqpName"
+            });
+        }
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var postData = data.field;
+            if (!postData["F_EnabledMark"]) postData["F_EnabledMark"] = false;
+            common.submitForm({
+                url: '/EquipmentManage/EqpPqcCheckItem/SubmitForm?keyValue=' + keyValue,
+                param: postData,
+                success: function () {
+                    common.parentreload('data-search-btn');
+                }
+            })
+            return false;
+        });
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">设备</label>
+                    <div class="layui-input-block">
+                        <select id="F_EqpId" name="F_EqpId" lay-verify="required" lay-search>
+                            <option value="" selected>请选择</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">点检项目</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_CheckItem" name="F_CheckItem" maxlength="50" autocomplete="off" lay-verify="required" placeholder="请输入点检项目" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label required">点检基准</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_CheckStand" name="F_CheckStand" maxlength="50" autocomplete="off" lay-verify="required" placeholder="请输入点检项目" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">存取顺序</label>
+                    <div class="layui-input-block">
+                        <input type="number" pattern="[0-9]*" id="F_Sequence" name="F_Sequence" lay-verify="number" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">选项</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="F_EnabledMark" id="F_EnabledMark" checked="" value="true" title="有效标识">
+                    </div>
+                </div>
+
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+

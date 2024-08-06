@@ -1,0 +1,80 @@
+<view class="page">
+  <view class="page-description">入库上架</view>
+  <form onSubmit="onSubmit">
+    <view class="page-section">
+      <view class="page-section-title requireLabel">流转箱编号</view>
+      <view class="page-section-demo">
+        <input value="{{transferCode}}" name="transferCode" class="input" placeholder="流转箱编号" onBlur="search"/>
+        <button size="mini" type="ghost" onTap="Scan_transferCode" class="scanbtn"></button>
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">流转箱相关信息</view>
+      <view class="form-line"/>
+      <view style="padding:10rpx;display:{{instorageHidden?'none':'block'}}">
+        <view class="page-section-demo">
+          <view>入库单号：{{F_InStorageCode}}</view>
+        </view>
+        <view class="page-section-demo">
+          <view>物料编号：{{F_MaterialCode}}</view>
+        </view>
+        <view class="page-section-demo">
+          <view>物料名称：{{F_MaterialName}}</view>
+        </view>
+        <view class="page-section-demo">
+          <view>批号：{{F_MaterialBatch}}</view>
+        </view>
+        <view class="page-section-demo">
+          <view>数量：{{F_Num}}</view>
+        </view>
+        <view class="page-section-demo">
+          <view>绑定人:{{F_BandingUserName}}</view>
+        </view>     
+      </view>
+    </view>
+    <!-- <view class="page-section">
+      <button size="mini" type="primary" onTap="GetLocation">获取规则库位</button>
+      <button size="mini" type="primary" style="float:right" onTap="GetAllLocation">获取所有库位</button>
+      <picker onChange="bindObjPickerAreaChange" disabled value="{{areaArrIndex}}" range="{{objectAreaArray}}" range-key="F_AreaCode">
+        <view class="row">
+          <view class="row-title">仓库</view>
+          <view class="row-extra">{{objectAreaArray[areaArrIndex].F_AreaCode}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view> -->
+    <view class="page-section">
+      <picker onChange="bindObjPickerAreaChange" value="{{arrAreaIndex}}" range="{{objectAreaArray}}" range-key="F_AreaCode">
+        <view class="row">
+          <view class="row-title requireLabel">库区</view>
+          <view class="row-extra">{{objectAreaArray[arrAreaIndex].F_AreaCode}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+      <view style="padding:10rpx;display:{{instorageHidden?'none':'block'}}">
+        <button size="mini" type="primary" onTap="GetLocation">获取可用库位</button>
+        <button size="mini" type="primary" style="float:right" onTap="GetAllLocation">获取所有库位</button>
+      </view>
+      <picker onChange="bindObjPickerOutChange" value="{{arrOutIndex}}" range="{{objectOutArray}}" range-key="Prefix">
+        <view class="row">
+          <view class="row-title requireLabel">库位编号</view>
+          <view class="row-extra">{{objectOutArray[arrOutIndex].Prefix}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <picker onChange="bindObjPickerChange" value="{{arrIndex}}" range="{{objectArray}}" range-key="F_LocationCode">
+        <view class="row">
+          <view class="row-title requireLabel">库位号</view>
+          <view class="row-extra">{{objectArray[arrIndex].F_LocationCode}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <view>
+        <button type="primary" formType="submit">提交</button></view>
+    </view>
+  </form>
+</view>

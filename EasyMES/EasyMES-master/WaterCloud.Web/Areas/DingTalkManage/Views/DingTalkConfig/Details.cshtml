@@ -1,0 +1,134 @@
+﻿@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common,
+            laydate = layui.laydate;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+        //此处需修改
+        //类型为时间时
+        //laydate.render({
+        //elem: '#F_Birthday'
+        //, btns: ['clear', 'now']
+        //, trigger: 'click',
+        //format: 'yyyy-MM-dd',
+        //});
+
+        $(function () {
+            initControl();
+            common.ajax({
+                url: '/DingTalkManage/DingTalkConfig/GetFormJson',
+                dataType: 'json',
+                data: { keyValue: keyValue },
+                async: false,
+                success: function (data) {
+                    common.val('adminform', data);
+                    common.setReadOnly('adminform');
+                }
+            });
+            if ($('#F_DingType').val() == "0") {
+                $("#F_AppId").parent().parent().addClass('layui-hide');
+                $("#F_RedirectUrl").parent().parent().addClass('layui-hide');
+                $("#F_Url").parent().parent().addClass('layui-hide');
+            }
+            else if ($('#F_DingType').val() == "2") {
+                $("#F_AppId").parent().parent().addClass('layui-hide');
+                $("#F_RedirectUrl").parent().parent().addClass('layui-hide');
+            }
+            else if ($('#F_DingType').val() == "1") {
+                $("#F_AgentId").parent().parent().addClass('layui-hide');
+                $("#F_AppKey").parent().parent().addClass('layui-hide');
+            }
+            form.render();
+        });
+        wcLoading.close();
+
+        function initControl() {
+            $("#F_DingType").bindSelect({
+                data: top.clients.dataItems['Mob_DingType'],
+                id: "",
+            });
+        }
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">应用类型</label>
+                    <div class="layui-input-block">
+                        <select id="F_DingType" name="F_DingType" lay-verify="required">
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">应用名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AppName" name="F_AppName" autocomplete="off" lay-verify="required" maxlength="50" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">回调地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_RedirectUrl" name="F_RedirectUrl" autocomplete="off" maxlength="255" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">AgentId</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AgentId" name="F_AgentId" autocomplete="off" maxlength="50" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">AppKey</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AppKey" name="F_AppKey" autocomplete="off" maxlength="50" lay-verify="required" placeholder="请输入AppId" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">AppId</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AppId" name="F_AppId" autocomplete="off" maxlength="50" lay-verify="required" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">AppSecret</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_AppSecret" name="F_AppSecret" autocomplete="off" lay-verify="required" maxlength="100" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">访问地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="F_Url" name="F_Url" autocomplete="off" maxlength="255" placeholder="请输入访问地址" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <label class="layui-form-label">选项</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" name="F_EnabledMark" id="F_EnabledMark" value="true" title="有效标识">
+                        <input type="checkbox" name="F_IsWebLogin" id="F_IsWebLogin" value="true" title="登录标识">
+                        <input type="checkbox" name="F_IsBoardLogin" id="F_IsBoardLogin" value="true" title="看板标识">
+                        <input type="checkbox" name="F_IsDingInfo" id="F_IsDingInfo" value="true" title="调用钉钉">
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text layui-hide">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <textarea id="F_Description" name="F_Description" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+

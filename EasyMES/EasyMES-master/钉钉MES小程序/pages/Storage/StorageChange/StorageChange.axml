@@ -1,0 +1,73 @@
+<view class="page">
+  <view class="page-description">转移</view>
+  <form onSubmit="onSubmit">
+    <view class="page-section">
+      <view class="page-section-title requireLabel">流转箱编号</view>
+      <view class="page-section-demo">
+        <input value="{{transferCode}}" name="transferCode" class="input" placeholder="流转箱编号" onBlur="search"/>
+        <button size="mini" type="ghost" onTap="Scan_transferCode" class="scanbtn"></button>
+      </view>
+      <view style="display:{{storageHidden?'none':'block'}}">
+        <view class="form-line"/>
+        <view style="padding:30rpx;">
+          <view class="uk-grid uk-grid-match uk-grid-width-1-2">
+            <view>物料编号：{{F_MaterialCode}}</view>
+            <view>物料名称：{{F_MaterialName}}</view>
+            <view>批号：{{F_MaterialBatch}}</view>
+            <view>当前库位号：{{F_LocationCode}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="form-row">
+        <view class="form-row-label requireLabel">转移数量</view>
+        <view class="form-row-content" style="text-align: right">
+          <input type="number" name="changeNum" min="0" value="{{changeNum}}" />
+        </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title requireLabel">转移流转箱编号</view>
+      <view class="page-section-demo">
+        <input value="{{newTransferCode}}" name="newTransferCode" class="input" placeholder="转移流转箱编号" onBlur="newsearch" />
+        <button size="mini" type="ghost" onTap="Scan_newTransferCode" class="scanbtn"></button>
+      </view>
+    </view>
+    <view class="page-section"> 
+        <view style="display:{{hidden?'none':'block'}}">
+          <button size="mini" type="primary"  onTap="GetLocation">获取规则库位</button>
+          <button size="mini" type="primary" style="float:right;" onTap="GetAllLocation">获取所有库位</button>
+          <view class="page-section">
+            <picker onChange="bindObjPickerOutChange" value="{{arrOutIndex}}" range="{{objectOutArray}}" range-key="Prefix">
+              <view class="row">
+                <view class="row-title">库位编号</view>
+                <view class="row-extra">{{objectOutArray[arrOutIndex].Prefix}}</view>
+                <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+              </view>
+            </picker>
+          </view>
+          <view class="page-section">
+            <picker onChange="bindObjPickerlocationChange" value="{{arrlocationIndex}}" range="{{objectlocationArray}}" range-key="F_LocationCode">
+              <view class="row">
+                <view class="row-title">转移库位号</view>
+                <view class="row-extra">{{objectlocationArray[arrlocationIndex].F_LocationCode}}</view>
+                <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+              </view>
+            </picker>
+          </view>
+        </view>
+    </view>
+
+    <!-- <view class="page-section">
+      <view class="page-section-title">描述</view>
+      <view class="page-section-demo">
+        <textarea auto-height name="description" value="{{description}}" placeholder="描述" />
+      </view>
+    </view> -->
+    <view class="page-section">
+      <view>
+        <button type="primary" formType="submit">提交</button></view>
+    </view>
+  </form>
+</view>

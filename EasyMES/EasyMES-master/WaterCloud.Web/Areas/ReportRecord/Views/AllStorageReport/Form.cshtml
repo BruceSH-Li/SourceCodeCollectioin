@@ -1,0 +1,46 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            common = layui.common,
+            laydate = layui.laydate;
+        var keyValue = $.request("keyValue");
+        //权限字段
+        common.authorizeFields('adminform');
+        wcLoading.close();
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var postData = data.field;
+            postData.keyValue = keyValue;
+            common.submitForm({
+                url: "/ReportRecord/AllStorageReport/SubmitForm",
+                param: postData,
+                success: function () {
+                    common.parentreload("data-search-btn");
+                }
+            })
+            return false;
+        });
+    });
+</script>
+    <body>
+        <div class="layuimini-container">
+            <div class="layuimini-main">
+                <div class="layui-form layuimini-form " lay-filter="adminform">
+                    <div class="layui-form-item layui-hide">
+                        <label class="layui-form-label">预警值</label>
+                        <div class="layui-input-block">
+                            <input type="number" pattern="[0-9]*" id="num" name="num" lay-verify="number" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item layui-hide">
+                        <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>

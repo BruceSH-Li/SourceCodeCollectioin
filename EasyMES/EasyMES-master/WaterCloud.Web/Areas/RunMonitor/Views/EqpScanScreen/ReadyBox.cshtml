@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "EqpForm";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'table', 'common', 'optimizeSelectOption', 'inputAttr'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            table = layui.table,
+            common = layui.common;
+        var inputAttr = layui.inputAttr;
+        inputAttr.init({
+            // 重新定义根节点
+            root: ".layui-form",
+            // 事件托管
+            event: {
+                // 当点击清除按钮内容被清理
+                clearable: function (event, dom) {
+                    console.log({ event: event, dom: dom });
+                }
+            }
+        });
+        var keyValue = $.request("keyValue");
+        var datalist = [];
+        $('#F_TransferBoxCode').focus();
+        common.ajax({
+            url: '/RunMonitor/EqpScanScreen/GetReadyBoxes',
+            dataType: 'json',
+            data: { keyValue: keyValue },
+            async: false,
+            success: function (data) {
+                datalist = data;
+            }
+        });
+        table.render({
+            elem: '#currentTableId',
+            id: 'currentTableId',
+            search: false,
+            limit: 9999,//每页数据 默认
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count'] //自定义分页布局
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            defaultToolbar: [],
+            toolbar: '',//工具栏
+            data: datalist,
+            height: 'full-120',
+            cols: [[
+                //此处需修改
+                { type: "numbers", width: 50 },
+                { field: 'F_TransferBoxCode', title: '流转箱编号', minWidth: 160, sort: true },
+                { title: '操作', width: 100, toolbar: '#currentTableBar', align: "center" }
+            ]]
+        });
+        wcLoading.close();
+        //toolrow监听事件
+        table.on('tool(currentTableFilter)', function (obj) {
+            if (obj.event === 'delete') {
+                common.deleteForm({
+                    url: "/RunMonitor/EqpScanScreen/DeleteReadyBox",
+                    param: { transferBoxCode: obj.data.F_TransferBoxCode },
+                    success: function () {
+                        for (var i = 0; i < datalist.length; i++) {
+                            if (datalist[i].F_TransferBoxCode == obj.data.F_TransferBoxCode) {
+                                datalist.splice(i, 1);
+                                break;
+                            }
+                        }
+                        table.reload('currentTableId', { data: datalist }, true);
+                        parent.getData();
+                    }
+                });
+            }
+            return false;
+        });
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var postData = data.field;
+            postData.F_EqpId = keyValue;
+            common.submitForm({
+                url: "/RunMonitor/EqpScanScreen/AddReadyBox",
+                param: postData,
+                close:false,
+                success: function () {
+                    var temp = {};
+                    temp.F_Id = uuid();
+                    temp.F_TransferBoxCode = data.field.F_TransferBoxCode;
+                    datalist.push(temp);
+                    table.reload('currentTableId', { data: datalist }, true);
+                    parent.getData();
+                }
+            })
+            return false;
+        });
+    });
+</script>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-form layuimini-form " lay-filter="adminform">
+            <div class="layui-form-item">
+                <label class="layui-form-label required">流转箱</label>
+                <div class="layui-input-inline">
+                    <input id="F_TransferBoxCode" name="F_TransferBoxCode" autocomplete="off" class="layui-input" lay-verify="required" clearable/>
+                </div>
+                <div class="layui-form-mid layui-word-aux">
+                    <button class="layui-btn layui-btn-sm layui-btn-danger" lay-submit id="submit" lay-filter="saveBtn">绑定流转箱</button>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">流转箱列表</label>
+                <div class="layui-input-block">
+                    <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+                </div>
+            </div>
+            <script type="text/html" id="currentTableBar">
+                <a id="NF-delete" class="layui-btn layui-btn-sm layui-btn-danger data-info-btn" lay-event="delete"><i class="layui-icon">&#xe640;</i></a>
+            </script>
+        </div>
+    </div>
+</div>

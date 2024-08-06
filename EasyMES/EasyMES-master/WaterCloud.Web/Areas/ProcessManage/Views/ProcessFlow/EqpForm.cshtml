@@ -1,0 +1,133 @@
+﻿@{
+    ViewBag.Title = "Form"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'common', 'table', 'commonTable', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            commonTable = layui.commonTable,
+            table = layui.table,
+            common = layui.common;
+        var itemId = $.request("itemId");
+        //权限字段
+        common.authorizeFields('adminform');
+
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            id: 'currentTableId',
+            url: '/EquipmentManage/Equipment/GetAddListJson?type=' + 0 + '&use=' + -1,
+            search: false,
+            height: 'full-110',
+            limit: 99999,//每页数据 默认
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count'] //自定义分页布局
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            toolbar: false,//工具栏
+            cols: [[
+                { type: 'radio' },
+                {
+                    field: 'F_EqpType', title: '设备类型', width: 120,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_EqpType"][d.F_EqpType] == null ? "" : top.clients.dataItems["Mes_EqpType"][d.F_EqpType];
+                    }
+                },
+                {
+                    field: 'F_EqpUse', title: '设备用途', width: 120,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_EqpUse"][d.F_EqpUse] == null ? "" : top.clients.dataItems["Mes_EqpUse"][d.F_EqpUse];
+                    }
+                },
+                {
+                    field: 'F_MouldType', title: '模具类型', width: 110, sort: true,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_MouldType"][d.F_MouldType] == null ? "" : top.clients.dataItems["Mes_MouldType"][d.F_MouldType];
+                    }
+                },
+                { field: 'F_EqpName', title: '设备名称', minWidth: 120 },
+            ]]
+        });
+        // 监听双击事件
+        table.on('rowDouble(currentTableFilter)', function (obj) {
+            var postData = {};
+            postData["F_ProcessId"] = itemId;
+            postData["F_EqpId"] = obj.data.F_Id;
+            common.submitPost({
+                prompt: "注：您确定要选择{设备名称" + obj.data.F_EqpName + "}的数据吗？",
+                url: '/ProcessManage/ProcessFlow/SubmitEqpForm',
+                param: postData,
+                close:true,
+                success: function () {
+                    common.parentreload('temp-search-btn');
+                }
+            });
+            return false;
+        });
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            commonTable.reloadtable({
+                elem: 'currentTableId',
+                page: false,
+                where: { keyword: data.field.txt_keyword }
+            });
+            return false;
+        });
+        wcLoading.close();
+        //行点击事件监听，控制按钮显示
+        commonTable.tableRowClick("radio", "currentTableFilter", "currentTableId");
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var postData = {};
+            var checkStatus = table.checkStatus("currentTableId").data;
+            if (checkStatus.length <= 0) {
+                common.modalMsg("未选中数据", "warning");
+                return false;
+            }
+            postData["F_ProcessId"] = itemId;
+            postData["F_EqpId"] = checkStatus[0].F_Id;
+            common.submitPost({
+                prompt: "注：您确定要选择{设备名称" + checkStatus[0].F_EqpName + "}的数据吗？",
+                url: '/ProcessManage/ProcessFlow/SubmitEqpForm',
+                param: postData,
+                close: true,
+                success: function () {
+                    common.parentreload('temp-search-btn');
+                }
+            });
+            return false;
+        });
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <fieldset class="table-search-fieldset">
+                @*<legend>搜索信息</legend>*@
+                <div>
+                    <form class="layui-form layui-form-pane" action="">
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">关键字:</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" id="txt_keyword" name="txt_keyword" autocomplete="off" class="layui-input" placeholder="">
+                                </div>
+                            </div>
+                            <div class="layui-inline">
+                                <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                            </div>
+                        </div>
+                        <div class="layui-form-item layui-hide">
+                            <button class="layui-btn" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                        </div>
+                    </form>
+                </div>
+            </fieldset>
+            <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        </div>
+    </div>
+</body>
+

@@ -1,0 +1,106 @@
+<import-sjs from="/static/js/enum.sjs" name="Enum"></import-sjs>
+<view class="page">
+  <view class="page-description">二次检验</view>
+  <form onSubmit="onSubmit">
+    <view class="page-section">
+      <picker onChange="bindObjPickerTypeChange" value="{{arrTypeIndex}}" range="{{objectTypeArray}}" range-key="CheckType">
+        <view class="row">
+          <view class="row-title requireLabel">检验类型</view>
+          <view class="row-extra">{{objectTypeArray[arrTypeIndex].CheckType}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <picker onChange="bindObjPickerChange" value="{{arrIndex}}" range="{{objectArray}}" range-key="F_BatchCode">
+        <view class="row">
+          <view class="row-title requireLabel">条码编号</view>
+          <view class="row-extra">{{objectArray[arrIndex].F_BatchCode}}</view>
+          <image class="title_icon" src="/static/images/arrow_down.png" mode="aspectFill" />
+        </view>
+      </picker>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">相关信息</view>
+      <view class="form-line"/>
+      <view style="padding:10rpx;display:{{storageHidden?'none':'block'}}">
+        <view a:if="{{!entity}}">
+          <view style="color:grey">不存在和此条码匹配的信息！</view>
+        </view>
+        <view a:else>
+          <view class="page-section-demo">
+            <view>物料编号：{{entity.F_MaterialCode}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>物料名称：{{entity.F_MaterialName}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>批号：{{entity.F_MaterialBatch}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>检验类型：
+              <text class="uk-badge">{{Enum.CheckoutType(entity.F_CheckType)}}</text></view>
+          </view>
+          <view class="page-section-demo">
+            <view>总数量：{{entity.F_Num}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>可疑数量：{{entity.F_OtherNum}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>报废数量：{{entity.F_ScapNum}}</view>
+          </view>
+          <view class="page-section-demo">
+            <view>退回数量：{{entity.F_ReturnNum}}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view style="display:{{storageHidden?'none':'block'}}">
+      <view class="page-section">
+        <view class="page-section-title">缺陷列表</view> 
+          <view class="page-section-demo" a:for="{{propList}}" key="label-{{index}}">
+            <view class="uk-grid uk-grid-width-1-2">
+              <view>  
+                <text class="radio-text">{{item.F_Description}}</text>
+              </view>
+              <view>  
+                <button size="mini" type="primary" data-attr='{{item.F_FilePath}}' onTap="LookImage">预览</button>
+              </view>
+            </view>
+          </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="form-row">
+        <view class="form-row-label requireLabel">数量</view>
+        <view class="form-row-content" style="text-align: right">
+          <input type="number" name="num" min="0" value="{{num}}" />
+        </view>
+      </view>
+    </view>
+    <view class="page-section">
+      <view class="page-section-title">设置状态：</view>
+      <view class="page-section-demo">
+        <radio-group class="radio-group" onChange="radioChange" name="isBack">  
+          <label class="radio" key="label-0">
+            <radio value="0" checked/>
+            <text class="radio-text">可疑</text>
+          </label>   
+          <label class="radio" key="label-1">
+            <radio value="1" />
+            <text class="radio-text">报废</text>
+          </label>
+          <label class="radio" key="label-2">
+            <radio value="2" />
+            <text class="radio-text">正常</text>
+          </label>
+        </radio-group>
+      </view>
+    </view>
+    <view class="page-section">
+      <view>
+        <button type="primary" formType="submit">提交</button></view>
+    </view>
+  </form>
+</view>

@@ -1,0 +1,16 @@
+﻿<Window x:Class="MXY_Chat.Client.Views.showNumber"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MXY_Chat.Client.Views"
+        mc:Ignorable="d"
+        Title="showNumber" Height="150" Width="300"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Label Content="请记住您的账号" FontWeight="Bold" HorizontalAlignment="Center" Margin="0 35"/>
+        <TextBox x:Name="tboxNumber" TextWrapping="Wrap" Text="number" Width="200" Height="27"
+                    HorizontalAlignment="Center" Margin="0 30 0 0"/>
+
+    </Grid>
+</Window>

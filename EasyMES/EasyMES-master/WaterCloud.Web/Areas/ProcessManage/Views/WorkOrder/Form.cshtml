@@ -1,0 +1,380 @@
+﻿@{
+    ViewBag.Title = "Form"; 
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'laydate', 'commonTable', 'table', 'common', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            laydate = layui.laydate,
+            table = layui.table,
+            commonTable = layui.commonTable,
+            common = layui.common;
+        var keyValue = $.request("keyValue");
+      
+        let orderstate = $.request("orderstate");
+        //权限字段
+        common.authorizeFields('adminform');
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#planDate'
+            , trigger: 'click'
+            , type: 'date'
+            , format: 'yyyy/MM/dd',
+        });
+        $(function () {
+            $("#classNum").bindSelect({
+                data: top.clients.dataItems['Mes_ClassNumber'],
+                id: "",
+            });
+            if (!!keyValue) {
+                common.ajax({
+                    url: '/ProcessManage/WorkOrder/GetFormJson',
+                    dataType: 'json',
+                    data: { keyValue: keyValue },
+                    async: false,
+                    success: function (data) {
+
+                        common.val('adminform', data);
+                        $('#planDate').val(new Date(data.planDate).Format("yyyy/MM/dd"));
+
+                        //orderstate = data.F_WorkOrderState;
+                        if (orderstate > 0) {
+                            common.setReadOnly('adminform');
+                        }
+                        if (!!data.details) {
+                            table.reload('currentTableId', {
+                                data: data.details
+                            });
+                        }
+                    }
+                });
+            }
+            else {
+                var code = new Date().formatDate('yyyyMMddhhmmss');
+                $('#F_WorkOrderCode').val("WC_" + code+"0");
+            }
+            form.render();
+        });
+        wcLoading.close();
+        commonTable.rendertable({
+            elem: '#currentTableId',
+            data: [],
+            defaultToolbar: [],
+            search: false,
+            limit: 9999,//每页数据 默认
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count'] //自定义分页布局
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            height: 'full-265',
+            filter: {
+                clearFilter: false,
+            },
+            cols: [[
+                { type: "checkbox", width: 50 },
+                {
+                    field: 'F_MaterialType', title: '料号分类', width: 110, sort: true, filter: true,
+                    templet: function (d) {
+                        return top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType] == null ? "" : top.clients.dataItems["Mes_MaterialType"][d.F_MaterialType];
+                    }
+                },
+                { field: 'F_MaterialCode', title: '料号编号', width: 200, sort: true, filter: true },
+                { field: 'F_MaterialName', title: '料号名称', width: 200, sort: true, filter: true },
+                { field: 'F_MaterialUnit', title: '料号单位', width: 120, sort: true, filter: true },
+                { field: 'F_PlanNum', title: '计划数量', width: 110, sort: true, filter: true, edit: 'number' },
+                { field: 'F_DoneNum', title: '完成数量', width: 110, sort: true, filter: true,hide:true },
+                { field: 'F_BadNum', title: '不良数量', width: 110, sort: true, filter: true, hide: true },
+                { field: 'F_RunSort', title: '执行顺序', width: 120, sort: true, filter: true },
+                { field: 'F_ProcessName', title: '工序名称', width: 120, sort: true, filter: true },
+                { field: 'F_Description', title: '备注', minWidth: 120, sort: true, filter: true },
+                { title: '操作', width: 90, toolbar: '#currentTableBar', align: "center" }
+
+            ]]
+        });
+        //行点击事件监听，控制按钮显示
+        var oneList = ["NF-split"];//选择1条显示
+        var moreList = ["NF-merge"];//多条显示
+
+        if (orderstate == 0) {
+            commonTable.tableRowClick("checkbox", "currentTableFilter", "currentTableId", oneList, moreList);
+        }
+        //else {
+        //    commonTable.tableRowClick("checkbox", "currentTableFilter", "currentTableId");
+        //}
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var cacheData = table.cache.currentTableId;
+            if (cacheData.length == 0) {
+                common.modalMsg("没有工单明细无法提交", "warning");
+                return false;
+            }
+            var postData = data.field;
+            postData.details = cacheData;
+            common.submitForm({
+                url: '/ProcessManage/WorkOrder/SubmitForm?keyValue=' + keyValue,
+                param: postData,
+                success: function () {
+                    common.reloadIframe("/ProcessManage/WorkOrder/Index", 'data-search-btn');
+                }
+            })
+            return false;
+        });
+        //监听复选框
+        form.on('select(splitType)', function (data) {
+            if (!$('#F_MaterialId').val()) {
+                common.modalMsg("请选择物料", "warning");
+                return false;
+            }
+            if (!$('#F_PlanNum').val()) {
+                common.modalMsg("请输入数量", "warning");
+                return false;
+            }
+            var cacheData = table.cache.currentTableId;
+            if (cacheData.length > 0) {
+                common.modalConfirm("注：您确定要清除已有的数据，重新拆分吗？", function (r) {
+                    if (r) {
+                        if (!!data.value) {
+                            common.ajax({
+                                url: '/ProcessManage/WorkOrder/GetSplitListJson',
+                                dataType: 'json',
+                                data: { keyValue: $('#F_MaterialId').val(), num: $('#F_PlanNum').val(), type: data.value },
+                                async: false,
+                                success: function (data) {
+                                    if (data) {
+                                        table.reload('currentTableId', {
+                                            data: data
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        else {
+                            table.reload('currentTableId', {
+                                data: []
+                            });
+                        }
+                    }
+                });
+            }
+            else {
+                common.ajax({
+                    url: '/ProcessManage/WorkOrder/GetSplitListJson',
+                    dataType: 'json',
+                    data: { keyValue: $('#F_MaterialId').val(), num: $('#F_PlanNum').val(), type: data.value },
+                    async: false,
+                    success: function (data) {
+                        if (data) {
+                            table.reload('currentTableId', {
+                                data: data
+                            });
+                        }
+                    }
+                });
+            }
+        });
+        //toolbar监听事件
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            var data = table.checkStatus('currentTableId').data;
+            if (obj.event === 'split') {  // 监听添加操作
+                common.modalOpen({
+                    title: "拆分",
+                    url: "/ProcessManage/WorkOrder/SplitForm?keyValue=" + data[0].F_Id,
+                    width: "500px",
+                    height: "600px",
+                });
+            }
+            else if (obj.event === 'merge') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                var index = parent.layer.load(0, {
+                    shade: [0.5, '#000'], //0.1透明度的背景
+                });
+                var cacheData = table.cache.currentTableId;
+                var num = data[0].F_PlanNum;
+                for (var i = 1; i < data.length; i++) {
+                    if (data[0].F_MaterialId != data[i].F_MaterialId || data[0].F_RunSort != data[i].F_RunSort) {
+                        common.modalMsg("数据不一致，不能合并", "warning");
+                        parent.layer.close(index);
+                        return false;
+                    }
+                    for (var j = 0; j < cacheData.length; j++) {
+                        if (data[i].F_Id == cacheData[j].F_Id) {
+                            cacheData.splice(j, 1);
+                            break;
+                        }
+                    }
+                    num = Number(num) + Number(data[i].F_PlanNum);
+                }
+                for (var i = 0; i < cacheData.length; i++) {
+                    if (data[0].F_Id == cacheData[i].F_Id) {
+                        cacheData[i].F_PlanNum = num;
+                        cacheData[i].LAY_CHECKED = false;
+                        break;
+                    }
+                }
+                common.modalMsg("操作成功", "success");
+                table.reload('currentTableId', {
+                    data: cacheData
+                });
+                parent.layer.close(index);
+            }
+            return false;
+        });
+        //toolrow监听事件
+        table.on('tool(currentTableFilter)', function (obj) {
+            if (obj.event === 'split') {
+                common.modalOpen({
+                    title: "拆分",
+                    url: "/ProcessManage/WorkOrder/SplitForm?keyValue=" + obj.data.F_Id,
+                    width: "500px",
+                    height: "600px",
+                });
+            }
+            return false;
+        });
+
+        table.on('edit(currentTableFilter)', function (obj) {
+            let val = Number(obj.value);
+            if ((!((val|0) === val))||val==0) {
+                common.modalMsg("请输入大于0的整数", "warning");
+
+                $(this).val($(this).prev().text());
+                return;
+            }
+            let cacheData = table.cache.currentTableId;
+            let newPlannum = 0;
+            for (let i = 0; i < cacheData.length; i++) {
+                //if (obj.data.F_Id == cacheData[i].F_Id) {
+                //    cacheData[i].F_PlanNum = num;
+                //    break;
+                //}
+                newPlannum += Number(cacheData[i].F_PlanNum);
+            }
+            if (newPlannum != 0) {
+                $('#F_PlanNum').val(newPlannum);
+            }
+        });
+
+    });
+    function search() {
+        layui.use(['jquery', 'form', 'common', 'table'], function () {
+            var $ = layui.$,
+                table = layui.table,
+                common = layui.common;
+            var parentform = window.name;
+            var cacheData = table.cache.currentTableId;
+            if (cacheData.length > 0) {
+                common.modalConfirm("注：您确定要清除已有的数据，重新选择物料吗？", function (r) {
+                    if (r) {
+                        table.reload('currentTableId', {
+                            data: []
+                        });
+                        common.modalOpen({
+                            title: "选择物料",
+                            url: "/MaterialManage/Material/AddForm?parentform=" + parentform + "&name=" + "F_MaterialName" + "&value=" + "F_MaterialId" + "&ids=" + $('#F_MaterialId').val(),
+                            width: "650px",
+                            height: "600px",
+                        });
+                    }
+                });
+            }
+            else {
+                common.modalOpen({
+                    title: "选择物料",
+                    url: "/MaterialManage/Material/AddForm?parentform=" + parentform + "&name=" + "F_MaterialName" + "&value=" + "F_MaterialId" + "&type=-1" + "&ids=" + $('#F_MaterialId').val(),
+                    width: "650px",
+                    height: "600px",
+                });
+            }
+        });
+    }
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item">
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label required">工单编号</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="F_WorkOrderCode" name="F_WorkOrderCode" autocomplete="off" maxlength="50" lay-verify="required" placeholder="请输入工单编号" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label required">物料名称</label>
+                        <div class="layui-input-block">
+                            <input id="F_MaterialName" name="F_MaterialName" type="text" lay-verify="required" maxlength="50" autocomplete="off" class="layui-input" onclick="search()" />
+                            <input id="F_MaterialId" name="F_MaterialId" type="text" hidden />
+                        </div>
+                    </div>
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label required">数量</label>
+                        <div class="layui-input-block">
+                            <input type="number" pattern="[0-9]*" id="F_PlanNum" name="F_PlanNum" lay-verify="required|number" oninput="if(value.length>8)value=value.slice(0,8)" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label required">拆分</label>
+                        <div class="layui-input-block">
+                            <select id="F_SplitType" name="F_SplitType" lay-filter="splitType">
+                                <option value="">==请选择==</option>
+                                <option value="0">单阶</option>
+                                @*<option value="1">尾阶</option>*@
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label required">计划日期</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="planDate" name="planDate" lay-verify="required" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-col-md4 layui-col-sm4 layui-hide">
+                        <label class="layui-form-label required">班别</label>
+                        <div class="layui-input-block">
+                            <select id="classNum" lay-verify="required" name="classNum">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md12 layui-hide">
+                        <label class="layui-form-label">备注</label>
+                        <div class="layui-input-block">
+                            <input id="F_Description" name="F_Description" class="layui-input" placeholder="请输入备注">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md12">
+                        <label class="layui-form-label required">物料列表</label>
+                        <div class="layui-input-block">
+                            <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item text-right">
+                    <button class="layui-btn site-demo-active" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+            <script type="text/html" id="toolbarDemo">
+                <div class="layui-btn-container" id="toolbar">
+                    <button id="NF-split" name="NF-split" authorize="yes" class="layui-btn layui-btn-sm layui-btn-warm data-add-btn layui-hide" lay-event="split"><i class="layui-icon">&#xe642;</i>拆分</button>
+                    <button id="NF-merge" name="NF-merge" authorize="yes" class="layui-btn layui-btn-sm data-edit-btn layui-hide" lay-event="merge"><i class="fa fa-compress"></i>合并</button>
+                </div>
+            </script>
+            <script type="text/html" id="currentTableBar">
+                <a id="NF-split" authorize class="layui-btn layui-btn-sm layui-btn-warm" lay-event="split"><i class="layui-icon">&#xe642;</i></a>
+            </script>
+        </div>
+    </div>
+</body>
+

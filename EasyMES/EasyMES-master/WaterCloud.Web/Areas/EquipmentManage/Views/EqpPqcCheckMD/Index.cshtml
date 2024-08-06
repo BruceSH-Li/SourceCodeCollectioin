@@ -1,0 +1,472 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Index.cshtml";
+}
+
+<script>
+
+    layui.use(['jquery', 'form', 'table', 'commonTable', 'common', 'optimizeSelectOption'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            laydate = layui.laydate,
+            table = layui.table, commonTable = layui.commonTable,
+            common = layui.common;
+
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#Month'
+            , trigger: 'click'
+            , type: 'month'
+            , format: 'yyyyMM',
+            value: new Date()
+        });
+
+        //准备视图对象
+        window.viewObj = {
+            tbData: [{
+                tempId: new Date().valueOf(),
+                type: 2,
+                name: '测试项名称',
+                state: 1
+            }],
+            typeData: [
+                { id: '1', name: '✔' },
+                { id: '2', name: '❌' },
+                { id: '3', name: '⚪' },
+                { id: '4', name: '🅿' }
+            ],
+            renderSelectOptions: function (data, settings) {
+                //debugger;
+                settings = settings || {};
+                var valueField = settings.valueField || 'value',
+                    textField = settings.textField || 'text',
+                    selectedValue = settings.selectedValue || "";
+                var html = [];
+                for (var i = 0, item; i < data.length; i++) {
+                    item = data[i];
+                    html.push('<option value="');
+                    html.push(item[valueField]);
+                    html.push('"');
+                    if (selectedValue && item[valueField] == selectedValue) {
+                        html.push(' selected="selected"');
+                    }
+                    html.push('>');
+                    html.push(item[textField]);
+                    html.push('</option>');
+                }
+                return html.join('');
+            }
+        };
+
+        function getOption(name, value) {
+            var result = '';
+            if (name = "id") {
+                viewObj.typeData.forEach(t => {
+                    if (t.id == value) {
+                        result = t.name;
+                        //break;
+                    }
+                });
+
+            }
+            else if (name = "name") {
+                viewObj.typeData.forEach(t => {
+                    if (t.name == value) {
+                        result = t.id;
+                        //break;
+                    }
+                });
+            }
+            return result;
+        }
+
+        function getyymm() {
+            //创建日期对象
+            var date = new Date;
+            //获取年份
+            var yy = date.getFullYear();
+            //获取月份
+            var mm = date.getMonth() + 1;
+            //如果月份小于10 前面加0
+            mm = (mm < 10 ? "0" + mm : mm);
+            //返回日期
+            return (yy.toString() + mm.toString());
+        }
+
+        window.cols_arr = [];
+        var resdata = [];
+        var tableIns;
+
+        var colname;
+        var remarklist = [];
+
+
+        $(function () {
+            initControl();
+            loadData();
+            loadtable();
+            form.render();
+        });
+
+        function initControl() {
+            layui.$('#F_EqpId').bindSelect({
+                url: "/EquipmentManage/EqpPqcCheckItem/GetEqpListJson",
+                id: "F_Id",
+                text: "F_EqpName"
+            });
+            $("#F_EqpId option:first").prop("selected", 'selected');
+        }
+
+        function loadData() {
+            common.ajax({
+                url: '/EquipmentManage/EqpPqcCheckMD/GetGridJson',
+                dataType: 'json',
+                data: {
+                    EqpId: $('#F_EqpId').val(),
+                    Month: $('#Month').val(),
+                    Shiftday: $('#Shiftday').val()
+                },
+                async: false,
+                success: function (data) {
+                    resdata = data;
+                    if (data.code == 10) {
+                        common.modalMsg("该设备未配置点检或保养项，请至设备点检项维护画面进行配置", "warning");
+                    }
+
+                }
+            });
+        }
+
+        function loadtable() {
+            //var obj = [{ "F_Day1": "✔", "F_Day2": "❌" }, { "F_Day1": "⚪", "F_Day2": "❤" }];
+            //var all_date = Object.keys(obj[0]);
+            var all_date = resdata.cols;
+
+            window.cols_arr[0] = [];
+            window.cols_arr[0][0] = { field: 'F_CheckItem', title: '点检/保养项目', align: 'center', minWidth: 200 };
+            window.cols_arr[0][1] = { field: 'F_CheckStand', title: '点检标准', align: 'center', minWidth: 350 };
+            all_date.forEach(function (value, i) {
+                var titlename = value.replace('F_Day', '') + '号';
+
+                if (i != 0 || $('#Month').val() != getyymm()) {
+                    window.cols_arr[0][i + 2] = ({
+                        field: value, title: titlename, align: 'center', minWidth: 100, templet: function (d) {
+                            return getOption('id', d.c[value]);
+                        }
+                    })
+                }
+                else {
+                    window.cols_arr[0][i + 2] = {
+                        field: value, title: titlename, minWidth: 150, align: 'center', templet: function (d) {
+                            var settings = { valueField: "id", textField: "name" };
+                            if (!!d.c)
+                                settings = { valueField: "id", textField: "name", selectedValue: d.c[value] };
+
+                            var options = viewObj.renderSelectOptions(viewObj.typeData, settings);
+                            return '<a lay-event="type"  val=' + value + '></a><select name="type" lay-filter="type"><option value="">请选择</option>' + options + '</select>';
+                        }
+                    }
+                }
+            })
+
+            remarklist = [];
+            $('#F_Remark').val("");
+            $('#saveBtn').addClass("layui-btn-disabled").attr("disabled", true);
+
+            if (!!resdata.data && resdata.data.length > 0) {
+
+                //$('#saveBtn').removeClass("layui-btn-disabled").attr("disabled", false);
+
+                //$('#F_Remark').val(resdata.data[0].F_Remark);
+                if (!!resdata.data[0].F_Remark) {
+                    remarklist = JSON.parse(resdata.data[0].F_Remark) ?? [];
+                }
+                var curdayremark = remarklist.find(t => { return t.day == new Date().getDate() });
+                if (!!curdayremark) {
+                    $('#F_Remark').val(curdayremark.dayRemark);
+                }
+
+
+                for (var i = 0; i < resdata.data.length; i++) {
+                    resdata.data[i].LAY_TABLE_INDEX = i;
+
+                    //如果查询的明细c是null，先把空结构给他建上。
+                    if (!resdata.data[i].c) {
+                        resdata.data[i].c = {};
+                        for (var j = 1; j <= (new Date()).getDate(); j++) {
+                            resdata.data[i].c['F_Day' + j] = '';
+                        }
+                    }
+                }
+            }
+
+
+            tableRender(window.cols_arr, resdata.data);
+
+            table.reload('currentTableId', {
+                //page: {
+                //    curr: 1
+                //},
+                //where: {
+                //    all_date: all_date
+                //}
+            });
+
+
+
+        }
+
+        function tableRender(cols_arr, obj) {
+            tableIns = table.render({
+                elem: '#currentTableId',
+                id: 'currentTableId',
+                data: obj,
+                unresize: false,
+                limit: 999999,//每页数据 默认
+                height: 'full-350',
+                //url: '/EquipmentManage/EqpPqcCheckMD/GetGridJson',
+                //where: {
+                //    EqpId: '0d3555e5-cc4b-445c-9795-f7c2e5e9e7fa',
+                //    Month: '202106',
+                //    Shiftday:'白班'
+                //},
+                cols: cols_arr,
+                done: function (res) { }
+            });
+        }
+
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+
+            loadData();
+            loadtable();
+
+
+            return false;
+        });
+        wcLoading.close();
+
+        //定义表格操作
+        var active = {
+
+            //更新数据
+            updateRow: function (data) {
+                //debugger;
+                //更新表数据
+                var oldData = table.cache["currentTableId"];
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    if (row.LAY_TABLE_INDEX == data.LAY_TABLE_INDEX) {
+                        $.extend(oldData[i], data);
+                        return;
+                    }
+                }
+                tableIns.reload({
+                    url: null,
+                    data: oldData
+                });
+            },
+
+
+            saveTable: function () {
+
+                var oldData = table.cache["currentTableId"];
+                if (!!oldData) {
+                    //for (var i = 0, row; i < oldData.length; i++) {
+                    //    row = oldData[i];
+                    //    if (!row.field_name && !row.st && !row.st_tu && !row.st_tl && !row.st_pic) {
+                    //        oldData.splice(i, 1);    //删除空项
+                    //        continue;
+                    //    }
+                    //}
+                }
+                return oldData;
+            }
+
+        };
+
+        //激活事件
+        var activeByType = function (type, arg) {
+            if (arguments.length === 2) {
+                active[type] ? active[type].call(this, arg) : '';
+            } else {
+                active[type] ? active[type].call(this) : '';
+            }
+        }
+
+        //注册按钮事件
+        $('.layui-btn[data-type]').on('click', function () {
+            var type = $(this).data('type');
+            activeByType(type);
+        });
+
+        //监听select下拉选中事件
+        form.on('select(type)', function (data) {
+            var elem = data.elem; //得到select原始DOM对象
+            colname = $(elem).prev().attr('val');//得到列名
+            $(elem).prev("a[lay-event='type']").trigger("click");
+
+            $('#saveBtn').removeClass("layui-btn-disabled").attr("disabled", false);
+        });
+
+        //监听工具条
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data, event = obj.event, tr = obj.tr; //获得当前行 tr 的DOM对象;
+            console.log(data);
+            switch (event) {
+                case "type":
+                    //console.log(data);
+                    var select = tr.find("select[name='type']");
+                    if (select) {
+                        var selectedVal = select.val();
+                        if (!selectedVal) {
+                            layer.tips("请选择一个分类", select.next('.layui-form-select'), { tips: [3, '#FF5722'] }); //吸附提示
+                        }
+                        console.log(selectedVal);
+                        $.extend(obj.data.c, { [colname]: selectedVal });
+
+                        activeByType('updateRow', obj.data);	//更新行记录对象
+                    }
+                    break;
+                case "state":
+                    var stateVal = tr.find("input[name='state']").prop('checked') ? 1 : 0;
+                    $.extend(obj.data, { 'state': stateVal })
+                    activeByType('updateRow', obj.data);	//更新行记录对象
+                    break;
+                case "del":
+                    layer.confirm('真的删除行么？', function (index) {
+                        obj.del(); //删除对应行（tr）的DOM结构，并更新缓存
+                        layer.close(index);
+                        activeByType('removeEmptyTableCache');
+                    });
+                    break;
+            }
+        });
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            layer.confirm('确认保存点检结果？', function (index) {
+                layer.close(index);
+                //debugger;
+                $('#saveBtn').addClass("layui-btn-disabled").attr("disabled", true);
+
+                //取table缓存数据
+                var tableData = active.saveTable();
+                //$.extend(remarklist, { day: new Date().getDate(), dayRemark: $('#F_Remark').val() });
+                var mo = remarklist.find(t => { return t.day == new Date().getDate() });
+                if (!!mo) {
+                    mo.dayRemark = $('#F_Remark').val();//find是浅拷贝
+                }
+                else {
+                    remarklist.push({ day: new Date().getDate(), dayRemark: $('#F_Remark').val() });
+                }
+
+                tableData[0]["F_Remark"] = JSON.stringify(remarklist);
+
+                //return;
+                $.ajax({
+                    type: "POST",
+                    url: '/EquipmentManage/EqpPqcCheckMD/SaveCheckResult',
+                    contentType: "application/json",
+                    data: JSON.stringify(tableData),
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.state == "success") {
+                            common.modalMsg("保存成功", "success");
+                        }
+                        else {
+                            common.modalMsg("保存失败:" + result.message, "error");
+                        }
+                    }
+
+                });
+            });
+
+            return false;
+        });
+
+
+        //
+        form.on('submit(checkBtn)', function (data) {
+
+            //debugger;
+
+            common.modalOpen({
+                title: $("#F_EqpId option:selected").text() + "特别事项记录("+ $('#Month').val()+")",
+                url: "/EquipmentManage/EqpPqcCheckMD/RemarkDetail?EqpId=" + $('#F_EqpId').val() + "&Month=" + $('#Month').val(),
+                width: "450px",
+                height: "1000px",
+                btn: []
+            });
+
+
+            return false;
+        });
+
+
+    });
+</script>
+
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <fieldset class="table-search-fieldset" id="searchField">
+            <div>
+                <form class="layui-form layui-form-pane">
+
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">设备</label>
+                            <div class="layui-input-inline">
+                                <select id="F_EqpId" name="F_EqpId" lay-filter="splitType" lay-search>
+                                    @*<option value="" selected>请选择</option>*@
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">班别</label>
+                            <div class="layui-input-inline">
+                                <select id="Shiftday" name="Shiftday" lay-filter="splitType" lay-search>
+                                    <option value="白班" selected>白班</option>
+                                    <option value="夜班">夜班</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="layui-inline">
+                            <label class="layui-form-label">点检月份</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="Month" name="Month" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit lay-filter="data-search-btn"><i class="layui-icon">&#xe615;</i> 搜 索</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+        @*<button id="saveBtn" name="saveBtn" lay-submit lay-filter="saveBtn" authorize class="layui-btn layui-btn-sm data-add-btn layui-btn-disabled"><i class="layui-icon">&#xe62a;</i>保存</button>*@
+        <div class="layui-inline">
+            <label class="layui-form-label">✔：正常</label>
+            <label class="layui-form-label">❌：异常</label>
+            <label class="layui-form-label">🅿：停机</label>
+            <label class="layui-form-label">⚪：假日</label>
+        </div>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width:auto">特别事项：(点检人员检查、保养设备后，记录以文字和数据形式进行描述，如有异常请在特别事项栏记录)</label>
+            <button id="checkBtn" name="saveBtn" lay-submit lay-filter="checkBtn" authorize class="layui-btn layui-btn-sm data-add-btn"><i class="layui-icon">&#xe62a;</i>查看当月特别事项记录</button>
+            <textarea class="layui-textarea" rows="2" id="F_Remark" name="F_Remark" placeholder="请输入特别事项"></textarea>
+            <div style="text-align:center;padding:10px">
+                <button id="saveBtn" name="saveBtn" lay-submit lay-filter="saveBtn" authorize class="layui-btn layui-btn-sm data-add-btn layui-btn-disabled"><i class="layui-icon">&#xe62a;</i>保存</button>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+

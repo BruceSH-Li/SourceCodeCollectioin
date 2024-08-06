@@ -1,0 +1,296 @@
+﻿@{
+    ViewBag.Title = "Form";
+    Layout = "~/Views/Shared/_Form.cshtml";
+}
+<script>
+    layui.use(['jquery', 'form', 'table', 'tableEdit', 'common', 'commonTable', 'optimizeSelectOption'], function () {
+        var form = layui.form,
+            $ = layui.$,
+            tableEdit = layui.tableEdit,
+            table = layui.table,
+            commonTable = layui.commonTable,
+            common = layui.common;
+
+        var keyValue = $.request("keyValue");
+        var eqpId = $.request("eqpId");
+        var listData = [];
+        var materialId = '';
+        var processId = '';
+        var params = [];
+        common.ajax({
+            url: '/ProcessManage/WorkPlan/GetAddListJson',
+            dataType: 'json',
+            data: { eqpId: eqpId },
+            async: false,
+            success: function (data) {
+                if (!!data) {
+                    for (var i = 0; i < data.length; i++) {
+                        var temp = {};
+                        temp.name = data[i].F_MaterialName;
+                        temp.value = data[i].F_Id;
+                        params.push(temp);
+                    }
+                }
+            }
+        });
+
+        let processes = [];
+        //let processlists = [];
+        common.ajax({
+            url: '/ProcessManage/WorkPlan/GetOpListJson',
+            dataType: 'json',
+            data: { eqpId: eqpId },
+            async: false,
+            success: function (data) {
+                if (!!data) {
+                    for (let i = 0; i < data.length; i++) {
+                        let temp = {};
+                        temp.name = data[i].F_ProcessFlowName;
+                        temp.value = data[i].F_Id;
+                        processes.push(temp);
+                    }
+                    //processlists = data;
+                }
+            }
+        });
+
+
+        var tablefilter = table.render({
+            elem: '#currentTableId',
+            data: listData,
+            defaultToolbar: [],
+            toolbar: '#toolbarDemo',//工具栏
+            search: false,
+            limit: 9999,//每页数据 默认
+            page: { //支持传入 laypage 组件的所有参数（某些参数除外，如：jump/elem） - 详见文档
+                layout: ['count'] //自定义分页布局
+                , first: false //不显示首页
+                , last: false //不显示尾页
+            },
+            height: 'full-200',
+            cols: [[
+                { type: "radio", width: 50 },
+                {
+                    field: 'F_MaterialId', title: '物料名称', minWidth: 145, sort: true, event: 'selectMaterial', config: { type: 'select', data: params, verify: true }
+                    , templet: function (d) {
+                        if (d.F_MaterialId) {
+                            if (d.F_MaterialId.value) {
+                                return d.F_MaterialId.name;
+                            }
+                            for (var i = 0; i < params.length; i++) {
+                                if (params[i].value == d.F_MaterialId) {
+                                    return params[i].name;
+                                }
+                            }
+                        }
+                        return ''
+                    }
+                },
+                {
+                    field: 'F_ProcessId', title: '工序', minWidth: 145, sort: true, event: 'selectProcess', config: { type: 'select', data: processes, verify: true }
+                    , templet: function (d) {
+                        if (d.F_ProcessId) {
+                            if (d.F_ProcessId.value) {
+                                return d.F_ProcessId.name;
+                            }
+                            for (var i = 0; i < processes.length; i++) {
+                                if (processes[i].value == d.F_ProcessId) {
+                                    return processes[i].name;
+                                }
+                            }
+                        }
+                        return '';
+                    }
+                },
+                { field: 'F_PlanNum', title: '数量', width: 100, edit: 'text', sort: true },
+            ]]
+        });
+        var aopTable = tableEdit.aopObj(tablefilter.config.cols); //获取一个aop对象
+        aopTable.on('tool(currentTableFilter)', function (obj) {
+            var field = obj.field; //单元格字段
+            var value = obj.value; //修改后的值
+            var data = obj.data; //当前行旧数据
+            var event = obj.event; //当前单元格事件属性值
+            var update = {};
+            update[field] = value;
+            //把value更新到行中
+            obj.update(update);
+        });
+        //行点击事件监听，控制按钮显示
+        var oneList = ["NF-delete"];//选择1条显示
+        commonTable.tableRowClick("radio", "currentTableFilter", "currentTableId", oneList);
+        $(function () {
+            $("#F_ClassNum").bindSelect({
+                data: top.clients.dataItems['Mes_ClassNumber'],
+                id: "",
+            });
+            if (!!keyValue) {
+                $("#F_EqpId").bindSelect({
+                    url: "/EquipmentManage/Equipment/GetListJson",
+                    id: "F_Id",
+                    text: "F_EqpName"
+                });
+                $("#F_EqpId").val(eqpId);
+                $("#F_Date").val(keyValue.slice(0, 10));
+                $("#F_ClassNum").val(keyValue.slice(10, 11));
+                common.ajax({
+                    url: '/ProcessManage/WorkPlan/GetFormJson',
+                    dataType: 'json',
+                    data: { eqpId: eqpId, currentdate: keyValue.slice(0, 10), classnum: keyValue.slice(10, 11) },
+                    async: false,
+                    success: function (data) {
+                        materialId = data.F_MaterialId;
+                        processId = data.F_ProcessId;
+                        var alldata = [];
+                        alldata.push({ F_Id: uuid(), F_MaterialId: materialId, F_ProcessId: processId, F_PlanNum: '0' });
+                        table.reload('currentTableId', { data: alldata });
+                        common.val('adminform', data);
+                    }
+                });
+            }
+
+            form.render();
+        });
+        wcLoading.close();
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var postData = data.field;
+            var listdata = table.cache.currentTableId;
+
+            if (postData.F_WorkPlanType !='0') {
+                common.modalMsg("不是生产状态，无法附加生产！", "warning");
+                return false;
+            }
+
+            if (postData.F_WorkPlanType == 0 && listdata.length == 0) {
+                common.modalMsg("请添加产品", "warning");
+                return false;
+            }
+            postData.listData = [];
+            for (var i = 0; i < listdata.length; i++) {
+                var temp = {};
+                temp.F_MaterialId = !!listdata[i].F_MaterialId.value ? listdata[i].F_MaterialId.value : listdata[i].F_MaterialId;
+                temp.F_ProcessId = !!listdata[i].F_ProcessId.value ? listdata[i].F_ProcessId.value : listdata[i].F_ProcessId;
+                temp.F_PlanNum = listdata[i].F_PlanNum;
+                postData.listData.push(temp);
+            }
+            postData.F_EqpName = $("#F_EqpId option:selected").text();
+
+
+            common.submitPost({
+                prompt: "注：您确定要附加生产计划并创建工单吗？",
+                url: '/ProcessManage/WorkPlan/SubmitAddForm',
+                param: postData,
+                success: function () {
+                    common.parentreload('data-search-btn');
+                    parent.layer.close(parent.layer.getFrameIndex(window.name));
+                }
+            });
+            return false;
+        });
+        form.render();
+        //监听复选框
+        form.on('select(WorkPlanType)', function (data) {
+            WorkPlanTypeChange(data.value);
+            form.render();
+        });
+        //toolbar监听事件
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            var data = table.checkStatus('currentTableId').data;
+            if (obj.event === 'add') {  // 监听添加操作\
+                var alldata = table.cache.currentTableId;
+                alldata.push({ F_Id: uuid(), F_MaterialId: materialId, F_ProcessId: processId, F_PlanNum: '0' })
+                table.reload('currentTableId', { data: alldata })
+            }
+            else if (obj.event === 'delete') {
+                if (data.length == 0) {
+                    common.modalMsg("未选中数据", "warning");
+                    return false;
+                }
+                var alldata = table.cache.currentTableId;
+                for (var i = 0; i < alldata.length; i++) {
+                    if (alldata[i].F_Id == data[0].F_Id) {
+                        alldata.splice(i, 1);
+                        break;
+                    }
+                }
+                table.reload('currentTableId', { data: alldata })
+            }
+            return false;
+        });
+        function WorkPlanTypeChange(value) {
+            if (value == "0") {
+
+            }
+            else {
+                table.reload('currentTableId', { data: [] });
+            }
+        }
+    });
+</script>
+
+<body>
+    <div class="layuimini-container">
+        <div class="layuimini-main">
+            <div class="layui-form layuimini-form" lay-filter="adminform">
+                <div class="layui-form-item">
+                    <div class="layui-col-md6 layui-col-sm6">
+                        <label class="layui-form-label required">计划日期</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="F_Date" name="F_Date" readonly autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-col-md6 layui-col-sm6">
+                        <label class="layui-form-label required">班别</label>
+                        <div class="layui-input-block">
+                            <select id="F_ClassNum" name="F_ClassNum" disabled>
+                                <option value="">==请选择==</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md6 layui-col-sm6">
+                        <label class="layui-form-label required">设备</label>
+                        <div class="layui-input-block">
+                            <select id="F_EqpId" name="F_EqpId" disabled>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-col-md6 layui-col-sm6">
+                        <label class="layui-form-label required">计划类型</label>
+                        <div class="layui-input-block">
+                            <select id="F_WorkPlanType" name="F_WorkPlanType" disabled>
+                                <option value="0" selected>生产</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">备注</label>
+                    <div class="layui-input-block">
+                        <input id="F_Description" name="F_Description" class="layui-input" placeholder="请输入备注">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-col-md12 layui-col-sm12">
+                        <label class="layui-form-label">产品列表</label>
+                        <div class="layui-input-block">
+                            <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-hide">
+                    <button class="layui-btn" lay-submit id="submit" lay-filter="saveBtn">确认保存</button>
+                </div>
+            </div>
+            <script type="text/html" id="toolbarDemo">
+                <div class="layui-btn-container" id="toolbar">
+                    <button id="NF-add" name="NF-add" class="layui-btn layui-btn-sm data-add-btn" lay-event="add"><i class="layui-icon">&#xe642;</i>添加</button>
+                    <button id="NF-delete" name="NF-delete" class="layui-btn layui-btn-sm layui-btn-danger layui-hide" lay-event="delete"><i class="layui-icon">&#xe640;</i>删除</button>
+                </div>
+            </script>
+        </div>
+    </div>
+</body>
+
